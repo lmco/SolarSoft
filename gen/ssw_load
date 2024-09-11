@@ -1,0 +1,198 @@
+#!/bin/csh -f
+# Name: ssw_load
+# Purpose:
+#  To load SSW software tree and preserve original settings on exit.
+#  Also perform some error checking.
+# Written: Feb'97, Zarro (ARC)
+
+onintr catch
+
+# Check if SSW defined
+
+if !($?SSW) then
+  if (-d /solarsoft) setenv SSW /solarsoft
+endif
+
+if !($?SSW) then
+  if (-d /ssw) setenv SSW /ssw
+endif
+
+if !($?SSW) then
+  echo "undefined SSW environment variable"
+  exit 1
+endif
+
+if !(-e $SSW) then
+  echo "SSW tree currently unavailable"
+  exit 1
+endif
+
+if !($?SOHO_DATA) setenv SOHO_DATA $HOME
+if !($?ys) setenv ys $HOME
+if !($?ydb) setenv ydb $HOME
+if !($?SSWDB) setenv SSWDB $HOME
+if !($?EIT_QKL) setenv EIT_QKL $HOME
+
+# set DISPLAY
+
+#if (-e $SSW/gen/bin/host_addr.awk) then
+# set addr = `who -M am i | awk -f $SSW/gen/bin/host_addr.awk -`
+# echo % login from $addr"."
+# if ($addr != "" && $addr != ":0.0") setenv DISPLAY $addr":0"
+#endif
+
+echo "...loading SSW from: $SSW "
+
+# Save initial IDL_STARTUP, IDL_PATH, & SSW_INSTR
+
+if ($?IDL_STARTUP) then
+  set OLD_STARTUP = $IDL_STARTUP
+  unsetenv IDL_STARTUP
+  unset IDL_STARTUP
+endif
+
+if ($?IDL_PATH) then
+  set OLD_PATH = $IDL_PATH
+  unsetenv IDL_PATH
+  unset IDL_PATH
+endif
+
+if ($?SSW_INSTR) then
+  set OLD_INSTR = $SSW_INSTR
+endif
+
+# load instruments
+
+if !($?SSW_INSTR) then
+  setenv SSW_INSTR "eit sxt hessi mdi trace eis xrt aia hmi euvi"
+endif
+
+# remove instruments that don't have subdir's
+
+#set new_list = ""
+#set temp = `echo $SSW_INSTR`
+#foreach inst ($temp)
+#  if (-d $SSW/soho/$inst || -d $SSW/$inst || -d $SSW/yohkoh/$inst || -d $SSW/packages/$inst || -d $SSW/hinode/$inst || -d $SSW/stereo/$inst) then
+#   set new_list = "$new_list $inst"
+#  endif
+#end
+
+#set new_list = "$new_list"
+#if ("$new_list" == "") then
+#  echo "...$SSW_INSTR instruments not installed"
+#  echo "...defaulting to SXT & EIT"
+#  setenv SSW_INSTR "sxt eit"
+#endif
+
+#setenv SSW_INSTR "$new_list"
+
+unalias idl
+unalias sswidl
+
+
+# only use current IDL_STARTUP if /start set
+
+if ($#argv == 1) then
+  if ($argv[1] == "/start") then
+   if ($?OLD_STARTUP) then
+    setenv IDL_STARTUP $OLD_STARTUP
+   endif
+  endif
+endif
+
+if ($#argv > 1) then
+  if ($argv[2] == "/start" || $argv[1] == "/start")  then
+   if ($?OLD_STARTUP) then
+    setenv IDL_STARTUP $OLD_STARTUP
+   endif
+  endif
+endif
+
+if ($?IDL_STARTUP) then
+  if (-e $IDL_STARTUP) then
+   echo "...using IDL_STARTUP: $IDL_STARTUP"
+  else
+   echo "...disabling IDL_STARTUP: since $IDL_STARTUP not found"
+   unsetenv IDL_STARTUP
+  endif
+endif
+
+# Load any input procedure that user entered on command line
+
+if ($#argv == 1) then
+  if (-e $argv[1]) set idl_proc = $argv[1]
+endif
+
+if ($#argv > 1) then
+  if !($?idl_proc) then
+   if (-e $argv[1]) set idl_proc = $argv[1]
+  endif
+  if !($?idl_proc) then
+   if (-e $argv[2]) set idl_proc = $argv[2]
+  endif
+endif
+
+# disable checking for X-windows colors if doing it in SSW_STARTUP
+
+if ($?ssw_nox) then
+  set old_ssw_nox = $ssw_nox
+endif
+
+if !($?idl_proc) then
+ if !($?IDL_STARTUP) then
+  set ssw_startup = $SSW/gen/setup/ssw_startup.pro
+  if (-e $ssw_startup) then
+   set idl_proc = $ssw_startup
+  endif
+ endif
+endif
+
+if ($?ssw_nox) then
+  echo "% ssw_nox = $ssw_nox"
+endif
+
+setenv ssw_nox 1
+source $SSW/gen/setup/setup.ssw /quiet
+
+if ($?idl_proc) then
+  echo "...executing: $idl_proc"
+  sswidl nox $idl_proc
+else
+  sswidl nox
+endif
+
+catch:
+
+# Set things back
+
+if ($?old_ssw_nox) then
+  setenv ssw_nox $old_ssw_nox
+else
+  setenv ssw_nox ""
+endif
+
+if ($?OLD_STARTUP) then
+  setenv IDL_STARTUP $OLD_STARTUP
+endif
+
+if ($?OLD_PATH) then
+  setenv IDL_PATH $OLD_PATH
+endif
+
+if ($?OLD_INSTR) then
+  setenv SSW_INSTR $OLD_INSTR
+endif
+
+exit
+
+
+
+
+
+
+
+
+
+
+
+

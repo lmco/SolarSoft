@@ -1,0 +1,17 @@
+#!/usr/bin/perl -s
+# Obey the remove commands generated but not done by mirror.
+# eg:
+# NEED TO unlink /public/micros/ibmpc/simtel20/sprdsht/tc810.arc
+# NEED TO rmdir /public/micros/ibmpc/simtel20/sprdsht
+
+# A simple safety check - only delete if the pathname begins with this
+$del_only = '/public';
+
+while( <> ){
+	chop;
+	if( /^NEED TO (unlink|rmdir) ($del_only.*)/ ){
+		$zap = "$1('$2')";
+		print "$zap\n" if $show;
+		(eval "$zap") || warn "failed: $zap\n";
+	}
+}

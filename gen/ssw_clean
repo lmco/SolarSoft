@@ -1,0 +1,91 @@
+#!/bin/csh -f
+# Name: ssw_clean
+# Purpose:
+# Load clean SSW software tree minus personal IDL_PATH or IDL_STARTUP
+# Written: 29 December 2013, Zarro (ADNET)
+
+onintr catch
+
+# Check if SSW defined
+
+if !($?SSW) then
+  if (-d /solarsoft) setenv SSW /solarsoft
+endif
+
+if !($?SSW) then
+  if (-d /ssw) setenv SSW /ssw
+endif
+
+if !($?SSW) then
+  echo "undefined SSW environment variable"
+  exit 1
+endif
+
+if !(-e $SSW) then
+  echo "SSW tree currently unavailable"
+  exit 1
+endif
+
+echo "...loading clean SSW from: $SSW "
+
+# Save initial IDL_STARTUP, IDL_PATH, & SSW_INSTR
+
+if ($?IDL_STARTUP) then
+  set OLD_STARTUP = $IDL_STARTUP
+  unsetenv IDL_STARTUP
+  unset IDL_STARTUP
+endif
+
+if ($?IDL_PATH) then
+  set OLD_PATH = $IDL_PATH
+  unsetenv IDL_PATH
+  unset IDL_PATH
+endif
+
+if ($?SSW_INSTR) then
+  set OLD_INSTR = $SSW_INSTR
+endif
+
+# load instruments (if not defined)
+
+if !($?SSW_INSTR) then
+  setenv SSW_INSTR "cds eit sxt hessi mdi trace sumer"
+endif
+
+unalias idl
+unalias sswidl
+
+set ssw_startup = $SSW/gen/setup/ssw_startup.pro
+source $SSW/gen/setup/setup.ssw /quiet
+
+sswidl nox $ssw_startup
+
+catch:
+
+# Set things back
+
+if ($?OLD_STARTUP) then
+  setenv IDL_STARTUP $OLD_STARTUP
+endif
+
+if ($?OLD_PATH) then
+  setenv IDL_PATH $OLD_PATH
+endif
+
+if ($?OLD_INSTR) then
+  setenv SSW_INSTR $OLD_INSTR
+endif
+
+exit
+
+
+
+
+
+
+
+
+
+
+
+

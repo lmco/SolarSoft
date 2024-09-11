@@ -1,0 +1,37 @@
+#!/bin/csh -f 
+
+# Mac OS fix for IDL-Python bridge 
+# Make sure to define or hardwire $PYTHONHOME and $IDL_DIR beforehand to your local setup.
+# Run as "sudo pyidl_mac_fix"
+# I have no clue how this works, but I cribbed it from extensive Google searching.
+
+# Zarro (ADNET) 26-July-18 
+
+set CWD = `pwd` 
+onintr catch
+
+setenv PYTHONHOME /Users/zarro/anaconda3
+setenv IDL_DIR /Applications/harris/idl
+
+cd $IDL_DIR/bin/bin.darwin.x86_64 
+
+install_name_tool -change libpython3.6m.dylib $PYTHONHOME/libpython3.6m.dylib idl_python36.so
+install_name_tool -change libidl.8.6.dylib @loader_path/libidl.8.6.dylib pythonidl36.so
+install_name_tool -change libidl_ips.8.6.dylib @loader_path/libidl_ips.8.6.dylib pythonidl36.so
+
+#install_name_tool -change libpython2.7.dylib $PYTHONHOME/lib/libpython2.7.dylib pythonidl27.so
+#install_name_tool -change libidl.8.5.dylib @loader_path/libidl.8.5.dylib pythonidl27.so
+#install_name_tool -change libidl_ips.8.5.dylib @loader_path/libidl_ips.8.5.dylib pythonidl27.so
+
+install_name_tool -change libMesaGL6_2.dylib @loader_path/libMesaGL6_2.dylib libidl.8.6.dylib
+install_name_tool -change libMesaGLU6_2.dylib @loader_path/libMesaGLU6_2.dylib libidl.8.6.dylib
+install_name_tool -change libOSMesa6_2.dylib @loader_path/libOSMesa6_2.dylib libidl.8.6.dylib
+install_name_tool -change libXm.3.0.2.dylib @loader_path/libXm.3.0.2.dylib libidl.8.6.dylib
+install_name_tool -change libMesaGL6_2.dylib @loader_path/libMesaGL6_2.dylib libMesaGLU6_2.dylib
+install_name_tool -change libMesaGL6_2.dylib @loader_path/libMesaGL6_2.dylib libOSMesa6_2.dylib
+install_name_tool -change libidl.8.6.dylib @loader_path/libidl.8.6.dylib libidl_ips.8.6.dylib
+
+catch: 
+if ($?CWD) then  
+ cd $CWD 
+endif

@@ -1,0 +1,83 @@
+Dynamically Loadable Modules (DLMs), or "plugins" for IDL
+
+To compile & install the plugins, first make sure the following environment
+variables are set appropriately:
+
+SSW_COMPILE_TYPE:
+
+   A string identifying the operating system/compiler. This is
+   has to be set so the correct Makefile.xyz file is used during
+   compilation/linking. Among the choices from this distribution:
+
+   darwin -  Mac OS X with gcc [Why "darwin"? Ask Steve Jobs]
+   linux  -  Linux with gcc
+   alpha  -  Compaq Tru64 UNIX with native compiler
+   solaris - SunOS/Solaris with native compiler
+
+   On many systems (but certainly not all), SSW_COMPILE_TYPE can be set to
+   $HOSTTYPE, or the output of the command hosttype.
+
+   The OS & compiler combinations above are considered baseline - if you're
+   using other compilers, or other operating systems, a new Makefile.xyz
+   should be created. When possible, the name should be derived from
+   existing choices, e.g. "linux-intel" for linux with Intel compiler, etc.
+
+   On other platforms, look at the IDL system variable !MAKE_DLL for hints
+   on what compiler/linker options may be necessary to make a shareable
+   object/library.
+
+   If you find it necessary to create a new Makefile.xyz, please send it to
+   s.v.h.haugan@astro.uio.no so it can be included in the SSW distribution.
+
+SSW_BINARY_TYPE:
+
+   A string identifying the platform, i.e. the OS and processor type. This
+   serves no other function than to allow multiple-platform installations to
+   coexist peacefully, by making sure the binary files for each platform is
+   installed in the right place. If you want to, you can even use the machine
+   name, but then you'd have to compile & install the DLM's on each and every
+   machine.
+
+   At ITA in Oslo, we use "$SSW_COMPILE_TYPE.$PROCTYPE", where $PROCTYPE
+   identifies the machine processor architecture thus:
+
+   alpha  : Alpha (Tru64)
+   i386   : Intel (Darwin/Mac OS X)
+   powerpc: Powerpc (Darwin/Mac OS X)
+   i686   : 32-bit Intel (Linux)
+   x86_64 : 64-bit Intel (Linux)
+   sparc  : Sparc architecture (Solaris)
+
+SSW_DLM_TOP:
+
+   The path to the top of the DLM installation tree. Installation will be done
+   into the path $SSW_DLM/$SSW_BINARY_TYPE. The default value should be
+   $SSW/site/dlm.
+
+IDL_DIR:
+
+    Should be set to the directory where IDL is installed, so we can locate
+    its subdirectory $IDL_DIR/external.
+
+
+Having set these environment variables, issue the command "make rounds" in this
+directory. All [at present only one] DLMs should then be compiled & installed.
+
+Next, set IDL_DLM_PATH to "<IDL_DEFAULT>:$SSW_DLM/$SSW_BINARY_TYPE". The
+"<IDL_DEFAULT>" part will be replaced with the correct path by IDL on startup,
+at least on "recent" versions. For ancient versions, you may have to dig up the
+right value (hint: look at where the executable is picked up from).
+
+Now start IDL, and try e.g.
+
+
+IDL> help,fmedian(findgen(10,10),3,3)
+% Loaded DLM: FMEDIAN.
+ALL
+<Expression>    FLOAT     = Array[10, 10]
+
+The telltale sign everything worked right is the "%Loaded DLM: FMEDIAN"
+message (i.e. not "Compiled ....").
+
+For regular users of already-installed DLMs, the only action needed is to set
+IDL_DLM_PATH correctly.

@@ -1,0 +1,64 @@
+File: /ssw/gen/data/info/idl_header.txt
+
+     ;+
+     ; Project     : SOHO - CDS
+     ;
+a    ; Name        : HELP_FITSHEAD()
+     ;
+b    ; Purpose     : Widget display to give help on items in CDS FITS header.
+     ;
+c    ; Category    : Help, FITS, CDS
+     ;
+     ; Explanation : Presents a typical, or specific, CDS FITS file header
+     ;               and allows the user to click on any item to receive an
+     ;               extended explanation of that item.
+     ;
+d    ; Syntax      : IDL> status = help_fitshead([file,/noext])
+     ;
+e    ; Examples    : IDL> file = ''
+     ;               IDL> f = find_with_def(file,'CDS_FITS_DATA','fits,fts')
+     ;               IDL> print_str,f
+     ;               IDL> status = help_fitshead(last_item(f),/noext)
+     ;
+     ; Inputs      : None
+     ;
+     ; Opt. Inputs : FILE    -  name of FITS file to read.  If not given, a
+     ;                          standard header example is displayed.
+     ;
+     ; Outputs     : None
+     ;
+     ; Opt. Outputs: None
+     ;
+f    ; Keywords    : NOEXT   -  if specified, the main FITS header is
+     ;                          displayed as opposed to the extensive one
+     ;                          used in the binary table extension.
+     ;
+g    ; Common      : None
+     ;
+h    ; Restrictions: Requires specification of env. var. CDS_FITS_DATA if
+     ;               file path/name is not given explicitly.
+     ;
+i    ; Side effects: None
+     ;
+j    ; History     : Version 1,  28-Apr-1995,  C D Pike.  Written
+     ;               Version 2,  14-Jun-1995,  C D Pike.
+     ;                           Added /NOEXT keyword and removed /NOHEAD.
+     ;
+k    ; Contact     : CDPIKE
+     ;-
+--------------------------------------------------
+a - functions are suffixed with () and main routines with *
+b - text should be <= 60 characters to allow fixed format output in help.
+c - only entries from approved list (extendable) accepted
+d - not required to specify all parameters/keywords, just give flavour
+e - if appropriate, it should be possible to run IDL code given here verbatim
+f - if appropriate, keywords should be qualified with (input) and/or (output).
+g - common block files should be same name as common block with .pro extension
+h - other examples are: OS dependent; requires IDL version 3.xx; can only
+    be run after calling other initialisation routines etc....
+i - for example, sets global variable.
+j - first line required to include:
+      Version (Ver[sion] #), Date (dd/mmm/yyyy - or reversed) and
+      Person ([initials]surname)
+k - entry should be sufficient to allow the SSW administrators to identify a
+    contact person

@@ -1,0 +1,71 @@
+#!/bin/csh 
+#
+# share_env
+#
+# History: S.L.Freeland - 16-Nov-1993
+#                         29-Jun-1994 suppress mail
+#                          6-Sep-1994 skip dead remote hosts (via is_alive)
+#			   4-Dec-1994 change lparl default from sxt2 to sxt3
+#                          6-aug-1995 only export if 2nd parameter present
+#                          7-apr-1997 update for SSW use
+#
+# Exchange common directories with other yohkoh sites
+# Calls get_remenv    - to get remote environmental translation
+#       rdist_one.src - to do rdist updates
+#
+# Method - 1. translate remote environmental assignements
+#	   2. import designated env (path) from every host
+#	   3. export (now integrated) path to every host
+# 
+set senv=$1
+if (!($?share_hosts)) then
+   echo "You must defined environmental 'share_hosts'"
+   exit
+endif
+
+echo sharing environmental $1 with hosts $share_hosts
+
+set remenv=""
+set this_host=`hostname`
+set this_env=`printenv $senv`
+set import=1
+
+if ($#argv > 1) then
+   set import=0
+endif
+
+# first, update this host from the other share hosts
+set alive_hosts=()
+foreach host ($share_hosts)				# for each host
+   set alive=`csh $SSW/gen/bin/is_alive $host`
+   if ($alive) then
+      set onerem=`csh $SSW/gen/bin/get_remenv $host $senv`
+      echo on host $host, remote $senv env is: $onerem
+      set remenv = ($remenv $onerem)			# build remenv list
+      if ($import) then 
+         set rcmd="csh $SSW/gen/bin/rdist_one.src $onerem $this_host $this_env /nomail"
+         echo importing from host $host
+         rsh $host $rcmd
+      else
+         echo "export only mode..."
+      endif
+      set alive_hosts=($alive_hosts $host)
+   else
+      echo "HOST: "$host" is not responding now"
+   endif
+end
+
+# now, go back the other way (this_host distributes to each share host)
+foreach host ($alive_hosts)
+   echo exporting to host $host
+#  In case it dies in the middle, check again
+   set alive=`csh $SSW/gen/bin/is_alive $host`
+   if ($alive) then 
+      csh $SSW/gen/bin/rdist_one.src $this_env $host $remenv[1] /nomail
+   else
+      echo "HOST: "$host" is not responding now"
+   endif
+   shift remenv
+end   
+
+exit

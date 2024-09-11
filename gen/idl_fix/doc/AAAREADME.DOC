@@ -1,0 +1,23 @@
+Description of $ys/idlfix		February 23, 1993 - S.L.Freeland
+
+$ys/idlfix directory was created to contain source code which falls under
+one of the following categories...
+
+1. IDL supplied source code contains a bug in 'current' version - If a
+   corrected version is available, it is placed in directory:
+	$ys/idlfix/soft/bugfix
+   These routines will precede the idl supplied (incorrect) version in !path
+   to provide a temporary work around to the problem.
+
+2. A new IDL feature is incorporated in $ys software but is not available
+   to users of older versions.  If a dummy version of such a routine can
+   be written to emulate (or at least mask) the new routine, it is placed
+   in directory:
+	$ys/idlfix/soft/oldxyz (where xyz = rev. when new feature was
+				introduced, ex: old220 = !version.rev=.2.2.0)
+
+   The routine: set_oldpath.pro will add the category 2. direrectories to
+   !path selectivly, based upon the current IDL version running at startup.
+
+If routines falling into category 1. are fixed in later revs of idl, then
+they will be moved into a 'category 2. type' directory.

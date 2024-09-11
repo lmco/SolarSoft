@@ -1,0 +1,121 @@
+#!/bin/csh -f
+############################################################################
+#
+# Name - setos
+#
+# Purpose - sets the following system dependent environmentals:
+#
+#   $OS      - "Operating System"    (old $OS designation)
+#   $OSIDL   - Operating System      (!version.os)                     
+#   $OSARCH  - Architecture          (!version.arch)
+#   $OSVER   - OS Version            
+#   $OS_ARCH - Corresponding SSW executable subdirectory (UNIX<=>IDL)
+#
+# History
+# S.L.Freeland - 29-July-1992 Originally for Yohkoh SW system
+#	(SLF) -  1-Oct-1993 (add OS env)
+#	(SLF) - 19-Nov-1993 (add Solaris)
+#       (DMZ) - 12-May-1994 (add OSF)
+#	(BNH) - 22-May-1996 (add Linux)
+#                           (add FreeBSD)
+#       (SLF) - 15-apr-1997 (add OS_ARCH for SSW binaries)
+#               use <uname> when possible, following RSI logic
+#       (SLF) - 16-apr-1997 (made $OS old 
+#	(MDM) -  9-Jul-1997 (Added "endif" to sunos case)
+#
+#############################################################################
+# Determine Operating System based on configuration files 
+# Sets variable and environmental OS
+# (Logic for determination based on existing directories/files borrowed
+# Borrows from RSI supplied 'lm...' scripts
+##############################################################################
+set OS=""
+set OSARCH=""
+set OSIDL=""
+##############################################################################
+
+# use the following IF block if system does not support <uname>
+if (-d /usr/convex) then 
+    set OSNAME="convex"
+else
+    set OSNAME=`uname`
+endif
+
+########### now set some OS/ARCH/VERSION environementals   
+switch ($OSNAME) 
+   case SunOS:
+   set OSIDL=sunos
+   if (-d /proc) then 
+      setenv OSVER 2
+      set mach=`mach`
+      if ($mach == "i386") then
+         set OSARCH=.x86
+      else
+          set OSARCH=sparc
+      endif
+   endif
+   setenv pingtype 0
+   breaksw
+   case OSF1:
+      set OS=osf
+      set OSIDL=OSF
+      set OSARCH=alpha
+      setenv OSMACH dec
+      setenv pingtype 0
+   breaksw            
+   case ULTRIX:
+     set OSIDL=ultrix
+     set OSARCH=mipsel
+     setenv pingtype 0
+   breaksw
+   case HP-UX:
+      set OSIDL="hp"
+   breaksw
+   case IRIX:
+   case IRIX6
+   case IRIX64
+      set OS=sgi
+      set OSIDL=IRIX
+      setenv mach sgi
+      set OSARCH=mipseb       
+   breaksw      
+   case AIX:
+      set OSIDL=ibm
+   breaksw
+   case dgux:
+      set OSIDL=aviion
+   breaksw
+   case Linux:
+      set OSIDL=linux
+   breaksw
+   default:
+    if (-e /dev/root ) then			# Mips
+	set OSIDL=mips
+    else 
+       if (-e /kernel ) then                     #FreeBSD
+           set OSIDL=linux
+       endif
+    endif
+    breaksw
+endsw
+
+setenv OSIDL $OSIDL                             # variable->env
+
+if ($OS =="") then
+  set OS="$OSIDL"   
+endif
+
+setenv OS $OS                                   # variable->env
+
+if ($OSARCH == "") then            
+   set OSARCH=$OSIDL
+endif
+setenv OS_ARCH $OSIDL"_"$OSARCH
+
+if ($?OS) then 
+   setenv OS $OS
+endif
+
+exit
+############################################################################
+

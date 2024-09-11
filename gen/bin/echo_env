@@ -1,0 +1,29 @@
+#!/bin/csh -f
+#  Echo argument 1 , replacing environnmental  in arg 2
+#  Calling Example
+#     echo_env $SSW/path/file SSW
+#
+#   Needs 2 arguments (no checking!)
+#
+if ($#argv == 0 ) then 		# no need to continue
+      echo ""
+      exit
+else
+   if ($#argv == 1) then 
+       set envx="SSW"		# default (SSW bias)
+   else
+      set envx=$2		# 2nd parameter = environmental
+   endif
+endif
+
+set trans=`printenv $envx`	# translation
+
+if ("$trans" == "") then 
+   echo ""
+else 
+   set out=`echo $1 | sed s+"$trans"+'$'"$envx"+g`
+   echo $out
+endif
+exit
+
+

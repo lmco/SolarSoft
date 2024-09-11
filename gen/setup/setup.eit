@@ -1,0 +1,9 @@
+echo "setup eit...."
+
+# redefine top level EIT if not under SSW
+# setenv 		SSW_EIT		/eit_newpath
+
+# now set EIT related environmentals
+setenv		SSW_EIT_RESPONSE	$SSW_EIT/response
+
+exit

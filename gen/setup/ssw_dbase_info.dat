@@ -1,0 +1,24 @@
+;
+ACE EPAM E38_53     1 NGDC 'Differential Flux/cm2-s-ster-MeV'
+ACE EPAM E175_31    1 NGDC 'Differential Flux/cm2-s-ster-MeV'
+ACE EPAM P47_65     1 NGDC 'Differential Flux/cm2-s-ster-MeV'
+ACE EPAM P112_187   1 NGDC 'Differential Flux/cm2-s-ster-MeV'
+ACE EPAM P310_580   1 NGDC 'Differential Flux/cm2-s-ster-MeV'
+ACE EPAM P761_1220  1 NGDC 'Differential Flux/cm2-s-ster-MeV'
+ACE EPAM P060_1910  1 NGDC 'Differential Flux/cm2-s-ster-MeV'
+ACE EPAM ANIS_RATIO 1 NGDC 'Differential Flux/cm2-s-ster-MeV'
+
+ACE SWEPAM P_DENSITY 0 NGDC 'Proton Density (p/cc)
+ACE SWEPAM B_SPEED   0 NGDC 'Bulk Speed (Km/Sec)'
+ACE SWEPAM ION_TEMP  0 NGDC 'Ion Temperature (deg K.) 
+
+ACE SIS P_GT10MEV 1 NGDC 'Proton Flux p/cs2-sec-ster'
+ACE SIS P_GT30MEV 1 NGDC 'Proton Flux p/cs2-sec-ster'
+ 
+ACE MAG BX 0 NGDC 'Bx (GSM) nT'
+ACE MAG BY 0 NGDC 'By (GSM) nT'
+ACE MAG BZ 0 NGDC 'Bz (GSM) nT'
+ACE MAG BT 0 NGDC 'BTotal(x,y,z) nT'
+ACE MAG LAT  0 NGDC 'IMF latitude (GSM) deg.'
+ACE MAG LONG 0 NGDC 'IMF longitude (GSM) deg.'
+

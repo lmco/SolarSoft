@@ -1,0 +1,121 @@
+  -adjoin              join images into a single multi-image file
+  -blur factor         apply a filter to blur the image
+  -border geometry     surround image with a border of color
+  -box color           color for annotation bounding box
+  -colors value        preferred number of colors in the image
+  -colorspace type     GRAY, OHTA, RGB, XYZ, YCbCr, YIQ, YPbPr, or YUV
+  -comment string      annotate image with comment
+  -compress type       RunlengthEncoded or Zip
+  -contrast            enhance or reduce the image contrast
+  -crop geometry       preferred size and location of the cropped image
+  -delay value         display the next image after pausing
+  -density geometry    vertical and horizontal density of the image
+  -despeckle           reduce the speckles within an image
+  -display server      obtain image or font from this X server
+  -dispose method      GIF disposal method
+  -dither              apply Floyd/Steinberg error diffusion to image
+  -draw string         annotate the image with a graphic primitive
+  -edge factor         apply a filter to detect edges in the image
+  -emboss              emboss an image
+  -enhance             apply a digital filter to enhance a noisy image
+  -equalize            perform histogram equalization to an image
+  -flip                flip image in the vertical direction
+  -flop                flop image in the horizontal direction
+  -font name           X11 font for displaying text
+  -frame geometry      surround image with an ornamental border
+  -gamma value         level of gamma correction
+  -geometry geometry   perferred size or location of the image
+  -implode amount      implode image pixels about the center
+  -interlace type      NONE, LINE, or PLANE
+  -label name          assign a label to an image
+  -loop iterations     add Netscape loop extension to your GIF animation
+  -map filename        transform image colors to match this set of colors
+  -matte               store matte channel if the image has one
+  -modulate value      vary the brightness, saturation, and hue
+  -monochrome          transform image to black and white
+  -negate              apply color inversion to image
+  -noise               reduce noise with a noise peak elimination filter
+  -normalize           transform image to span the full range of colors
+  -opaque color        change this color to the pen color
+  -page geometry       size and location of the Postscript page
+  -paint radius        paint an image
+  -pen color           color for annotating or changing opaque color
+  -pointsize value     pointsize of Postscript font
+  -quality value       JPEG quality setting
+  -raise value         lighten/darken image edges to create a 3-D effect
+  -region geometry     apply options to a portion of the image
+  -roll geometry       roll an image vertically or horizontally
+  -rotate degrees      apply Paeth rotation to the image
+  -sample geometry     scale image with pixel sampling
+  -scene value         image scene number
+  -segment value       segment an image
+  -sharpen factor      apply a filter to sharpen the image
+  -shear geometry      slide one edge of the image along the X or Y axis
+  -size geometry       width and height of image
+  -solarize thresold   negate all pixels above the threshold level
+  -spread amount       displace image pixels by a random amount
+  -swirl degrees       swirl image pixels about the center
+  -texture filename    name of texture to tile onto the image background
+  -transparent color   make this color transparent within the image
+  -treedepth value     depth of the color classification tree
+  -undercolor geometry control undercolor removal and black generation
+  -verbose             print detailed information about the image
+
+  AVS                   AVS X image file.
+  BMP   		Microsoft Windows bitmap image file.
+  CMYK  		Raw cyan, magenta, yellow, and black bytes.
+  DCX   		ZSoft IBM PC multi-page Paintbrush file
+  DIB   		Microsoft Windows bitmap image file.
+  EPS   		Adobe Encapsulated PostScript file.
+  EPS2  		Adobe Level II Encapsulated PostScript file.
+  EPSF  		Adobe Encapsulated PostScript file.
+  EPSI  		Adobe Encapsulated PostScript Interchange format.
+  FAX   		Group 3.
+  FITS  		Flexible Image Transport System.
+  GIF   		CompuServe graphics interchange format; 8-bit color.
+  GIF87 		CompuServe graphics interchange format; 8-bit color (version 87a).
+  GRAY  		Raw gray bytes.
+  HDF   	        Hierarchical Data Format.
+  HISTOGRAM
+  HTML  		Hypertext Markup Language with a client-side image map
+  JBIG  		Joint Bi-level Image experts Group file interchange format.
+  JPEG  		Joint Photographic Experts Group JFIF format; compressed 24-bit color.
+  MAP   		colormap intensities and indices.
+  MATTE 		Raw matte bytes.
+  MIFF  		Magick image file format.
+  MPEG  		Motion Picture Experts Group file interchange format.
+  MTV
+  NULL  		NULL image.
+  PBM   		Portable bitmap format (black and white).
+  PCD   		Photo CD.
+  PCX   		ZSoft IBM PC Paintbrush file.
+  PDF   		Portable Document Format.
+  PGM   		Portable graymap format (gray scale).
+  PICT  		Apple Macintosh QuickDraw/PICT file.
+  PNG   		Portable Network Graphics.
+  PNM   		Portable anymap.
+  PPM   		Portable pixmap format (color).
+  PS    		Adobe PostScript file.
+  PS2   		Adobe Level II PostScript file.
+  RAD   		Radiance image file.
+  RGB   		Raw red, green, and blue bytes.
+  RGBA  		Raw red, green, blue, and matte bytes.
+  RLA   		Alias/Wavefront image file; read only.
+  RLE   		Utah Run length encoded image file; read only.
+  SGI   		Irix RGB image file.
+  SUN   		SUN Rasterfile.
+  TEXT  		raw text file; read only.
+  TGA   		Truevision Targa image file.
+  TIFF  		Tagged Image File Format.
+  UYVY  		16bit/pixel interleaved YUV.
+  TILE  		tile image with a texture.
+  VICAR 		read only.
+  VID   		Visual Image Directory.
+  VIFF  		Khoros Visualization image file.
+  X     		select image from X server screen.
+  XC    		constant image of X server color.
+  XBM   		X Windows system bitmap, black and white only.
+  XPM   		X Windows system pixmap file (color).
+  XWD   		X Windows system window dump file (color).
+  YUV   		CCIR 601 1:1:1 file.
+  YUV3  		CCIR 601 2:1:1 files.

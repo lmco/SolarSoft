@@ -1,0 +1,20 @@
+#AniS ***sample*** enhancement tables file
+
+# Each Table begins with a name line with a * in the first column
+
+# Table entries are ordered:
+#  in-lo in-hi  red-lo red-hi  green-lo  green-hi  blue-lo blue-hi
+# (extra blanks dont matter)
+
+
+*grayscale # (probably should always have one)
+0 255 0 255 0 255 0 255
+
+*vapor  #water vapor first cut
+0 50 0 0 0 0 0 0
+51 180 0 255 0 255 0 255
+181 255 255 255 255 255 255 255
+
+*inverted GS # inverted table
+0 255 255 0 255 0 255 0
+

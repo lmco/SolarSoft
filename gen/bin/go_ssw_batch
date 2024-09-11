@@ -1,0 +1,24 @@
+#!/bin/csh -f
+
+# front end to 'ssw_batch' to simplify crontab calling sequence
+
+# Input Parameters:
+#   <idlprogram> - the name of the IDL main level program to run
+#
+# Calling Sequence:
+#
+#   csh -f go_ssw_batch <idlprogram>
+#
+#   side effects:
+#      generates logfile: $SSW/site/logs/<idlprogram>.log
+# 
+#   $SSW/gen/bin/ssw_batch does the "real work"
+#
+#   S.L.Freeland Circa 1-August-2001 - simplify SSW crontab files
+#                                      
+setenv SSW_INSTR "sxt eit trace hessi cds lasco mdi sumer uvcs xrp bcs hxt sxt wbs uvsp ethz"
+set log="$SSW"/site/logs/"$1"".log"
+set cmd="$SSW""/gen/bin/ssw_batch "$1" "$log
+eval $cmd
+exit
+

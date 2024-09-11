@@ -1,0 +1,10 @@
+21-March-2006 - S.L.Freeland
+
+This directory contains files for ssw-client support of the AniS applet
+for java animations. See detailed documentation at:
+
+http://www.ssec.wisc.edu/visit/AniS/anisdoc.html
+
+SSW interface routine: ssw_javamovie.pro (via image2movie.pro)
+Coming soon to:
+http://www.lmsal.com/solarsoft/ssw_movie_making.html (/APPLET)

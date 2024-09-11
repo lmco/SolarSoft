@@ -1,0 +1,34 @@
+# $SSW/gen/setup/ssw_install.linkages
+#
+# S.L.Freeland - 30-November-1999
+# This file provides implied/automatic linkages for branches
+# If instrument/branch in the 1st column is referenced, the 
+# instruments/branches in the second...NN columns are included 
+# Generally, the PI team suggest auto-linkages
+#
+# These are in addition to the 'forced' linkages 
+# (such as ssw-gen, mission-gen, and mission-ucon) which are required to 
+#  assure integrated function)
+#  10-oct-2006 - S.L.Freeland - add SBROWSER->SECCHI links
+#  22-jan-2008 - S.L.Freeland - add NRL->SECCHI & LASCO
+#   8-feb-2010 - S.L.Freeland - hmi&aia->ontology
+#  16-jan-2012 - S.L.Freeland - sot->azam
+#   4-apr-2013 - S.L.Freeland - iris->ontology
+#  19-jul-2016 - S.L.Freeland/W.Thompson - stereo -> sunspice
+#  04-Aug-2016 - W.Thompson   - remove sunspice for impact, plastic, swaves
+# 
+#
+Instrument			Auto-Linkages
+hessi				spex,xray
+hxrs     			spex,xray
+cactus				cmes
+cmes				cactus
+secchi				mjastereo,sbrowser,nrl,s3drs,sunspice
+ssc				sunspice
+lasco				nrl
+aia				ontology
+hmi				ontology
+sot				azam
+azam				sot
+iris				ontology
+wispr				nrl,sunspice

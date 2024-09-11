@@ -1,0 +1,102 @@
+		List of Solar-Soft IDL Categories
+		=================================
+
+						V2.1  28-Jun-95 (M.Morrison)
+					File: /ssw/gen/data/info/ssw_categories.txt
+
+Program and Instrument Categories (From "Project" Header Key)
+-------------------------------------------------------------
+	SOHO			SOHO S/C or project
+	Yohkoh			Yohkoh S/C or project
+	SSW			general solar software routine
+	CDS			SOHO-CDS instrument
+	EIT			SOHO-EIT instrument
+	LASCO			SOHO-LASCO instrument
+	MDI			SOHO-MDI instrument
+	SUMER			SOHO-SUMER instrument
+	UVCS			SOHO-UVCS instrument
+	SXT			Yohkoh-SXT instrument
+	......			and so forth
+
+Science and Analysis Categories
+-------------------------------
+	Analysis		general scientific analysis routines
+	Calibration		instrument response and calibration routines
+	Coordinates		absolute, instrument, and S/C coordinate conversions
+	Engineering		instrument engineering routines
+	Error-analysis		routines to assist in the error analysis
+	Fitting			spectral, image and time series fitting routines
+	Geometry		geometry routines
+	Image-processing	Image processing (2-d warping, ...)
+	Interpolation		interpolation routines
+	Instrument		instrument (but not calibration) routines
+	Numerical		numerical routines
+	Orbit			orbit solution/information routines
+	Operations		S/C or instrument operations routines
+	Planning		science and operations planning routines
+	Quicklook		operations quick look routines
+	Spectrum		wavelength spectrum analysis routines
+	Statistics		statistical routines
+	Registration		image registration routines
+	Telemetry		raw S/C telemetry routines
+	Time-series		time series routines (light curves, ...)
+
+Data Displaying Categories:
+---------------------------
+	1D			one dimensional data 
+	2D			two dimensional data 
+	3D			three dimensional data 
+	Animation		MOVIE and animation routines
+	Color-table		creation/modification of color tables
+	Graphics		PLOT, SURFACE, and CONTOUR type of commands
+	Image-display		TV type of commands
+	Video			video equipment handling and processing
+	Windows			low level routines to setup display device
+
+General Utility Categories
+--------------------------
+	Array			array routines
+	Common			routines which define common blocks
+	Data-extraction		routines to extract data or information
+	Database		UIT or Oracle routines
+	Help			online help and documentation assistance
+	FITS			FITS file routines
+	String			string routines
+	Structure		structure routines
+	Time			time routines
+	Utility			general utility routines (misc)
+	Widgets			widget routines
+	Compound-widgets?	compound widget routines
+
+System Categories
+-----------------
+	Filename		file name creation/interpreting routines
+	Fonts			routines to select and set fonts.
+	I/O			input and/or output routines
+	Only-Unix		routines which only work on Unix systems
+	Only-VMS		routines which only work on VMS systems
+	Only-Windows		routines which require windows
+	Only-NT-Windows		routines which only work on NT windows
+	OS			operating system routines
+	Printer			printer device routines
+	Setup			routines used to setup an IDL session
+	SWmaint			software maintenance routines
+	Tape			tape device routines
+
+Use Categories
+--------------
+	Class1			main program/routine (novice+ user)
+	Class2			high level interactive routine (intermediate user)
+	Class3			mid level routines (expert user)
+	Class4			low level routines (programmer/system level routine)
+	Class5			limited and single use routines
+
+Special-Use Categories:
+-----------------------
+	SU:xxx			identify as part of a specific package of routines
+        SU:UITDB           	the UIT database routines
+        SU:FXFITS          	the "FX" FITS binary table routines
+        SU:SERTSIM         	the SERTS image display routines
+        SU:SERTSDEV        	the SERTS graphics device routines
+        SU:UNIXVMSTP       	the emulations of the VMS tape commands in Unix
+        SU:IMAGE_TOOL      	the image_tool program.

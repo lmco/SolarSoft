@@ -1,0 +1,62 @@
+#!/bin/csh
+#
+#				S.L.Freeland 
+#				Yohkoh SW
+#				Version 0.2. circa Jan-1992
+#				Version 1.0, 31-July-1992
+#				Version 1.1, 01-December-1993 (JBG)
+#
+#
+# Script file to set users DISPLAY environmental variable - originally
+# developed to execute when entering idl incase the user forgot
+# Assumes all required script/awk files reside under pathname $DIR_GEN_SCRIPT 
+# Which needs to be defined before executing this script
+# V1.1 adds support for HPUX's version of "who."
+# 12-May-1994, Zarro, modified to support OSF's `who -R am i`	
+#
+
+if (($?DIR_GEN_SCRIPT) && (-e $DIR_GEN_SCRIPT)) then
+#  
+
+   source $DIR_GEN_SCRIPT/setos.src			#determine OS
+   set opt = " "
+   echo "OS->$OS"
+   if ($OS == 'osf')  set opt = "-M"
+   switch($OS)
+   
+#
+      case osf:
+      case ultrix:
+      case  sunos:
+         set addr=`who $opt am i | awk -f $DIR_GEN_SCRIPT/DISPLAYaddr.awk -`
+	 if ($#addr != 0) then
+            set id=`grep -i $addr[1] /etc/hosts`
+            if ($#id != 0) then
+               echo Setting X Window DISPLAY to: $id[1]":0"
+               setenv DISPLAY $id[1]":0"
+            endif
+	  endif
+      breaksw
+#
+#
+      case sgi:
+         set rtest=`setenv | grep REMOTEHOST`
+         set id=`echo $rtest | awk -f $DIR_GEN_SCRIPT/DISPLAYrhost.awk -`
+         echo Setting X Window DISPLAY to: $id[1]":0"
+         setenv DISPLAY $id[1]":0"
+      breaksw
+# 
+      case hp:
+         set addr=`who am i -R | awk -f $DIR_GEN_SCRIPT/DISPLAYaddr.awk -`
+	 if ($#addr != 0) then
+            set id=`grep -i $addr[1] /etc/hosts`
+            if ($#id != 0) then
+               echo Setting X Window DISPLAY to: $id[1]":0"
+               setenv DISPLAY $id[1]":0"
+            endif
+	  endif
+      breaksw
+#
+  endsw
+
+endif

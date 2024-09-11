@@ -1,0 +1,31 @@
+#!/bin/csh -f 
+#
+##############################################################################
+# which_idldir 
+# find IDL_DIR (Version 5, backwardly compatible to Version 3)
+#
+# 14-Jan-1997 - S.L.Freeland - SSW single point maintenence
+#
+# Different sites and RSI have used different paths etc for IDL
+# installations - moreover, some sites, have multiple versions online
+# but only one at a time is supported under the liscense manager (+V3.6)
+# This script attempts to handle these cases....
+##############################################################################
+set idldir=""                             
+
+if ($?IDL_DIR) then 
+   set idldir=$IDL_DIR                    # defer to user override
+else
+#  first check to see if licsense manager is managing a version of idl 
+#  this code is assumed UNIX ubiquitous...
+   set lmv=`ps auxw | grep idl_lmgrd | grep root`       
+   set lmpath=`echo "$lmv" | cut -f2-10 -d"/"`
+   set lmpath="/"`echo "$lmpath" | cut -f1 -d" "`
+   set idldir=`echo $lmpath:h`
+   while (!(-e $idldir/bin/idl))                 # assume 'bin' common to ALL IDL
+      set idldir=`echo $idldir:h`
+   end
+endif
+
+echo $idldir
+exit

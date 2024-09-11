@@ -1,0 +1,20 @@
+#!/bin/csh
+#
+# get_remenv - find ys environmental assignment on remote machine
+#
+# Calling Sequence: set remenv=`$ys/gen/script get_remenv HOST ENV`
+#
+# 	HOST - internet host name
+#	ENV  - Environmental desired (if not supplied, all envs of form:
+#	       DIR_YYY_XXX
+#
+# Calling Example: set remenv=`$ys/gen/script get_remenv sxt4 DIR_GEN_ATT`
+#
+# Restrictions: must have rsh priviledge on remote and .yslogin in home
+#
+set remevn=`rsh $1 "setenv ys_quiet; source .yslogin; printenv $2"`
+# set remevn=`rsh $1 "setenv ys_quiet; source .yslogin; printenv | grep $2"`
+echo $remevn
+
+exit
+

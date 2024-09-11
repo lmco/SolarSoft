@@ -1,0 +1,6833 @@
+%VERSION:2
+127
+1144
+0:ASSIGN_NOCOPY
+1159:AUXREAD
+2796:AVG_ENG
+3251:BOX_FILTER
+4209:CAL_HDR_UPDATE
+5296:CDS_IMAGE
+8835:CDS_SHOW_IMAGE
+10220:CDSCONGRID
+14001:CDSGAUSS
+14817:CDSLOG
+16047:CDSNOTIFY
+16916:CLEAN_SERTSW
+17697:CMOUSE
+19829:CMOUSE_ACTION
+20689:CMTEST
+21441:CW_PSELECT
+23027:DETDATA
+24856:DETREAD
+26954:DETSELECT
+29649:DL2VEL
+30686:DL_TO_VEL
+31823:DSP_INFO
+34256:DSP_MENU
+36958:DSPEXP
+39738:DSPSPEC
+41420:DSPWAV
+45967:EXPSLICE
+47945:FILTER
+48780:FIND_SERTSW
+49658:FITS_MENU
+50486:FUNC_F
+51487:FUNCT_1
+52569:FUNCTN
+53564:GAUSS_D_A
+54549:GAUSS_D_P
+55595:GAUSS_D_W
+56572:GDSPSPEC
+59076:GET_QLDS
+61000:GET_SERTSW
+61828:GT_DATA
+65768:GT_DURATION
+66915:GT_EXPTIME
+68097:GT_MIRRPOS
+69375:GT_NUMEXP
+70467:GT_NUMWIN
+71656:GT_SLITNUM
+72788:GT_SLITPOS
+74067:GT_START
+76087:GT_WINSIZE
+77281:GT_WLABEL
+78613:GT_WLIMITS
+80165:GT_WNUM
+81767:HDRREAD
+82776:HEAD_ENG
+83235:HRTS_W
+84182:HRTS_W_3_0
+85165:HRTS_W_EVENT
+85968:INT_FWHM
+86818:INT_FWHM_2
+87679:INT_SUM
+88572:INTERP
+89457:LOAD_RED
+90243:MAXDATA
+91067:MINDATA
+91891:MKAUXDESC
+93018:MKDETWDESC
+94594:NDSPSPEC
+97740:NEXPOSURES
+98954:PARAB
+99925:PICK_LINE
+101653:PIX2WAVE
+103718:PIXELS_2_DATA
+104985:PIXELS_2_DEVICE
+106261:PLOT_DELTAT
+107705:PLOT_PHA
+108235:PLOT_RASTER
+109408:PLOT_WINDOWS
+110694:POINTSLICE
+111938:PQLPROFILE
+115803:PQLZOOM
+119175:PR_CAL_HDR
+120028:PROC_RAW_GIS
+120584:PTEST
+121998:QL_BSCALE
+123354:QL_DIMENSIONS
+125006:QL_MENU
+125754:QL_RD_LLIST
+127315:QL_SIZE
+128555:QLDS_CHECKIN
+130671:QLDS_FETCH
+132559:QLDS_INVENTORY
+133486:QLDS_REPORT
+135678:QLDS_STORE
+137050:QLDS_STORE_CURRENT
+138428:QLHELP
+139400:QLMGR
+142317:QLMGRCLEAN
+144277:READ_CDS
+148502:READ_CDS_IM
+149416:READ_HRTS_IM
+150279:READ_RAW_GIS
+150507:READCDSCOL
+155498:READCDSFITS
+158196:RECOVER
+159137:SET_QLDS
+161108:SET_SERTSW
+162031:SIMPSON_A
+163088:SLITPOS
+164436:SLITPOS_B
+165820:SLITPOS_K1
+167209:SLITPOS_K2
+168599:SLITPOS_Y
+169990:STORE_WND
+171987:THREE_MOMENT
+172919:TOT_INT
+174131:TOT_INT_W
+174873:TOT_INT_W_EVENT
+175620:V_MAP
+176745:VDS_CALIB
+178765:VDS_DEBIAS
+180076:WAVE2PIX
+181955:WAVESIZE
+183056:WAVESLICE
+184538:WINDOWNO
+186139:WMAX
+187091:WRT_FILE
+187587:ZSIZE
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : ASSIGN_NOCOPY
+               
+ Purpose     : Move data from one variable to another, without copying.
+               
+ Explanation : Under IDL Version 3.1 or later, the use of the NO_COPY
+		keyword in the call to WIDGET_CONTROL when setting or
+		getting the UVALUE of a widget provides a method of
+		moving large amounts of data without actually copying
+		it from one place to another.
+               
+ Use         : ASSIGN_NOCOPY,DESTINATION,SOURCE
+    
+ Inputs      : SOURCE: The variable containing the data to move.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : DESTINATION : A named variable to receive the contents
+			of SOURCE.
+
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : WIDGET_BASE()
+
+ Common      : None.
+               
+ Restrictions: None.
+               
+ Side effects: Creates a widget base.
+               
+ Category    : Utility
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, ItA/UiO, 11-June-1994
+               
+ Modified    : Never.
+
+ Version     : 1, 11-June-1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        :  AUXREAD()
+               
+ Purpose     : Read block of auxiliary data from a CDS FITS level-1 file.
+               
+ Explanation : READCDSCOL is used to read all information
+		about the auxiliary data with 'TTYPEx' == NAME.
+		The data is returned in an IDL structure,
+		with the tags DATA, which contains the actual
+		data, and DESC, which contains the CDS QL Data Format
+		auxiliary data descriptor.
+		If the specified auxiliary data are not found,
+		the tags will have a value of zero.
+
+ Use         : AUX = AUXREAD(UNIT,HEADER,NAME)
+    
+ Inputs      : UNIT =	the file unit associated with the FITS file.
+
+		HEADER=	the header of the FITS file
+		
+		NAME = 	the type/label name of the desired auxiliary
+			data.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Returns structure with auxiliary data and descriptor.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : STATUS : Set to initialized variable in order to return
+		error message instead of crashing on error. Returns
+		empty string if ok.
+
+ Calls       : FXBFIND, READCDSCOL, MKAUXDESC, TRIM
+
+ Common      : None.
+               
+ Restrictions: The file has to be a CDS FITS level-1 file.
+               
+ Side effects: None.
+               
+ Category    : Data_Handling, I_O, CDS, FITS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 27 September 1993
+               
+ Modified    : SVHH, Version 2, 8-June-1994
+			Added status=status
+		SVHH, 25 Aug. 1994,
+			Switched READ_CDS-->READCDSCOL
+
+ Version     : 2, 8-June-1994
+;-
+;+
+ Project     : SOHO - CDS
+
+ Name        : AVG_ENG
+
+ Purpose     : Average Eng data
+
+ Explanation : NONE!!
+
+ Use         : IDL> ¿?¿?
+
+ Inputs      :  ENG
+
+ Opt. Inputs : As above
+
+ Outputs     : PROC_ENG
+
+ Opt. Outputs: None
+
+ Keywords    : None
+
+ Calls       : None
+
+ Restrictions: None
+
+ Side effects: ¿?¿?
+
+ Category    : Data Handling, Telem ????
+
+ Prev. Hist. : None
+
+ Written     : E Alam, 15 Dec 1993
+
+ Modified    :
+
+ Version     : Version 1
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : box_filter()
+               
+ Purpose     : make rounded edges on data to be fft filtered
+               
+ Explanation : to avoid 'ringing' effects the edges of the data
+               record should be rounded 
+               
+ Use         : IDL> val = box_filter(number of points in array,
+                                cut value, roll value) 
+    
+ Inputs      : n, cut, roll
+               
+ Opt. Inputs : None
+               
+ Outputs     : array with rounded edges
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : fft
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Olav Kjeldseth-Moe, ITA, UiO
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 1-July-1993
+
+ Version     : Version 1 1-July-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : CAL_HDR_UPDATE
+               
+ Purpose     : To update primary and binary table headers of a FITS file.
+               
+ Explanation : The routine FXHMODIFY is called to update the primary and
+               binary extension headers of a calibration FITS file.
+               
+ Use         : IDL> cal_hdr_update, filename, item_name, value
+    
+ Inputs      : filename  - the FITS file name
+               item_name - the name of the FITS header item
+               value     - the new value to be associated with item_name
+               
+ Opt. Inputs : None
+               
+ Outputs     : The input file headers are updated.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FXHMODIFY
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling,  FITS, i_o
+               
+ Prev. Hist. : None
+
+ Written     : CDP, RAL, 4-Mar-94
+               
+ Modified    : 
+
+ Version     : Version 1, 4-Mar-94
+;-
+;+
+ Project     :	SOHO - CDS
+
+ Name        :	CDS_IMAGE
+
+ Purpose     :	Reads a CDS image from a FITS file (QL or Level-1).
+
+ Explanation :	This routine reads in a CDS image from a FITS file.  Two kinds
+		of files are supported: simple FITS files with a single
+		two-dimensional image (quicklook files), or CDS FITS binary
+		table files (level-1).  In the latter case, the routine reads
+		in a data column, and the data is then integrated over the
+		wavelength dimension so that a simple image is returned.
+
+		This routine was deliberately written to "stand alone" as much
+		as possible, so that a minimum of CDS library routines will be
+		needed to support it.
+
+ Use         :	CDS_IMAGE, FILENAME, DATA  [, COLUMN ]
+
+ Inputs      :	FILENAME = Name of the CDS FITS file.
+
+ Opt. Inputs :	COLUMN	 = Column in the binary table to read data from, either
+			   as a character string containing a column label
+			   (TTYPE), or as a numerical column index starting
+			   from column one.  If not passed, the user will be
+			   asked to select from a list.  Ignored if the file is
+			   of basic FITS type with the array in the main part
+			   of the FITS file.
+
+ Outputs     :	DATA	 = The output data will be read into an anonymous
+			   structure variable with the following tag names:
+
+				ARRAY	= The actual data array.
+				UNITS	= The units of the data.
+				MISSING	= Value representing missing data.
+				AXES	= The labels for the axes of ARRAY.
+				ORIGIN	= The value of the first point along
+					  each of the axes of ARRAY.
+				SPACING	= The pixel spacing along each axis.
+				ROTATION= The rotation of each axis relative to
+					  the standard coordinate system.  This
+					  is only relevant for spatial
+					  dimensions.
+				WAVELENGTH = Wavelength of observation, in
+					  Angstroms.
+				WAVEMIN	= Minimum wavelength.
+				WAVEMAX	= Maximum wavelength.
+
+ Opt. Outputs:	None.
+
+ Keywords    :	NANVALUE = Value signalling data dropout.  All points
+			   corresponding to IEEE NaN (not-a-number) are
+			   converted to this number.  Ignored unless DATA is of
+			   type float, double-precision or complex.  If used,
+			   then the MISSING tag in the returned DATA structure
+			   reflects this value.  The default is -1.
+
+			   It is anticipated that the CDS data files will
+			   always be stored as integers, so that the use of
+			   this keyword should be unnecessary.
+
+ Calls       :	FXBOPEN, FXBCLOSE, FXBFIND, VALID_NUM, READCDSCOL, REVERSE
+
+ Common      :	None.
+
+ Restrictions:	This version of the software is restricted to the current
+		(October 93) plan for the CDS FITS binary table files, which
+		are assumed to have the following properties:
+
+			- Either the file is a simple FITS file with a single
+			  data array where the spectral information has already
+			  been removed (quicklook), or
+			- There is only one FITS extension per file, which is
+			  the CDS binary table (level-1), and
+			- There is only one row in the table.
+
+ Side effects:	None.
+
+ Category    :	Data Handling, I/O, CDS Specific.
+
+ Prev. Hist. :	None.  However, part of the logic of this routine was taken
+		from DETREAD by Stein Vidar Hagfors Haugan.
+
+ Written     :	William Thompson, GSFC, 26 October 1993.
+
+ Modified    :	Version 1, William Thompson, GSFC, 29 October 1993.
+			Added check to make sure column is a data window.
+		Version 2, William Thompson, GSFC, 15 September 1994
+			Modified to call READCDSCOL.
+			Use X-Y coordinate system instead of Y-Z.
+			Added HEADER to the output structure.
+
+ Version     :	Version 2, 15 September 1994
+;-
+;+
+ Project     :	SOHO - CDS
+
+ Name        :	CDS_SHOW_IMAGE
+
+ Purpose     :	Displays a CDS image read by CDS_IMAGE.
+
+ Explanation :	This routine displays in a window a CDS image read by the
+		routine CDS_IMAGE.  Axes are drawn around the image to signify
+		data coordinates in arcseconds from the center of the Sun.
+
+		Because CDS images are small, the image is shown three times
+		the actual size.
+
+		This routine was deliberately written to "stand alone" as much
+		as possible, so that a minimum of CDS library routines will be
+		needed to support it.
+
+ Use         :	CDS_SHOW_IMAGE, DATA
+
+ Inputs      :	DATA	= A structure variable containing the CDS image and
+			  auxilliary data.  See CDS_IMAGE for more information.
+
+ Opt. Inputs :	None.
+
+ Outputs     :	A window is displayed containing the image.
+
+ Opt. Outputs:	None.
+
+ Keywords    :	WINDOW	= The index of the window used to display the image is
+			  returned in this parameter.
+
+ Calls       :	None.
+
+ Common      :	None.
+
+ Restrictions:	Requires the current graphics device to be a windowing system.
+
+ Side effects:	None.
+
+ Category    :	Data Handling, I/O, CDS Specific.
+
+ Prev. Hist. :	None.
+
+ Written     :	William Thompson, GSFC, 27 October 1993.
+
+ Modified    :	Version 1, William Thompson, GSFC, 29 October 1993.
+			Fixed bug with Y axis origin.
+			Added WINDOW keyword.
+
+ Version     :	Version 1, 29 October 1993.
+;-
+;+
+ NAME:
+	CDSCONGRID
+
+ PURPOSE:
+       Shrink/expand the size of an array by an arbitrary amount.
+
+ EXPLANATION:
+       This IDL procedure simulates the action of the VAX/VMS
+       CONGRID/CONGRIDI function.
+
+	This function is similar to "REBIN" in that it can resize a
+       one, two, or three dimensional array.   "REBIN", however,
+       requires that the new array size must be an integer multiple
+       of the original size.   CDSCONGRID will resize an array to any
+       arbitrary size (REBIN is somewhat faster, however).
+       REBIN averages multiple points when shrinking an array,
+       while CDSCONGRID just resamples the array.
+
+ CATEGORY:
+       Array Manipulation.
+
+ CALLING SEQUENCE:
+	array = CDSCONGRID(array, x, y, z)
+
+ INPUTS:
+       array:  A 1, 2, or 3 dimensional array to resize.
+               Data Type : Any type except string or structure.
+
+       x:      The new X dimension of the resized array.
+               Data Type : Int or Long (greater than or equal to 2).
+
+ OPTIONAL INPUTS:
+       y:      The new Y dimension of the resized array.   If the original
+               array has only 1 dimension then y is ignored.   If the
+               original array has 2 or 3 dimensions then y MUST be present.
+
+       z:      The new Z dimension of the resized array.   If the original
+               array has only 1 or 2 dimensions then z is ignored.   If the
+               original array has 3 dimensions then z MUST be present.
+
+ KEYWORD PARAMETERS:
+       INTERP: If set, causes linear interpolation to be used.
+               Otherwise, the nearest-neighbor method is used.
+
+	CUBIC:	If set, uses "Cubic convolution" interpolation.  A more
+		accurate, but more time-consuming, form of interpolation.
+		CUBIC has no effect when used with 3 dimensional arrays.
+
+       MINUS_ONE:
+               If set, will prevent CDSCONGRID from extrapolating one row or
+               column beyond the bounds of the input array.   For example,
+               If the input array has the dimensions (i, j) and the
+               output array has the dimensions (x, y), then by
+               default the array is resampled by a factor of (i/x)
+               in the X direction and (j/y) in the Y direction.
+               If MINUS_ONE is present (AND IS NON-ZERO) then the array
+               will be resampled by the factors (i-1)/(x-1) and (j-1)/(y-1).
+
+ OUTPUTS:
+	The returned array has the same number of dimensions as the original
+       array and is of the same data type.   The returned array will have
+       the dimensions (x), (x, y), or (x, y, z) depending on how many
+       dimensions the input array had.
+
+ PROCEDURE:
+       IF the input array has three dimensions, or if INTERP is set,
+       then the IDL interpolate function is used to interpolate the
+       data values.
+       If the input array has two dimensions, and INTERP is NOT set,
+       then the IDL POLY_2D function is used for nearest neighbor sampling.
+       If the input array has one dimension, and INTERP is NOT set,
+       then nearest neighbor sampling is used.
+
+ EXAMPLE:
+       ; vol is a 3-D array with the dimensions (80, 100, 57)
+       ; Resize vol to be a (90, 90, 80) array
+       vol = CDSCONGRID(vol, 90, 90, 80)
+
+ MODIFICATION HISTORY:
+       DMS, Sept. 1988.
+       DMS, Added the MINUS_ONE keyword, Sept. 1992.
+ 	Daniel Carr. Re-wrote to handle one and three dimensional arrays
+                    using INTERPOLATE function.
+ 	DMS, RSI, Nov, 1993.  Added CUBIC keyword.
+	SVHH, UiO, May 1994.   Included in CDS project with name 
+		changed from CONGRID. Also fixed the problem noted that
+		an interpolated image seemed shifted half a pixel if
+		interpolation was used.
+		Modified usage of CUBIC keyword in call to INTERPOLATE,
+		to enable use on IDL v 3.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : gauss()
+               
+ Purpose     : Gaussian function
+               
+ Explanation : Calculates the gaussian of a function
+               
+ Use         : IDL> gauss(x,a,p,w)
+    
+ Inputs      : x-array, max-intensity, shift, width
+               
+ Opt. Inputs : None 
+               
+ Outputs     : Gaussian profile
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None 
+               
+ Side effects: None
+               
+ Category    : 
+               
+ Prev. Hist. : 
+
+ Written     : Nils Brynildsen, ITA, UiO 27-May-1993 
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 27-May-1993
+
+ Version     : Version 1  27-May-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : CDSLOG
+               
+ Purpose     : Accumulate messages from other routines, option to save
+               
+ Explanation : Creates a window in the lower right corner of the
+		screen with a text area to show lines with
+		the logged information (intensities etc...)
+
+		Normally, the window pops up in front (also from 
+		iconified state) to show the text. This may be
+		turned off.
+               
+ Use         : CDSLOG,'Text to be logged'
+    
+ Inputs      : The message text
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : BELL: Set to cause a bell after the text is displayed
+
+ Calls       : BELL, DATATYPE()
+
+ Common      : CDSLOG
+               
+ Restrictions: 
+               
+ Side effects:
+               
+ Category    : CDS,QL,DISPLAY,UTIL
+               
+ Prev. Hist. : Adapted from CDSNOTIFY
+
+ Written     : SVHH, February 1994
+               
+ Modified    : SVHH, March 1994
+			Made it ignore group (leader) - in case
+			it's invoked first by a sub-application.
+		SVHH, 12 April 1994
+			Fixed the procedure to add (append) messages
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : CDSNOTIFY
+               
+ Purpose     : Display a message to the user.
+               
+ Explanation : Creates a window in the upper right corner of the
+		screen with a text area to show lines with
+		information to the CDS QuickLook user.
+               
+ Use         : CDSNOTIFY,'Message'
+    
+ Inputs      : The message text
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : BELL:	Set to cause a beep.
+
+ Calls       : BELL, DATATYPE()
+
+ Common      : CDSNOTIFY
+               
+ Restrictions: 
+               
+ Side effects: 
+               
+ Category    : CDS, QL, DISPLAY, UTIL
+               
+ Prev. Hist. : None.
+
+ Written     : SVHH, January 1994
+               
+ Modified    : 
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : CLEAN_SERTSW
+               
+ Purpose     : Remove all data window def's for this physical window
+               
+ Explanation : For use in QL display routines to keep track of 
+		data window sizes/data coordinates etc.
+               
+ Use         : CLEAN_SERTSW, TVWINDOW
+    
+ Inputs      : TVWINDOW : The ID of the window
+               
+ Opt. Inputs : 
+               
+ Outputs     : 
+               
+ Opt. Outputs: 
+               
+ Keywords    : 
+
+ Calls       :
+
+ Common      : TV_SCALE
+               
+ Restrictions: 
+               
+ Side effects: 
+               
+ Category    : 
+               
+ Prev. Hist. :
+
+ Written     : SVHH, January 1994
+               
+ Modified    : 
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : CMOUSE
+               
+ Purpose     : Controlling the "Mouse button action" selection & display
+               
+ Explanation : In order to make more than three types of actions 
+		available for the mouse buttons, a "Mouse button action" 
+		display with a pulldown menu for each mouse button is 
+		created.
+
+		The pulldown menu has the following appearance when
+		it is not pulled down:
+
+		 1:<btext>      2:<btext>     3:<btext>
+               
+		The user selects what type of action is to be hooked
+		to the different mouse buttons at any time by selecting
+		from the pulldown menu of the desired button. The 
+		<btext> field on the buttons is changed according to
+		the selected action.
+		
+		The main program then calls CMOUSE_ACTION(EVENT)
+		in order to translate a widget DRAW event into a "uvalue"
+		corresponding to the keypress and the current action
+		selection.
+
+
+ Use         : CMOUSE,TOP,BASE,OPTIONS
+    
+ Inputs      : TOP:	The widget ID of the top level base 
+			(used for identification).
+
+		BASE:	The widget base to place the display on.
+               
+		OPTIONS: An array of {CMOUSE_S} (see below) with a 
+			description of the available mouse keyclick actions.
+
+		The options has the structure
+
+		{CMOUSE_S, btext:'', mtext:'', uvalue:'', avail:0}
+
+		The fields have the following meanings:
+		"btext" is the "button text", i.e., the text
+		that is to be displayed on the pulldown menu
+		if this option is selected.
+		mtext is the menu text, i.e., the text on the
+		pulldown menu
+
+
+ Opt. Inputs : None
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : INIT : An array of 3 integers specifying the initial state
+			(indices to OPTIONS).
+
+ Calls       : WIDGET_BASE(), ZPARCHECK
+
+ Common      : CMOUSE
+               
+ Restrictions: The UVALUES must be strings.
+               
+ Side effects: None...
+               
+ Category    : 
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 11-December-1994
+               
+ Modified    : Never.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : CMOUSE_ACTION
+               
+ Purpose     : Translate a mouse click accorrding to the CMOUSE status
+               
+ Explanation : See CMOUSE
+               
+ Use         : function = CMOUSEFUNC(EVENT)
+    
+ Inputs      : EVENT:  The mouse click event
+		
+ Opt. Inputs : None
+               
+ Outputs     : FUNCTION: The translated function (a string)
+			Returns an empty string if no action is to be taken.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : 
+
+ Common      : CMOUSE
+               
+ Restrictions: 
+               
+ Side effects: ?
+               
+ Category    : 
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 11-December-1994
+               
+ Modified    : Never.
+
+ Version     : 1.0, 11-Dec-1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : CMTEST
+               
+ Purpose     : Demonstration of CMOUSE
+               
+ Explanation : Try it...
+               
+ Use         : CMTEST
+    
+ Inputs      : None.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : CMOUSE, CMOUSE_ACTION(), WIDGET_BASE()
+
+ Common      : 
+               
+ Restrictions: ..
+               
+ Side effects: Starts XMANAGER
+               
+ Category    : Demonstration
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 11-December 1994
+               
+ Modified    : Never.
+
+ Version     : 0.5, 11-Dec-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : CW_PSELECT
+               
+ Purpose     : Simplified management of a pulldown selection menu
+               
+ Explanation : Often an exclusive button menu takes too much space.
+		This widget makes it possible to use a pulldown menu
+		for the selection in stead, with automated altering
+		of the top-level button for status change.
+		Events returned are of type {WIDGET_BUTTON}, and
+		widget_control,event.id,get_uvalue=uvalue returns
+		the UVALUE that is associated with the menu selection.
+               
+ Use         : dummy = cw_pselect(base,pdmenu)
+    
+ Inputs      : BASE: The base to put the widget on
+               
+		PDMENU: An array of structures of the following type:
+
+		{PSELECT_S, btext:'', mtext:'', uvalue:'', flags:0}
+
+		BTEXT is the button text, MTEXT is the menu text
+		(enables longer explanations of the selections),
+		UVALUE is the associated uvalue of the button.
+		Multi-level pulldown menus are possible with the
+		use of the FLAGS field -- see CW_PDMENU.
+
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : INITIAL : The index of the initial selection to be
+		displayed.
+
+ Calls       : WIDGET_BASE(), ZPARCHECK
+
+ Common      : None.
+               
+ Restrictions: 
+               
+ Side effects: None...
+               
+ Category    : 
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 11-December 1994
+               
+ Modified    : Never.
+
+ Version     : 1.0, 11-December 1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : DETDATA()
+               
+ Purpose     : Retrieve Spectral Window data from a QL Data Structure
+               
+ Explanation : The information in the detector descriptors 
+		(QLDS.DetDesc) is used to retrieve the data from 
+		QLDS.DetData corresponding to the spectral window that
+		is requested.
+		The windows may be referred to by NUMBER (1..N)
+		or the name (TLABEL) of the detector window.
+               
+ Use         : data = DETDATA(QLDS,WINDOW)
+    
+ Inputs      : QLDS: 	An IDL structure containing data in
+			the CDS QL Data Format.
+
+		WINDOW:	Either the NUMBER of the data window
+			(NOTE: numbering from 1...N) or a text
+			with the LABEL of the desired spectral window.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Returns an array containing the detector data for
+		the chosen spectral window.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOCHECK :
+			Set to skip QLMGR checking
+			Used to speed up processing inside QL software
+
+ Calls       : Datatype, QLMGR, WINDOWNO
+
+ Common      : None.
+               
+ Restrictions: QLDS must adhere to the CDS QL Data Format.
+		WINDOW must be a scalar.
+               
+ Side effects: None.
+               
+ Category    : Data_Handling, CDS, QuickLook
+               
+ Prev. Hist. : Earlier version DETWND_DATA modified to take
+		WINDOW as the window NUMBER (1 and up) instead
+		of the window INDEX (0 and up), and also to
+		recognize the use of a text matching a LABEL.
+
+ Written     : Stein Vidar Hagfors Haugan, 1 October 1993
+               
+ Modified    : SVHH, 4 October 1993 - 
+			Added verification of data by call to QLMGR
+		SVHH, 8 October 1993 -
+			Separated out WINDOWNO()
+		SVHH, 17 October 1993 -
+			Added NOCHECK keyword
+
+ Version     : 1.3
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : DETREAD()
+               
+ Purpose     : Reads detector data from CDS FITS level-1 file.
+
+ Explanation : Based on information from DETSELECT(), read and store
+		detector data from the file into one contiguous array,
+		QLDS.DetData, with descriptors (indexes & wavelength 
+		information) in QLDS.DetDesc(WndNo)
+               
+ Use         : DetRead,UNIT,HEADER,QLDS,SELECTION_DATA
+    
+ Inputs      : UNIT = Device unit associated with the FITS file
+		HEADER = Header (string array) of the FITS file
+		QLDS = The QuickLook data structure to put data into.
+		SELECTION_DATA = Structure from DETSELECT() with
+			information on windows etc.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Places the data from the file into the QLDS.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : STATUS : Set to an initialized, named variable to 
+		return an error message instead of crashing. If
+		everything's ok, a null string will be returned.
+
+ Calls       : FXBDIMEN(), MKDETWDESC(), READCDSCOL, STORE_WND, TRIM()
+		WINDOWNO()
+               
+ Common      : None.
+               
+ Restrictions: UNIT/HEADER must refer to a CDS FITS level-1 file.
+		Normally used internally from READCDSFITS.
+               
+ Side effects: None.
+               
+ Category    : Data_Handling, I_O, CDS, FITS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 27 September 1993
+               
+ Modified    : SVHH, 1 October 1993 -- accomodate possible LONG INTEGER
+					format.
+		SVHH, 26 October 1993
+			Changed FXBPARSETDIM  -> FXBTDIM
+			and     FXBPARSETFORM -> FXBTFORM
+               Version 2, William Thompson, GSFC, 4 March 1994
+                       Changed to call FXBDIMEN
+		SVHH, Version 3, 8-June-1994,
+			Included keywords MEMLIMIT etc.. as in CAL_DETREAD()
+		SVHH, Version 4, 11-June-1994,
+			Split in two (DETSELECT + DETREAD) to minimize
+			memory overhead.
+		SVHH, 25 Aug. 1994,
+			Switched READ_CDS --> READCDSCOL
+
+ Version     : Version 4, 11-June-1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : DETSELECT()
+               
+ Purpose     : Select detector data from CDS FITS level-1 file.
+
+ Explanation : Figure out how much space will be needed to store all
+		detector data in this file into one contiguous array,
+		Det.DetData, and return information necessary for
+		DETREAD to actually read the data and store them.
+               
+ Use         : Det = Detselect(UNIT,HEADER)
+    
+ Inputs      : UNIT = Device unit associated with the FITS file
+		HEADER = Header (string array) of the FITS file
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Structure with information for DETREAD.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : SELECT : set to enable selection of some data windows
+		For the windows that are not selected, descriptive 
+		information (DetDesc's) are created, but no detector 
+		data is stored. For windows that are not selected,
+		ixstart will be all zeros, while ixstop will have
+		a negative lambda entry, but by using absolute values,
+		the sizes of the potential data block can be found.
+		Note that, as with selected data, the size of
+		dimension i is now: sz = abs(ixstop(i)) - ixstart(i) + 1
+
+		/HEADER : Set to only read descriptive information
+		about detector data windows -- no data will be loaded
+
+		/AUTO : Set to force automatic, silent truncation of the data
+		by reading just those detector data windows that
+		fit below the memory limit. If the memory limit is exceeded
+		withouth this flag set, the user is prompted for either
+		setting the /HEADER flag or making a manual selection of
+		the data windows.
+
+		MEMLIMIT : Set to the maximum size of memory that
+		the detector data are allowed to occupy.
+
+		STATUS : Set to a initialized, named variable to 
+		return an error message instead of crashing. If
+		everything's ok, a null string will be returned.
+
+ Calls       : BELL, FXBDIMEN(), FXBFIND, FXBTFORM, FXPAR()
+		MKDETWDESC(), READ_CDS, TRIM(), YES_NO
+               
+ Common      : None.
+               
+ Restrictions: UNIT/HEADER must refer to a CDS FITS level-1 file.
+		Normally used internally from READCDSFITS.
+               
+ Side effects: None.
+               
+ Category    : Data_Handling, I_O, CDS, FITS, QuickLook
+               
+ Prev. Hist. : Taken out of the old DETREAD. Split done to minimize
+		memory overhead. Also fixed a bug that was making all data
+		storage LONGs (instead of INTs whenever possible).
+
+ Written     : Stein Vidar Hagfors Haugan, 11 June 1994
+               
+ Modified    : SVHH, 25 Aug. 1994,
+			Switched READ_CDS --> READCDSCOL, and 
+			'TDETY'-->'TDETX'
+
+ Version     : Version 1, 11-June-1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : dl2vel
+               
+ Purpose     : transform from delta wavelength to velocity (km/s)
+               
+ Explanation : uses formula for velocity: v = c*(dl/l), 
+               where c = velocity of light, dl = shift in
+               wavelength and l = wavelength of line    
+               
+ Use         : IDL> dl_to_vel, fitted parameters, background value
+    
+ Inputs      : fitted parameters (3, 5 or 7), backround level 
+               
+ Opt. Inputs : None
+               
+ Outputs     : fitted parameters with line shifts in km/s
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO 19-July-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 19-July-1993
+
+ Version     : Version 1 19-July-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : dl_to_vel
+               
+ Purpose     : transform from delta wavelength to velocity (km/s)
+               
+ Explanation : uses formula for velocity: v = c*(dl/l), 
+               where c = velocity of light, dl = shift in
+               wavelength and w0 = wavelength of line    
+               
+ Use         : IDL> dl_to_vel, fitted parameters, background       ;               value, lab. wavelength of line
+    
+ Inputs      : fitted parameters (3, 5 or 7), backround level,
+               lab. wavelength of spectral line 
+               
+ Opt. Inputs : None
+               
+ Outputs     : fitted parameters with line shifts in km/s
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO 13-Sep.-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 13-Sep.-1993
+
+ Version     : Version 1 13-Sep.-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : DSP_INFO
+               
+ Purpose     : Display basic information from a CDS QL Data Structure
+               
+ Explanation : Displays basic information in a window about the
+		structure containing data from a CDS FITS level-1 file.
+		Optional display of information concerning each spectral
+		window appears in a separate window, as is also the case
+		with the optional display of auxiliary data information.
+               
+ Use         : DSP_INFO, QLDS
+    
+ Inputs      : QLDS = A CDS QL Data Structure variable as returned by
+			READCDSFITS(). See also "CDS QL data format".
+
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : ALL: 	Set to display all information (basic+window+aux)
+
+		WINDOW:	Set to display detector window information
+
+		AUX: 	Set to display auxiliary data information
+
+		NO_BASIC:
+			Set to suppress basic header info display
+			(to add, e.g., AUX-window without duplicating
+			basic header information)
+		
+		GROUP_LEADER:
+			If this invoked by any other CDS QuickLook 
+			display routine (group leader responsible for 
+			keeping the QLDS), this keyword should have
+			the widget ID of the top level base of the
+			calling routine.
+			If it is not set, the Xmanager is called to
+			handle the widgets until they die..
+
+		NOCHECK:
+			Set this to avoid calls to QLMGR to check
+			validity of the QLDS.
+
+ Calls       : DATATYPE, TRIM, QLMGR
+
+ Common      : QLMGR
+
+ Restrictions: The routine is intended solely for CDS QuickLook data,
+		and requires a strict adherence to the QL data format,
+		version 1.1
+
+ Side effects: Creates widget windows on the screen. Does not 
+		use xmanager (only "dead" windows).
+               
+ Category    : Display_Info, QuickLook, CDS
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, Oslo Univ., 27 September 1993
+               
+ Modified    : SVHH, 4 October 1993
+			added QLMGR call & common block to avoid 
+			multiple window copies & keep window placings
+
+		SVHH, 21 October 1993
+			added /NOCHECK, GROUP_LEADER keywords
+		SVHH, 29 October 1993
+			Made the widget active, with "Done" buttons
+			and CLEANUP keywords
+		SVHH,  3 November 1993
+			Added display of ORIGIN in spectral window 
+			information, added Units (Angstrom, etc.)
+			Fixed bug for 1-dimensional (GIS) data
+ Version     : 1.4
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : DSP_MENU
+ 
+ Purpose     : Selection of display modes for CDS QL data.
+               
+ Explanation : Creates a menu with selections for the different display
+		modes possible for the CDS QuickLook Data Structure
+		passed as a parameter.
+
+		It's also possible to initiate reading of another
+		FITS file with new data, to display more than one
+		data set at the same time.
+               
+ Use         : DSP_MENU,QLDS
+    
+ Inputs      : QLDS : 	A CDS QuickLook Data structure containing data
+			from  CDS FITS level-1 file, as returned
+			by READCDSFITS(). See "CDS QL data format".
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : GROUP_LEADER: 
+			Set to indicate that this window should
+			have another (top-level) menu as a group
+			leader. This has implications for how
+			the QLDS is stored during the lifetime
+			of the menu.
+
+		NOCHECK:
+			Set to avoid checking the QLDS by a call
+			to QLMGR. Used by the QL routines to speed
+			up processing.
+
+ Calls       : CDSCONGRID(), DATATYPE(), DETDATA(), DSPEXP
+		DSPSPEC, DSPWAV, DSP_INFO, DSP_MENU, DSP_STRUCT
+		GET_QLDS(), NEXPOSURES(), QLHELP, QLMGR, QL_MENU
+               SET_QLDS, TRIM(), WAVESIZE(), XMOVIE, XSELECT
+
+ Common      : QLSAVE: See QLDS_CHECKIN
+               
+ Restrictions: The QLDS must adhere to the "CDS QL data format".
+               
+ Side effects: Initiates the QLMGR, if not already initiated.
+		Kills any previous menu for this particular data
+		structure, taking the same position on the screen.
+               
+ Category    : CDS, QuickLook, Display 
+               
+ Prev. Hist. : Idea/setup by Paal Brekke
+
+ Written     : Stein Vidar Hagfors Haugan, October 1993
+               
+ Modified    : SVHH, 29 October 1993 - Added CLEANUP to xmanager call.
+		PB,	 November 1993 - Added several new features
+			(Full spectrum, NIS Movie..)
+		SVHH, 20 November 1993 - Brushed up documentation and
+			nomenclature (as much as possible), moved the 
+			selection of spectral windows into a separate
+			window popping up when needed.
+
+		SVHH, Feb-March 1994, - Added structure browsing,
+			skipped spectral window selection for waveslice,
+			included file name and Sci-obj. on top of the menu,
+			added QL Menu (to display other files).
+
+		PB,  July 8 1994  - Added help button
+		PB,  Aug 24 1994  - Fixed bug: Added keyword X/Yoffset 
+                       in call to Xselect, changed size of movie-image.
+               PB,   Sept 21 - 94    Added Help using WIDG_HELP
+		SVHH, 16-May-1995 - Version 2.7
+			Added XPL_STRUCT button
+
+ Version     : 2.7 16-May-1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : DSPEXP
+               
+ Purpose     : Display all exposures of selected Spectral Windows.
+               
+ Explanation : A window is created to show all the exposures of
+		the selected Spectral Windows, spread out one after
+		another, and to report the identity of the
+		Spectral Window/exposure number that is clicked on
+		by the user.
+
+	To do:  Logarithmic scaling of data.
+		Interactive selection of windows to be displayed,
+		More information to the status line when clicking.
+		
+               
+ Use         : DSPEXP,QLDS,WINDOWS
+    
+ Inputs      : QLDS:	CDS QuickLook data structure.
+
+ Opt. Inputs : WINDOWS:Array containing the numbers of the
+			detector data windows to be displayed.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : GROUP_LEADER:
+			If this invoked by any other CDS QuickLook 
+			display routine (group leader responsible for 
+			keeping the QLDS), this keyword should have
+			the widget ID of the top level base of the
+			calling routine.
+
+		NOCHECK:
+			Set this to avoid calls to QLMGR to check
+			validity of the QLDS.
+
+ Calls       : ASSIGN_NOCOPY, BELL, CDSLOG, CDSNOTIFY, CLIPBOX, CMOUSE, 
+		CMOUSE_ACTION(), DATATYPE(), EXPSLICE(), LOAD_RED, 
+		NEXPOSURES(), PCONVERT(), PFIND(), PQLPROFILE, PQLZOOM, 
+		PSTORE(), QLDS_CHECKIN, QLDS_REPORT, QLMGR, QL_BSCALE(), 
+		SETWINDOW, TRIM(), WAVESIZE(), WIDGET_BASE(), 
+		WIDGET_TEXT(), WIDG_HELP, WINDOWNO(), WMAX(), XSELECT, 
+		ZSIZE()
+		(11-Dec-94)
+
+ Common      : QLSAVE: See QLDS_CHECKIN
+  
+ Restrictions: QLDS must adhere to "CDS QL data format"
+		The number of spectral windows must be gt 0 
+		and le 4
+               
+ Side effects: Kills any earlier copy displaying data from the
+		same QLDS.
+               
+ Category    : CDS, QuickLook, Display
+               
+ Prev. Hist. : Idea/origin: Paal Brekke, September 1993
+
+ Written     : Stein Vidar Hagfors Haugan, Medio October 1993
+               
+ Modified    : Several times....
+		SVHH, 22 October 1993
+			Added event handling to report the raster number
+			and the line name....
+		SVHH, 29 October
+			Terminology: Raster -> Exposure
+			Exposure numbers from 1 and up...(consistency)
+			CLEANUP keyword added in xmanager call.
+		SVHH, 29 October
+			Added DRAWZOOM functionality
+		SVHH, 20 November
+			Documentation brush-up to v. 1.0
+		SVHH, March 1994,
+			Added cdslog calls to save status line.
+		SVHH, Version 2, June 1994
+		PB,   Version 2.1 Aug 24 1994
+			Added buttons - Help, and Hardcopy
+		PB,   August 26, 1994
+			Changed dety --> detx
+               PB,   Sept 21 - 94    Added Help using WIDG_HELP
+		SVHH, 10-December 94 -- Added CMOUSE/CMOUSE_ACTION
+			mouse control.
+
+ Version     : 2.3  10-December 94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : DSPSPEC()
+
+ Purpose     : Displays all Spectral Windows from specific exposures.
+
+ Explanation : The individual Spectral Windows are deselected 
+		into their corresponding positions on the detector.
+		A somewhat different approach is used with NIS/GIS
+		data - see NDSPSPEC/GDSPSPEC. This is just a wrapper routine.
+
+ Use         : dspspec,QLDS
+    
+ Inputs      : QLDS: A CDS QL data structure
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+                      
+               
+ Opt. Outputs: Should return the displayed data for further analysis
+               and PostScript file. To be written. 
+
+ Keywords    : GROUP_LEADER:
+			If this invoked by any other CDS QuickLook 
+			display routine (group leader responsible for 
+			keeping the QLDS), this keyword should have
+			the widget ID of the top level base of the
+			calling routine.
+
+		NOCHECK:
+			Set to skip QLMGR parameter check.
+
+ Calls       : GDSPSPEC, NDSPSPEC, QLMGR
+
+ Common      : None.
+               
+ Restrictions: QLDS must be a valid CDS QL data structure
+               
+ Side effects: 
+               
+ Category    : QuickLook, Display,
+               
+ Prev. Hist. : Used to be just NIS-compatible. Now 
+
+ Written     : Paal Brekke, 17 November 1993
+               
+ Modified    : SVHH, 20 November 1993 - Brushed up documentation.
+		SVHH, Jan/Feb/March 1994 - Added new features to
+			the NIS version (zoom, profile, line identification)
+			Made the GIS version and made this into a
+			wrapper calling either NDSPSPEC/GDSPSPEC
+		SVHH, 21 May 1994
+			Made it recognize Calibration data.
+ Version     : 2.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : DSPWAV
+       
+ Purpose     : Display data slices at specific wavelength +line profiles
+
+ Explanation : A window is created with two types of display of the
+		data in four selected spectral windows. 
+
+		The upper display is is a cross section of the 
+		data at a specific wavelength, giving a spatial 
+		view of the region that has been scanned by the CDS NIS/GIS.
+
+		The lower display is the intensity profile along the
+		dispersion direction (line profile), at a selected
+		point in the two-dimensional image displayed in the
+		window above. 
+
+		Although only four spectral windows may be shown
+		on screen at any time, it is possible to select
+		which spectral window is to be shown where from 
+		the pulldown menu between the upper and lower
+		displays.
+
+		To change the spatial views from one wavelength to 
+		another, click on the line profile at the desired
+		wavelength. 
+
+		The point from which the line profile is taken 
+		is selected by clicking the left mouse button in the 
+		spatial view, and it is marked by a cross in the 
+		spatial view. 
+
+		Incremental positioning is done by clicking the left 
+		mouse button outside the axes of the displayed area. 
+		The point/cross is then moved one pixel in the direction 
+		of the mouse marker.
+
+		Cursor action is as follows:
+		    	B1: select point/wavelength of interest
+			B2: extract profiles (profile window appear)
+              		B3: zooming
+
+ Use         : DSPWAV,QLDS
+    
+ Inputs      : QLDS:	CDS QuickLook data structure.
+
+ Opt. Inputs : WINDOWS:Array containing the numbers of the
+			detector data windows to be displayed.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : GROUP_LEADER:
+			If this invoked by any other CDS QuickLook 
+			display routine (group leader responsible for 
+			keeping the QLDS), this keyword should have
+			the widget ID of the top level base of the
+			calling routine.
+
+		NOCHECK:
+			Set this to avoid invoking QLMGR to check
+			validity of the QLDS.
+
+ Calls       : ASSIGN_NOCOPY, BELL, CDSNOTIFY, CDSPICKFILE(), CLIPBOX, 
+		CMOUSE, CMOUSE_ACTION(), CW_PSELECT(), DSP_MENU, FUNCT_1, 
+		INT_FWHM_2, LOAD_RED, LSTSQR, NEXPOSURES(), POINTSLICE(), 
+		PQLPROFILE, PQLZOOM, PRESTORE, PS, PSCLOSE, PSPLOT, 
+		PSTORE(), QLDS_CHECKIN, QLDS_REPORT, QLMGR, SETWINDOW, 
+		SLITPOS_B, SLITPOS_K1, SLITPOS_K2, SLITPOS_Y, TRIM(), 
+		WAVESIZE(), WAVESLICE(), WIDGET_BASE(), WIDG_HELP, 
+		ZSIZE()
+		(11-Dec-94)
+
+ Common      : QLSAVE: See QLDS_CHECKIN
+           
+ Restrictions: The QLDS must adhere to the "CDS QL data format"
+               
+ Side effects: Kills any previous copy displaying data from the
+		same QLDS, taking its position on the screen.
+               
+ Category    : CDS, QuickLook, Display
+               
+ Prev. Hist. : Idea/origin: Paal Brekke, September 1993
+
+ Written     : Stein Vidar Hagfors Haugan, Medio October 1993
+               
+ Modified    : Several times.... cut /no_copy keyword  CDP
+		SVHH, 26 October
+			BASES are now lonarr, not intarr..
+		SVHH, 29 October
+			Added DRAWZOOM functionality
+               PB, 8 November
+			Added wavelength scales in plot window.
+                       Pointing and exposure info diplayed.
+                       Calculates intensity, FWHM and shifts..
+                       Slitposition on Sun etc.
+		SVHH, 21 November
+			Documentation brush-up
+		SVHH, January -94
+			Added interactive selection of spectral windows.
+			Rotated image to have "correct" orientation.
+		SVHH, March -94
+			Added plot to file/printer routines.
+		SVHH, Version 2, 8-June-1994
+			Switched to PQLZOOM, added PQLPROFILE for
+			both image display and the point profile.
+			
+               PB,   June 29 -94
+                       Added frame around images
+                       Modyfied layout slightly; more full disk images
+                       available, prepared for n(e)/T diagnostics,
+                       Added call to WIDG_HELP <--
+               PB,   Sept 21 - 94    Added Help using WIDG_HELP
+		SVHH, 29-Nov - 94, Fixed POSITION keyword roundoff error
+		SVHH, 10-Dec - 94, Added CMOUSE/CMOUSE_ACTION() Mouse
+			control functionality. Redesigned the layout and
+			made the line fit type selection into a pulldown
+			selection menu (CW_PSELECTION).
+			Added x/y-format/units in PQLZOOM call.
+		Version 2.6, William Thompson, GSFC, 24 March 1995
+			Changed so that axes are not reversed, and changed
+			references from Solar_Y/Z to Solar_X/Y.
+
+ Version     : 2.6, 24 March 1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : EXPSLICE()
+               
+ Purpose     : Returns slice of a Spectral Window at specific exposure
+
+ Explanation : 
+               
+ Use         : exposure = EXPSLICE(QLDS,window,exposure_no)
+    
+ Inputs      : QLDS:	A CDS QL data structure.
+		
+		window:	The number or name of a detector window.
+
+		exposure_no: The number of the desired exposure.
+
+
+ Opt. Inputs : VALID:	Supply to return a value of 0 instead of
+			generating an error message.
+               
+ Outputs     : Returns a 1- (GIS) or 2- (NIS) dimensional array 
+		corresponding to the data from a specific exposure
+		in a specified detector data window for a specific 
+		exposure. (A slice in the SOLAR_Y - WAVELNTH plane).
+
+ Opt. Outputs: VALID:	Returns TRUE (NOT 0) if the slice went ok
+			and 0 if some error was detected.
+               
+ Keywords    : NOCHECK :
+			Set to skip QLMGR parameter check.
+
+ Calls       : WINDOWNO(),QLMGR
+
+ Common      : None.
+               
+ Restrictions: QLDS must be a valid CDS QL data structure
+		WINDOW must be a scalar integer or string,
+		with the number or name of an existing detector
+		window.
+		EXPOSURE_NO must be <1, ... , nexposures(QLDS)-1 >
+               
+ Side effects: 
+               
+ Category    : Data_Handling, QuickLook, Interface.
+               
+ Prev. Hist. : Requested by Paal Brekke 19 October 1993
+		Made by modifying WAVESLICE() - bugs here
+		should be checked out in WAVESLICE(), and
+		vice versa.
+
+ Written     : Stein Vidar Hagfors Haugan, 19 October 1993
+               
+ Modified    : SVHH, 21 November 1993 - Changed name:
+						rstslice -> expslice
+		SVHH, 1-June-1994, Fixed minor bug in calling windowno.
+		SVHH, 20-Feb-1995, New data storage formats causes
+			some changes. Needs to be looked at. What
+			does EXPSLICE mean with data of dimensions
+			(SOLAR_X,SOLAR_Y,DEL_TIME) ?
+			For now I'm assuming (WAVELNTH,SOLAR_X,SOLAR_Y).
+
+ Version     : 1.1, 1-June-1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : filter
+               
+ Purpose     : fft filtering of data
+               
+ Explanation : filtering to reduse the noise in the data
+               
+ Use         : IDL> filter, y-array (raw), y-array (filtered) 
+    
+ Inputs      : raw y-array
+               
+ Opt. Inputs : None
+               
+ Outputs     : raw and filtered y-array
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : fft, box_filter
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Olav Kjeldseth-Moe, ITA, UiO 
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 1-July-1993
+
+ Version     : Version 1 1-July-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : FIND_SERTSW()
+               
+ Purpose     : Find data window (clip region, scales etc.) for given event
+               
+ Explanation : For use in QL display routines to keep track of 
+		data window sizes/data coordinates etc.
+               
+ Use         : SRTSW = FIND_SERTSW(DRAW_EVENT,FOUND)
+    
+ Inputs      : DRAW_EVENT: The event from a draw window.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : FOUND
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : CDSNOTIFY
+
+ Common      : TV_SCALE
+               
+ Restrictions: ..
+               
+ Side effects: ..
+               
+ Category    : CDS, QL, DISPLAY, UTILITY
+               
+ Prev. Hist. : None.
+
+ Written     : SVHH, January 1994
+               
+ Modified    : 
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : FITS_MENU
+ 
+ Purpose     : Executive menu for QL software
+               
+ Explanation : Enables reading of a CDS FITS file. Preleminary
+               solution. 
+               
+ Use         : FITS_MENU, QLDS
+    
+ Inputs      : None.
+
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : READCDSFITS(), Later - DSP_MENU
+
+ Common      : None.
+               
+ Restrictions: ..
+               
+ Side effects: ..
+               
+ Category    : CDS, QL, DISPLAY
+               
+ Prev. Hist. : QL_MENU, Stein Vidar Hagfors Haugan, March 16 1994
+
+ Written     : P. Brekke, Sept. 21 1994
+               
+ Modified    : Not yet.
+
+ Version     : 1 (very experimental)
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : funct_f()
+               
+ Purpose     : Make the line profile of 1,2 or 3 Gaussians
+               
+ Explanation : Calls routines to produce the fitted line profile
+               
+ Use         : IDL> val = func_f(x-array,Parameters of Gaussian,
+                           partial derivatives for the Gaussian)
+    
+ Inputs      : x-array, parameters of Gaussian, derivatives
+               
+ Opt. Inputs : None
+               
+ Outputs     : Composit lineprofile
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : cdsgauss, gauss_d_a, gauss_d_p, gauss_d_w
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO 29-June-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 29-June-1993
+
+ Version     : Version 1 29-June-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : funct_1
+               
+ Purpose     : Make the line profile of 1,2 or 3 Gaussians
+               
+ Explanation : Calls routines to produce the fitted line profile
+               
+ Use         : IDL> funct_1,x-array,parameters for Gaussian(s),
+                           the sum of the Gaussian line profiles,
+                           first Gaussian, second Gaussian,
+                           third Gaussian  
+    
+ Inputs      : x-array, parameters of Gaussian
+               
+ Opt. Inputs : None
+               
+ Outputs     : sum of Gaussians and each individual Gaussian
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : cdsgauss
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO 29-June-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 29-June-1993
+
+ Version     : Version 1 29-June-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : functn
+               
+ Purpose     : Make the line profile of 1,2 or 3 Gaussians
+               
+ Explanation : Calls routines to produce the fitted line profile
+               
+ Use         : IDL> functn,x-array,Parameters of Gaussian,
+                           partial derivatives for the Gaussian)
+       
+ Inputs      : x-array, parameters of Gaussian, derivatives
+               
+ Opt. Inputs : None
+               
+ Outputs     : Composit lineprofile
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : cdsgauss, gauss_d_a, gauss_d_p, gauss_d_w
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO 29-June-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 29-June-1993
+
+ Version     : Version 1 29-June-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : gauss_d_a()
+               
+ Purpose     : Calculate the partial derivative of line intensity
+               
+ Explanation : Partial derivative of the Gaussian intensity
+               
+ Use         : IDL> val = gauss_d_a(x-array,line intensity,
+                          line position (i.e. shift), line width)  
+    
+ Inputs      : x-array, intensity, position and width of line
+               
+ Opt. Inputs : None
+               
+ Outputs     : partial derivative of Gaussian intensity
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO 1-July-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 1-July-1993
+
+ Version     : Version 1 1-July-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : gauss_d_p()
+               
+ Purpose     :  Calculate the partial derivative of line position
+               
+ Explanation :  Partial derivative of the Gaussian position
+               
+ Use         : IDL> val = gauss_d_p(x-array,line intensity,
+                                    line position (i.e. shift), 
+                                    line width)  
+    
+ Inputs      : x-array, intensity, position and width of line
+               
+ Opt. Inputs : None
+               
+ Outputs     : partial derivative of Gaussian position
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+               
+ Written     : Nils Brynildsen, ITA, UiO 1-July-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 1-July-1993
+
+ Version     : Version 1 1-July-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : gauss_d_w()
+               
+ Purpose     : Calculate the partial derivative of line width 
+               
+ Explanation : Partial derivative of the Gaussian width
+               
+ Use         : IDL> val = gauss_d_w(x-array,line intensity,
+                          line position (i.e. shift), line width)  
+    
+ Inputs      : x-array, intensity, position and width of line
+               
+ Opt. Inputs : None
+               
+ Outputs     : partial derivative of Gaussian width
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO 29-June-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 29-June-1993
+
+ Version     : Version 1 29-June-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GDSPSPEC
+
+ Purpose     : Displays all spectral windows from specific exposures.
+
+ Explanation : The individual spectral windows are deselected 
+		into their corresponding positions on the detector.
+		Line selection and windows given in Blue Book
+		can be displayed. Measurements of wavelengths
+		and positions on the detector is possible
+		together with line identification.
+
+               
+ Use         : gdspspec,QLDS
+    
+ Inputs      : QLDS: A CDS QL data structure
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+                      
+               
+ Opt. Outputs: Should return the displayed data for further analyses
+               and PostScript file. To be written. 
+
+ Keywords    : GROUP_LEADER:
+			If this invoked by any other CDS QuickLook 
+			display routine (group leader responsible for 
+			keeping the QLDS), this keyword should have
+			the widget ID of the top level base of the
+			calling routine.
+
+		NOCHECK :
+			Set to skip QLMGR parameter check.
+
+ Calls       : BELL, CDSLOG, CDSNOTIFY, CDSPICKFILE(), CONCAT_DIR(),
+		DATATYPE(), GET_QLDS(), NEXPOSURES(), PCONVERT, PFIND, 
+		PICK_LINE(), POINTSLICE, PQLPROFILE, PRESTORE, PS, PIX2WAVE(), 
+		PSCLOSE, PSPLOT, PSTORE(), QLHELP, QLMGR(), QL_RD_LLIST(), 
+                SETWINDOW, SET_QLDS, TRIM(), WAVESIZE()
+		(Per 7 July 1994)
+
+ Common      : QLSAVE
+               
+ Restrictions: QLDS must be a valid CDS QL data structure
+		Requires dummy GIS spectrum $CDS_GDS_MODEL/gis_dummy.dat 
+		Looks for line lists in $CDS_PLAN_TECH and $CDS_INFO,
+		with names 'llist_*'.
+               For HELP displays the file $CDS_INFO/gdspspec.hlp
+
+ Side effects: 
+               
+ Category    : QuickLook, Display, NIS
+               
+ Prev. Hist. : From the NIS version + Dave Pike's TP_PAGE1
+
+ Written     : Stein Vidar Hagfors Haugan, March 1994
+               
+ Modified    : SVHH, 16 May 1994
+			Added call to CONCAT_DIR('$CDS_GDS_MODEL',..)
+
+		SVHH, 21 May 1994
+			Switched GEN_WAV(?) --> pix2wave()
+			Removed some debris from old NDSPSPEC
+		SVHH, Version 2, 7 June 1994
+			Added Line ID, on-screen line list marking,
+			PostScript file dump, profiling/measuring.
+			Added some support for calibration files.
+		PB,   July 6, 1994
+			Added call to help routine QLHELP
+		PB,    August 26, 1994
+			Changed dety --> detx in nmake_spect.pro
+               PB,   Sept 21 - 94    Added Help using WIDG_HELP
+
+ Version     : 2.2  212 - September 1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GET_QLDS()
+               
+ Purpose     : Returns the QLDS that the display routine is working on.
+               
+ Explanation : In order to avoid multiple storage of the data
+		structures operated upon by the display routines,
+		the _FIRST_ display routine invoked interactively
+		by the user has the responsibility to keep the
+		QLDS as the UVALUE of its top level base. 
+
+		The window generated in this way is called the MASTER
+		window. All display routines called by the MASTER
+		window's event handling routine should be passed
+		the widget ID of the MASTER window in the keyword
+		GROUP_LEADER, and this should be stored in the
+		UVALUE of the invoked, (SLAVE) TOP_LEVEL_BASE.
+ 
+		If a SLAVE window event handling routine invokes another
+		display routine, (a sub-SLAVE), it passes the widget ID 
+		of its own TOP_LEVEL_BASE so that GET_QLDS can follow the
+		trace of widget IDs up to the MASTER, to retrieve the
+		QLDS. SET_QLDS can (SHOULD!) then also be used to 
+		"put back" the QLDS.
+               
+ Use         : QLDS = GET_QLDS(EV.TOP)
+    
+ Inputs      : EV.TOP -- the widget ID of the TOP_LEVEL_BASE of 
+		a window generated by a CDS QL display routine.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Returns the QLDS
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : DATATYPE()
+
+ Common      : None.
+               
+ Restrictions: See 'Explanation'
+               
+ Side effects: The use of this scheme reserves the user value (UVALUE)
+		of the TOP_LEVEL_BASE of any display window.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 10 October, 1993
+               
+ Modified    : CDP,  25 October 1993 -- cut /no_copy keyword
+		SVHH, 21 November 1993 - Documentation added.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GET_SERTSW
+               
+ Purpose     : Return a descriptor for the current SERTS IMAGE window
+               
+ Explanation : 
+               
+ Use         : SERTSW = GET_SERTSW()
+    
+ Inputs      : None.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Return value.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : None.
+
+ Common      : IMAGE_AREA, from Bill Thompsons image routines
+               
+ Restrictions: Should only be used when Bill routines are always used.
+               
+ Side effects: None.
+               
+ Category    : QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein V Hagfors Haugan, December -93
+               
+ Modified    : 
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_DATA()
+               
+ Purpose     : Retrieve GIS/VDS data from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the GIS/VDS data
+               collected during a raster.
+               
+ Use         : IDL> s = gt_data(file_str [,windows=windows,$
+                                           exposure=exposure,$
+                                           detector=detector,/nodeselect])
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns an integer array with various possible
+               dimensions. eg
+
+               A VDS data set will be returned as 
+               intarr(1024,height,detector,exposures)
+               if a single exposure is requested the last dimension will be
+               dropped.  If the /nodeselect keyword is specified the first
+               dimension will have a size of (number of windows selected x 
+               width of windows in pixels).
+
+               GIS data will normally be returned as 
+               intarr(2048,detectors,exposures)
+               again the last dimension is dropped if redundant.
+               If the /nodeselect keyword is set then the keyword detectors
+               is ignored and no splitting into detector arrays is done ie
+               an intarr(Number of windows x window width, exposures) is
+               returned. If the data are deselected (default) then each
+               detector's array is reversed so that wavelength increases
+               with bin number.
+               
+ Opt. Outputs: None
+               
+ Keywords    : WINDOWS - a scalar or vector giving the selection of windows
+                         whose data are to be returned.  May be either an
+                         integer (vector) giving the windows numbers or a
+                         string (array) giving the window names. If not
+                         specified, all windows are returned. Window 
+                         numbering ranges from 1 .... n.
+
+               NODESELECT - if present the windows requested are returned
+                            in the compact form they are stored in the
+                            data structure (ie all window data abutted in 
+                            pixel or wavelength dimension).  Otherwise the
+                            data are placed in their correct location in a
+                            full detector array ie 2048 bins per detector 
+                            (GIS) or 1024 bins per wavelength range (VDS).
+
+               EXPOSURE   - integer scalar or vector giving selection of
+                            exposures required.  If not specified all are
+                            returned. Exposure numbering ranges from 1 ...n.
+
+               DETECTOR   - scalar/vector to specify which of 1 to 4 
+                            GIS detectors data are required or which
+                            VDS wavelength range (1 or 2 for 300/500A).
+                            If not specified, all are returned.
+
+ Calls       : GT_WNUM()
+               FILE_EXIST()
+               CONCAT_DIR()
+               READCALFITS()
+               GT_WINSIZE()
+               GT_WLIMITS()
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 3-JUN-94
+               
+ Modified    : Fix bug on redefining input.  CDP, 16-Jun-94
+               Sort out detector/exposure/window nunbering (now all 
+               1...n).  CDP 17-Jun-94
+
+ Version     : Version 3, 17-Jun-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_DURATION()
+               
+ Purpose     : Get the duration of a raster from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the duration
+               of the raster.
+               
+ Use         : IDL> dur = gt_duration(file_str)
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the raster duration in a intarr(3) giving
+               the hours, minutes and seconds.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 15-Jun-94
+               
+ Modified    : 
+
+ Version     : Version 1, 15-Jun-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_EXPTIME()
+               
+ Purpose     : To retrieve the exposure time from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the exposure
+               time used in the raster.
+               
+ Use         : IDL> s = gt_exptime(file_str)
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the exposure time (secs) used.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: Factor of 100 fudge for calibration files.
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 24-May-94
+               
+ Modified    : To allow standard FITS directory, CDP, 25-May-94
+
+ Version     : Version 2, 25-May-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_MIRRPOS()
+               
+ Purpose     : To retrieve the mirror posns from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the mirror 
+               positions used in the raster.
+               
+ Use         : IDL> s = gt_mirrpos(file_str)
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the mirror posns used in an integer array.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 24-May-94
+               
+ Modified    : To allow standard FITS directory, CDP, 25-May-94
+               Fix bug in tag name in file case.  CDP, 14-Jun-94
+               Include cal/ops test.  CDP, 15-Jun-94
+
+
+ Version     : Version 4, 15-Jun-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_NUMEXP()
+               
+ Purpose     : Get the number of exposures from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the number
+               of exposures in the raster.
+               
+ Use         : IDL> s = gt_numexp(file_str)
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the number of exposures used.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 25-May-94
+               
+ Modified    : 
+
+ Version     : Version 1, 25-May-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_NUMWIN()
+               
+ Purpose     : Get the number of windows from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the number
+               of windows in the raster.
+               
+ Use         : IDL> s = gt_numwin(file_str)
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the number of windows used.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 3-Jun-94
+               
+ Modified    : Update to new file reading routines.  CDP, 14-Jun-94
+               Insert cal/ops test.  CDP, 15-Jun-94
+
+ Version     : Version 3, 15-Jun-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_SLITNUM()
+               
+ Purpose     : To retrieve the slit number from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the slit number
+               used in the raster.
+               
+ Use         : IDL> s = gt_slitnum(file_str)
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the slit number used.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 18-May-94
+               
+ Modified    : Allow std directory for FITS file, CDP, 25-May-94
+
+ Version     : Version 2, 25-May-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_SLITPOS()
+               
+ Purpose     : Retrieve the slit positions from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the slit positions
+               used in the raster.
+               
+ Use         : IDL> s = gt_slitpos(file_str)
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the slit positions used in an integer array.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 24-May-94
+               
+ Modified    : To allow standard FITS file directory, CDP, 25-May-94
+               Fix bug in tag name in file case.  CDP, 14-Jun-94
+               Insert cal/ops test.  CDP, 15-Jun-94
+
+ Version     : Version 4, 15-Jun-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_START()
+               
+ Purpose     : Gets the exposure start times from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the exposure
+               start times used in the raster.
+               
+ Use         : IDL> s = gt_start(file_str [,/exposure, /int, /ext, /ecs])
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the exposure start times.  The default
+               format is standard CCSDS string with other options available
+               via keywords.
+               
+ Opt. Outputs: None
+               
+ Keywords    : EXPOSURE  -  return start time for all exposures, otherwise
+                            just the raster start.
+               INTERNAL  -  return times in internal CDS format.
+               EXTERNAL  -  return times in external CDS format.
+               ECS       -  return times in ECS string format.
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: Reads OBS_DATE instead of DATE_OBS from calibration files.
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 24-May-94
+               
+ Modified    : Fix bug in structure tag name in file case.  CDP, 14-Jun-94
+               Insert cal/ops test.  CDP, 15-Jun-94
+
+               Fix bug caused by different tag names in cal/ops and
+               change .dat --> .mjd  and now that delta times are in
+               seconds not msec.    CDP, 7-Feb-95
+        
+               Handle case of /exp keyword and only one exposure. 
+                                    CDP, 6-Jun-95
+
+ Version     : Version 5, 6-Jun-95
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_WINSIZE()
+               
+ Purpose     : Get the size of data windows from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the size
+               of data windows in the raster.
+               
+ Use         : IDL> s = gt_winsize(file_str)
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the size of windows used.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 3-Jun-94
+               
+ Modified    : Update to new file reading routines. CDP, 14-Jun-94
+               Insert cal/ops test.  CDP  15-Jun-94
+
+ Version     : Version 3, 15-Jun-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_WLABEL()
+               
+ Purpose     : Get the label of a window from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the label
+               of a window or windows in the raster. 
+               
+ Use         : IDL> s = gt_wlabel(file_str [, win])
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+               
+ Opt. Inputs : win   -  either a string/integer scalar or vector of windows
+                        to be identified.  If not given the labels of all
+                        windows in the input are returned.
+               
+ Outputs     : Function returns the labels(s) of the window(s) used.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : Based on GT_WNUM
+
+ Written     : C D Pike, RAL, 20-Apr-95
+               
+ Modified    : 
+
+ Version     : Version 1, 20-Apr-95
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_WLIMITS()
+               
+ Purpose     : To retrieve the window limits from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the window 
+               limits used in the raster.
+               
+ Use         : IDL> s = gt_wlimits(file_str)
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns the window limits used in a (2xN) array 
+               for GIS data or a (4xN) array for VDS data.
+               
+ Opt. Outputs: None
+               
+ Keywords    : WAVE  - if specified, the window limits in the dispersion
+                       direction are returned as wavelengths.
+
+ Calls       : FX... routines
+               PIX2WAVE
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 26-May-94
+               
+ Modified    : Take account of negative .detdesc.ixstart(0) returned when
+               /header keyword used in FITS reading routines.  CDP, 3/6/94
+               Use new file reading routines.  CDP, 14-Jun-94
+               Insert cal/ops test.  CDP, 15-Jun-94
+
+ Version     : Version 4, 15-Jun-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : GT_WNUM()
+               
+ Purpose     : Get the number of a window from a file or data structure.
+               
+ Explanation : Depending on the nature of the input parameter (structure or
+               file name) the routine extracts and returns the number
+               of a window or windows in the raster. If the name of the
+               window is given, the numerical number of the corresponding
+               window is returned, otherwise the window number is just 
+               echoed.  Array can be handled.
+               
+ Use         : IDL> s = gt_wnum(file_str [, win])
+    
+ Inputs      : file_str   -  either:-   the name of a CDS FITS file
+                                 or:-   the name of a CDS data structure
+               
+               
+ Opt. Inputs : win   -  either a string/integer scalar or vector of windows
+                        to be identified.  If not given the numbers of all
+                        windows in the input are returned.
+               
+ Outputs     : Function returns the number(s) of the window(s) used.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : FX... routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS
+               
+ Prev. Hist. : Based on WINDOWNO by S V Haugan.
+
+ Written     : C D Pike, RAL, 6-Jun-94
+               
+ Modified    : Use new file reading routines.  CDP, 14-Jun-94
+
+ Version     : Version 2, 14-Jun-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : HDRREAD()
+               
+ Purpose     : Read basic header information from CDS FITS level-1 file.
+               
+ Explanation : Straightforward. Returns IDL structure described in
+		CDS QL Data Format.
+               
+ Use         : HDR = HDRREAD(HEADER)
+    
+ Inputs      : HEADER= The header (array of strings of a CDS FITS
+			level-1 file.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Return value, see above.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : FXPAR, TRIM()
+
+ Common      : None.
+               
+ Restrictions: See HEADER above.
+               
+ Side effects: None.
+               
+ Category    : Data_Handling, I_O, CDS, FITS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 27 September 1993
+               
+ Modified     : SVHH, Version 2, 8-June-94  Fixed types for all tags
+
+ Version     : 2, 8 June 1994
+;-
+;+
+ Project     : SOHO - CDS
+
+ Name        : HEAD_ENG
+
+ Purpose     : Create Eng data Header
+
+ Explanation : NONE!!
+
+ Use         : IDL> ¿?¿?
+
+ Inputs      :  ENG
+
+ Opt. Inputs : As above
+
+ Outputs     : H_ENG
+
+ Opt. Outputs: None
+
+ Keywords    : None
+
+ Calls       : None
+
+ Restrictions: None
+
+ Side effects: ¿?¿?
+
+ Category    : Data Handling, Telem ????
+
+ Prev. Hist. : None
+
+ Written     : E Alam, 12 Jan 1994
+
+ Modified    :
+
+ Version     : Version 1
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : hrts_w
+               
+ Purpose     : Main procedure, makes widgets, calls all procedures
+               
+ Explanation : Main 'program'
+               
+ Use         : IDL> hrts_w 
+    
+ Inputs      : Follow instructions given in IDL window !
+               
+ Opt. Inputs : None
+               
+ Outputs     : Widget with parameters and fitted line profiles
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : Widget routines, etc.
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO 29-June-1993
+               
+ Modified    : Version 2 Nils Brynildsen, ITA, UiO, 13-Sep.-1993
+
+		Changed x-array from x to x - w0 after suggestion
+ 		 by Bill Thompson
+	
+ Version     : Version 3 4-Nov.-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : hrts_w
+               
+ Purpose     : Main procedure, makes widgets, calls all procedures
+               
+ Explanation : Main 'program'
+               
+ Use         : IDL> hrts_w 
+    
+ Inputs      : Follow instructions given in IDL window !
+               
+ Opt. Inputs : None
+               
+ Outputs     : Widget with parameters and fitted line profiles
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : Widget routines, etc.
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO 29-June-1993
+               
+ Modified    : Version 2 Nils Brynildsen, ITA, UiO, 13-Sep.-1993
+
+	3	Changed x-array from x to x - w0 after suggestion
+ 		 by Bill Thompson
+	
+	4	This version is for IDL 3.0.0
+
+ Version     : Version 4 16-Nov.-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : hrts_w_event
+               
+ Purpose     : Widget control
+               
+ Explanation : Controls the end of the widget window
+               
+ Use         : Not called ?
+    
+ Inputs      : None
+               
+ Opt. Inputs : None
+               
+ Outputs     : None
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : Widget routines
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Widget control routine
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO, 29-June-1993 
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 29-June-1993
+
+ Version     : Version 1 29-June-1993 
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : int_fwhm
+               
+ Purpose     : Calculate the total line intensity from the maximum
+		intensity in the line and the FWHM
+               
+ Explanation : 
+               
+ Use         : IDL> int_fwhm, x, y, totint
+    
+ Inputs      : x and y arrays for spectral line
+               
+ Opt. Inputs : 
+               
+ Outputs     : total intensity of line
+               
+ Opt. Outputs: 
+               
+ Keywords    : None
+
+ Calls       : interp
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. :
+
+ Written     : Nils Brynildsen, ITA, UiO, 9-Sept.-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, 9-Sept-1993
+
+ Version     : Version 1 9-Sept.-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : int_fwhm
+               
+ Purpose     : Calculate total intensity from peak intensity and the FWHM
+               
+ Explanation : 
+               
+ Use         : IDL> int_fwhm, x, y, totint, fwhm, shift
+    
+ Inputs      : x and y arrays for spectral line
+               
+ Opt. Inputs : 
+               
+ Outputs     : total intensity of line
+               
+ Opt. Outputs: 
+               
+ Keywords    : None
+
+ Calls       : interp
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. :
+
+ Written     : Nils Brynildsen, ITA, UiO, 9-Sept.-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, 27-Oct.-1993
+		Out: fwhm and line shift
+
+ Version     : Version 1 9-Sept.-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : int_sum
+               
+ Purpose     : Calculate a spectral lines total intensity by
+		adding up the pixel values across the line
+               
+ Explanation : 
+               
+ Use         : IDL> int_sum, x, y, disp, xs, itot
+    
+ Inputs      : x and y array, background, dispersion, 
+		start wavelength
+               
+ Opt. Inputs : 
+               
+ Outputs     : total intensity for the line
+               
+ Opt. Outputs: 
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : 
+               
+ Prev. Hist. : None
+
+ Written     : Nils Brynildsen, ITA, UiO, 9-Sept.-1993
+               
+ Modified    : Version 2 Nils Brynildsen, ITA, 13-Sept-1993
+
+ Version     : Version 2 13-Sept.-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : interp
+               
+ Purpose     : Simple linear interpolation
+               
+ Explanation : 
+               
+ Use         : IDL> interp,x1,y1,x2,y2,xh,yh
+    
+ Inputs      : two points [x,y] and y-value where interpolated
+               value is wanted 
+               
+ Opt. Inputs : 
+               
+ Outputs     : interpolated values in x and y
+               
+ Opt. Outputs: 
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : None
+
+ Written     : Nils Brynildsen, ITA, UiO, 9-Sept.-1993
+               
+ Modified    : Version 1.1 Nils Brynildsen, ITA, 8-June-1995
+
+               Added y1 = y2 test.
+
+ Version     : Version 1.1 8-June-1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : LOAD_RED
+               
+ Purpose     : Load "Red Temperature" with a gamma effect.
+               
+ Explanation : Purpose says it all.
+               
+ Use         : LOAD_RED,GAMMA
+    
+ Inputs      : 
+               
+ Opt. Inputs : GAMMA
+               
+ Outputs     : None
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : LOADCT, STRETCH
+
+ Common      : None
+               
+ Restrictions: 
+               
+ Side effects: Changes current color table.
+               
+ Category    : CDS, QL, DISPLAY, UTILITY
+               
+ Prev. Hist. : None.
+
+ Written     : SVHH, March 14, 1994
+               
+ Modified    : SVHH, March 15, 1994
+			Added gamma.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : MAXDATA()
+               
+ Purpose     : Return maximum value for data in a QLDS.
+               
+ Explanation : Straightforward.
+               
+ Use         : MAX = MAXDATA(QLDS)
+    
+ Inputs      : QLDS: Quick Look Data Structure
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Returns maximum.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOCHECK: Set to avoid call to QLMGR to verify parameter
+
+ Calls       : QLMGR
+
+ Common      : None.
+               
+ Restrictions: QLDS must be a QLDS
+               
+ Side effects: None.
+               
+ Category    : CDS, QL, DATA
+               
+ Prev. Hist. : 
+
+ Written     : Stein Vidar Hagfors Haugan, 1993
+               
+ Modified    : 
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : MAXDATA()
+               
+ Purpose     : Return minimum value for data in a QLDS.
+               
+ Explanation : Straightforward.
+               
+ Use         : MIN = MINDATA(QLDS)
+    
+ Inputs      : QLDS: Quick Look Data Structure
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Returns minimum.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOCHECK: Set to avoid call to QLMGR to verify parameter
+
+ Calls       : QLMGR
+
+ Common      : None.
+               
+ Restrictions: QLDS must be a QLDS
+               
+ Side effects: None.
+               
+ Category    : CDS, QL, DATA
+               
+ Prev. Hist. : 
+
+ Written     : Stein Vidar Hagfors Haugan, 1993
+               
+ Modified    : 
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : MKAUXDESC()
+               
+ Purpose     : Return auxiliary data descriptor of correct type.
+               
+ Explanation : Based the dimenstionality of the data in DATA the correct
+		type of auxiliary data descriptor is returned,
+		with the descriptor values from DATA copied
+		into the new structure.
+
+ Use         : AUXDESCRIPTOR = MKAUXDESC(DATA)
+    
+ Inputs      : DATA	 = a structure variable of the form that 
+			   is returned by READ_CDS
+               
+ Opt. Inputs : None.
+               
+ Outputs     : IDL auxiliary data descriptor, see CDS QL Data Format.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : EXECUTE
+
+ Common      : None.
+               
+ Restrictions: DATA must adhere to the format returned by READ_CDS
+		Normally used by AUXREAD()
+               
+ Side effects: None.
+               
+ Category    : Data_Handling, I_O, FITS, CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Haugan, 27 September 1993
+               
+ Modified    : 
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : MKDETWDESC()
+               
+ Purpose     : Return detector data descriptor of correct type.
+               
+ Explanation : Based on DETECTOR (= 'NIS'/'GIS') and the
+		dimenstionality of the data in DATA the correct
+		type of detector data descriptor is returned,
+		with the descriptor values from DATA copied
+		into the new structure.
+
+ Use         : DETDESCRIPTOR = MKDETWDESC(DETECTOR,DATA)
+    
+ Inputs      : DETECTOR = 'NIS' / 'GIS'
+		DATA	 = a structure variable of the form that 
+			   is returned by READ_CDS
+               
+ Opt. Inputs : None.
+               
+ Outputs     : IDL detector data descriptor, see CDS QL Data Format.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : EXECUTE(), TRIM()
+
+ Common      : None.
+               
+ Restrictions: DATA must adhere to the format returned by READ_CDS
+		Normally used by DETREAD()
+               
+ Side effects: None.
+               
+ Category    : Data_Handling, I_O, FITS, CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Haugan, 27 September 1993
+               
+ Modified    : SVHH, 21 October 1993
+			Added Max/Min tags (for use by display routines)
+		SVHH,  3 November 1993
+			Fixed bugs concerning GIS data (TDETY)
+		SVHH,  Version 1.2, 8-June-1994
+		SVHH,  25 August 1994,
+			Fixed another bug concerning GIS/TDETY etc..
+			(DetY : Data.Detx)
+               PB,    26 August 1994,
+			Changed DetZ --> DetY
+			        DetY --> DetX
+
+ Version     : 1.2, 8-June-1994
+;-
+;+
+ Project     : SOHO - CDS
+                   
+ Name        : NDSPSPEC()
+
+ Purpose     : Displays all Spectral Windows from specific exposures.
+
+ Explanation : The individual Spectral Windows are deselected 
+		into their corresponding positions on the detector.
+		Line selection and windows given in Blue Book
+		can be displayed. 
+		Measurements of wavelengths and positions on the 
+		detector is possible together with line identification.
+               
+ Use         : ndspspec,QLDS
+    
+ Inputs      : QLDS: A CDS QL data structure
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+                      
+               
+ Opt. Outputs: Should return the displayed data for further analyses
+                        and PostScript file. To be written. 
+
+ Keywords    : GROUP_LEADER:
+			If this invoked by any other CDS QuickLook 
+			display routine (group leader responsible for 
+			keeping the QLDS), this keyword should have
+			the widget ID of the top level base of the
+			calling routine.
+
+		NOCHECK :
+			Set to skip QLMGR parameter check.
+
+ Calls       : ASSIGN_NOCOPY, BELL, CDSLOG, CDSNOTIFY, CDSPICKFILE(), 
+		CLIPBOX, CMOUSE, CMOUSE_ACTION(), CONCAT_DIR(), DATATYPE(), 
+		EXPSLICE(), LOAD_RED, NEXPOSURES(), PCONVERT(), PFIND(), 
+		PICK_LINE(), PIX2WAVE(), PQLPROFILE, PQLZOOM, PRESTORE, PS, 
+		PSCLOSE, PSPLOT, PSTORE(), QLDS_CHECKIN, QLDS_REPORT, 
+		QLMGR, QL_DIMENSIONS(), QL_BSCALE(), QL_RD_LLIST(), 
+		SETWINDOW, TRIM(), WIDGET_BASE(), WIDGET_TEXT(), WIDG_HELP
+		(11-Dec-94 +20-Feb-95)
+
+ Common      : QLSAVE: See QLDS_CHECKIN
+               
+ Restrictions: QLDS must be a valid CDS QL data structure
+		Requires dummy NIS spectrum $CDS_VDS_MODEL/vds_dummy.dat
+		Looks for line lists in $CDS_PLAN_TECH and $CDS_INFO,
+		with names 'llist_*'.
+               For HELP displays the file $CDS_INFO/ndspspec.hlp
+               
+ Side effects: 
+               
+ Category    : QuickLook, Display, NIS
+               
+ Prev. Hist. : None.
+
+ Written     : Paal Brekke, 17 November 1993
+               
+ Modified    : SVHH, 20 November 1993
+			Brushed up documentation.
+		SVHH & PB, Jan-March 1993
+			Zoom & Profile added, logging of status line info,
+			Line identification
+		SVHH, 16 May 1994
+			Added call to CONCAT_DIR('$CDS_VDS_MODEL',..)
+		SVHH, Version 1.5, 30 May 1994
+			Switched QLPROFILE/QLZOOM -> PQL.../PQL...
+		SVHH, Version 2, 7 June 1994
+			Modified cursor action selection,
+			added on-screen plot of LLIST_??
+			Added PostScript dump.
+		PB,   July 6, 1994
+			Added call to help routine QLHELP
+		PB,   August 26, 1994
+			Changed dety --> detx
+				detz --> dety  in nmake_spect.pro
+               PB,   Sept 21 - 94    Added Help using WIDG_HELP
+		SVHH, Nov 15, Fixed XTICKS/XRANGE conflict for IDL 3.6c
+		SVHH, Dec 10, Added CMOUSE/CMOUSE_ACTION functionality,
+			and added x/y-format/units in PQLZOOM-call.
+		SVHH, 20-Feb-1995, New data storage format, according
+			to Bill's note on generating FITS files from
+			telemetry. Incorporated the use of QL_DIMENSIONS()
+			to check dimensionality. Should be more robust.
+			Requires change of EXPSLICE as well.
+
+ Version     : 2.6  20-Feb-1995, SVHH
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : NEXPOSURES()
+               
+ Purpose     : Return the number of "exposures" in a QLDS
+               
+ Explanation : Returns the number of exposures, defined as the
+		size of the larger of the DEL_TIME and the SSOLAR_X
+		dimensions.
+               
+ Use         : NEXP = NEXPOSURES(QLDS)
+    
+ Inputs      : QLDS:	A "CDS QL data strucure"
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Ret.value.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOCHECK:
+			Set to avoid checking with QLMGR whether
+			the QLDS is acceptable. Set to speed up...
+
+ Calls       : QLMGR, QL_SIZES()
+
+ Common      : None.
+               
+ Restrictions: QLDS == QL data structure.
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : Used to be called nraster, but change of terminology
+		(RASTER -> EXPOSURE) prompted name change.
+
+ Written     : Stein Vidar Hagfors Haugan, October 1993.
+               
+ Modified    : SVHH, 6-March-1995, Altered to use the ql_dimensions()
+			routine after altering the data format slightly.
+
+ Version     : 1.1, 6-March-1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : parab
+               
+ Purpose     : fit a parabola to a given line profile
+               
+ Explanation : uses IDL-procedure poly_fit to fit a parabola to
+		the points in the line profile
+               
+ Use         : IDL>a = parab(x,y,p1,p2,back,a)
+    
+ Inputs      : x-array, y-array, first pixel in lineprofile,
+		last pixel in line profile, background value
+               
+ Opt. Inputs : None
+               
+ Outputs     : Coeffissients of fitted parabola
+               
+ Opt. Outputs: a
+               
+ Keywords    : ?
+
+ Calls       : poly_fit
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Line fitting
+               
+ Prev. Hist. : None
+
+ Written     : Nils Brynildsen, ITA, UiO, 12-Apr.-1994
+               
+ Modified    : Version 1.0 Nils Brynildsen, 12-Apr.-1994
+
+ Version     : Version 1.0, 1-July-1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PICK_LINE()
+               
+ Purpose     : Pick lines from Kelly's line list
+               
+ Explanation : Kelly's line list (or part of it) is searched, and a 
+		display pops up with the lines that were within a 
+		range around the given wavelength (default +/- 0.5 Angstrom).
+
+		This is really a whole suite of procedures.
+               
+ Use         : Result = PICK_LINE(WAVELENGTH)
+    
+ Inputs      : WAVELENGTH
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Returns a structure with the information in the line list
+               
+ Opt. Outputs: None.
+               
+ Keywords    : DELTA : Specifies the size of the area to be searched, 
+			around the given wavelength.
+
+ 		PICK : 	Set to force a selection before the routine
+			returns.
+
+ Calls       : CDSNOTIFY, DATATYPE(), TRIM(), CONCAT_DIR()
+
+ Common      : Pick_line
+               
+ Restrictions: Needs $CDS_ATOMIC/kelly_lines.dat and kelly_lines.ix
+               
+ Side effects: Xmanager...
+               
+ Category    : CDS QL
+               
+ Prev. Hist. : None.
+
+ Written     : SVHH, March 1994
+               
+ Modified    : SVHH, 27 April 1994
+			Added calls to HOST_TO_IEEE and vice versa,
+			as well as the VMS /BLOCK keyword to OPENR
+			for platform independence.
+			Lower-cased the second character of two-character
+			element names.
+		SVHH, 16 May 1994
+			Added reference to $CDS_ATOMIC and CONCAT_DIR
+
+		SVHH, 11 November 1994
+			Version 2.0 -- Using Widget_DRAW's for the
+			display for compatibility with IDL v 3.6
+			and for speedup.
+
+               CDP, 24-Mar-95  Update data file names to be specific to Kelly
+
+ Version     : Version 3, 24-Mar-95
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PIX2WAVE
+               
+ Purpose     : Calculate CDS wavelength given a detector pixel location.
+               
+ Explanation : Uses dummy transformations to translate a pixel value to a
+               wavelength for any of the CDS's six spectral regions. To be
+               updated when the wavelength calibration is known.
+               
+ Use         : IDL> lambda = pix2wave(spectrum [,pixel])
+    
+ Inputs      : spectrum  - the spectrum identifier (string).  Only the first
+                           and last characters are used to identify the
+                           spectrum so inputs such as NIS1 and N1 are
+                           equivalent.  Valid entries are NIS1, NIS2, GIS1,
+                           GIS2, GIS3, GIS4 (and their abbreviations).
+               
+ Opt. Inputs : pixel     - the pixel value to translate.  If not supplied the
+                           wavelengths for the extreme pixels are returned.
+                           The input can be an array.
+               
+ Outputs     : The function value returned is the corresponding wavelength.
+               A value of -1 is returned for an error condition.
+               
+ Opt. Outputs: None
+               
+ Keywords    : Limit   = If input pixel is out of range, then return the
+                         appropriate wavelength limit.
+		NoLimit = If input pixel is out of range, then return a value
+                         anyway.
+
+ Calls       : None
+               
+ Restrictions: Only dummy transformations at present
+               
+ Side effects: None
+               
+ Category    : Calibration, GDS, VDS, Wavelength
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 28-May-1993
+               
+ Modified    : Update VDS constants, CDP, 18-Nov-93
+               Include Limit keyword, CDP, 2-Feb-94
+               Updated wavelength ranges.  CDP, 30-Jan-95
+		Version 5, William Thompson, GSFC, 1 March 1995
+			Added keyword NOLIMIT
+
+ Version     : Version 5, 1 March 1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PIXELS_2_DATA()
+               
+ Purpose     : Convert pixel --> data coordinates for SERTS image routines
+               
+ Explanation : Uses the data stored for each SERTS window to calculate
+		from a pixel number/address to the corresponding
+		X/Y data coordinate.
+               
+ Use         : DATA_X = PIXELS_2_DATA(SERTSW,X_PIXEL_NO)
+    
+ Inputs      : SERTSW : A structure as returned by GET_SERTSW()
+
+		X_PIXEL_NO: 
+			(or Y_PIXEL_NO) the pixel number(s) to
+			calculate the corresponding data coordinate for.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Return value.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : Y : 	Set to mark that it's the Y pixel no. that is
+			supplied, and to return the Y data coordinate.
+
+ Calls       : GET_TV_SCALE, SET_SERTSW
+
+ Common      : None.
+               
+ Restrictions: There must exist a data coordinate system for the
+		given SERTS window.
+               
+ Side effects: ALTERS the current SERTS window, also !P,!X,... etc.
+               
+ Category    :
+               
+ Prev. Hist. : None.
+
+ Written     : SV Hagfors Haugan, December -93
+               
+ Modified    : Never.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PIXELS_2_DEVICE()
+               
+ Purpose     : Convert pixel --> device coords for SERTS image routines
+               
+ Explanation : Uses the data stored for each SERTS window to calculate
+		from a pixel number/address to the corresponding
+		X/Y device coordinate.
+               
+ Use         : DEVICE_X = PIXELS_2_DEVICE(SERTSW,X_PIXEL_NO)
+    
+ Inputs      : SERTSW : A structure as returned by GET_SERTSW()
+
+		X_PIXEL_NO: 
+			(or Y_PIXEL_NO) the pixel number(s) to
+			calculate the corresponding device coordinate for.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Return value.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : Y : 	Set to mark that it's the Y pixel no. that is
+			supplied, and to return the Y device coordinate.
+
+ Calls       : GET_TV_SCALE, SET_SERTSW
+
+ Common      : None.
+               
+ Restrictions: There must exist a data coordinate system for the
+		given SERTS window.
+               
+ Side effects: ALTERS the current SERTS window, also !P,!X,... etc.
+               
+ Category    :
+               
+ Prev. Hist. : None.
+
+ Written     : SV Hagfors Haugan, December -93
+               
+ Modified    : Never.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PLOT_DELTAT
+               
+ Purpose     : Plot the time interval between exposures in a raster.
+               
+ Explanation : Extracts the time interval from a CDS data structure (or
+               FITS file) and plot the interval between the start of 
+               exposures in a raster.
+               
+ Use         : IDL> plot_deltat, a [, exps, expe, maxdt=maxdt, mindt=mindt]
+    
+ Inputs      : a    - a valid CDS data structure or FITS file name.
+               
+ Opt. Inputs : exps - the start exposure to plot
+               expe - the last exposure to plot
+               
+ Outputs     : Just plots the results.
+               
+ Opt. Outputs: None
+               
+ Keywords    : MINDT  -  minimum plot value for time difference
+               MAXDT  -  maximum plot value for time difference
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: For reading calibration FITS files. Searches user directory
+               and then CDS_CAL_FITS.
+               
+ Side effects: None
+               
+ Category    : Util
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 24-may-94
+               
+ Modified    : To use lower level routines, CDP, 25-May-94
+               To include min max plot range, CDP, 8-Jun-94
+               Include cal/ops test and fix tag name bug.  CDP, 15-Jun-94
+
+ Version     : Version 4, 15-Jun-94
+;-
+;+
+ Project     : SOHO - CDS
+
+ Name        : PLOT_GIS
+
+ Purpose     : Used to plot the PHA data in the RAW GIS data file from the EGSE S/W. (TEST)
+
+ Explanation : NONE!!
+
+ Use         : IDL> ¿?¿?
+
+ Inputs      : PHA data array
+
+ Opt. Inputs : As above
+
+ Outputs     : None
+
+ Opt. Outputs: None
+
+ Keywords    : None
+
+ Calls       : None (so far)
+
+ Restrictions: None
+
+ Side effects: ¿?¿?
+
+ Category    : Data Handling, Telem ????
+
+ Prev. Hist. : None
+
+ Written     : E Alam, 4 Jan 1994
+
+ Modified    :
+
+ Version     : Version 1
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PLOT_RASTER
+               
+ Purpose     : Plot the scan positions in a raster.
+               
+ Explanation : Plots the mirror postion array against the slit position
+               array to demonstrate the raster performed.
+               
+ Use         : IDL> plot_raster, a 
+    
+ Inputs      : a    - a valid CDS data structure or FITS file name.
+               
+ Opt. Inputs : None
+               
+ Outputs     : Just plots the results.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : CAL_AUXREAD
+               EXT_RANGE()
+
+ Common      : None
+               
+ Restrictions: For calibration FITS files. Looks in user directory and
+               then CDS_CAL_FITS.
+               
+ Side effects: None
+               
+ Category    : Util
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 24-may-94
+               
+ Modified    : Use lower level routines to save time.  CDP, 25-may-94
+               Insert cal/ops test, fix tag name bug.  CDP, 15-Jun-94
+               To use ext_range. CDP, 23-Jun-94
+
+ Version     : Version 4, 23-Jun-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PLOT_WINDOWS
+               
+ Purpose     : Plot the data extraction windows in a raster.
+               
+ Explanation : Plots the data extraction windows used in a raster for
+               illustrative purposes.  Can work from a CDS data structure
+               or directly from a FITS file. The window plotted in is sized
+               so that if the image data (VDS) are plotted in a window with
+               xs=1024, the scale of the two plots will correspond approx.
+               
+ Use         : IDL> plot_window, file_str 
+    
+ Inputs      : file_str  - a valid CDS data structure or FITS file name.
+               
+ Opt. Inputs : None
+               
+ Outputs     : Just plots the results.
+               
+ Opt. Outputs: None
+               
+ Keywords    : TITLE - string to use as title to plot.
+
+ Calls       : GT_WLIMITS
+
+ Common      : None
+               
+ Restrictions: For calibration FITS files. Looks in user directory and
+               then CDS_CAL_FITS FOR FITS FILES.
+               
+ Side effects: None
+               
+ Category    : Util
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 27-may-94
+               
+ Modified    : 
+
+ Version     : Version 1, 27-May-94
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : POINTSLICE
+               
+ Purpose     : Return line profile at a specified spatial point
+               
+ Explanation : ...
+               
+ Use         : POINTSLICE(QLDS,window,yix,xix)
+    
+ Inputs      : QLDS:	CDS QuickLook Data structure
+               
+		WINDOW:	The number or name of a detector data window
+			in the QLDS
+
+		YIX:	Solar Cartesian Y index
+
+		XIX:	Solar Cartesian X index
+
+ Opt. Inputs : None.
+               
+ Outputs     : Returns a one-dimensional array with the line profile
+		at the specified point.
+               
+ Opt. Outputs: LAMBDA : wavelength for each pixel..
+               
+ Keywords    : NOCHECK: Set to avoid call to QLMGR
+		LAMBDS: See above.
+
+ Calls       : QLMGR, DATATYPE(), ZSIZE(), WINDOWNO(), NEXPOSURES()
+
+ Common      : None.
+               
+ Restrictions: QLDS == QL Data Structure.
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook, Data_Handling.
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, Medio October 1993
+               
+ Modified    : SVHH/PB,  8. November  -  added lambda
+		SVHH, 29-Apr-1995, Switched to (X,Y) coordinates
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PQLPROFILE
+               
+ Purpose     : General purpose profile-drawing kit.
+               
+ Explanation : Passing an event generated in a draw widget inside
+		a stored plot region will cause a new widget to be 
+		created, with a profile of the data in the original 
+		region.
+               
+ Use         : PQLPROFILE,DATA
+
+ Inputs      : DATA:	The data that is displayed in the plot region.
+
+ Opt. Inputs : XSCALE (only for 1D data)
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : LENGTH: The length of the profiled region in pixels
+			Default is 30 pixels
+
+		VERTICAL: set to plot vertical profiles. No effect for 
+			one-dimensional plots.
+
+		AVERAGE = Number of pixels to average over (only for 2D data).
+			No effect for one-dimensional plots.
+
+		TITLE = title of the plot
+
+		DATATITLE = the title to go on the axis showing the
+			    data values.
+
+		X/YTITLE = X/Y titles.
+		SUBTITLE = subtitle (only for 1D data)
+
+		X/YFORMAT = The format of the displayed X/Y position in the
+			subtitle.
+
+		X/Y_SIZE = size of plot window. Default X:500, Y:250
+
+		OUTSIDE: Set to make the widget appear on the outside
+			of the plot.
+
+		CURSOR: Set to make the widget appear aligned with the
+			plot cursor.
+
+		EVENT:	A WIDGET_DRAW event structure generated in
+			a widget_draw window. See restrictions.
+
+		P_reg: The plot region ID (as returned by pfind())
+			identifying which plot that is affected.
+
+		CHANGE : Set to indicate that a change of the DATA 
+			in the plot region has been made.
+			If there is a profile widget for this plot
+			region then this will update it's display
+			and the markings. If not, nothing happens.
+			If the data has not been changed, just 
+			redisplayed, DATA need not be supplied.
+
+		GROUP = Widget ID for the top level base that is to
+			be group leader (zoom window dies upon death of
+			the group leader).
+
+		KILL: 	Set to kill any profile widget from the specified
+			plot region
+		
+		ACTIVE: Set to a named variable to return 1 if there is
+			a profile window for the specified plot region
+	
+		RESET:  Set to reset the common block
+
+ Calls       : CDSNOTIFY, CDSPICKFILE(), CMOUSE, CMOUSE_ACTION(), 
+		DATATYPE(), PCONVERT(), PFIND(), PRESTORE, PS, PSCLOSE, 
+		PSPLOT, PSTORE(), SETWINDOW, TLB_PLACE(), TRIM(), 
+		WIDGET_BASE(), WIDGET_TEXT(), WIDG_HELP
+		(11-Dec-94)
+
+ Common      : PQLPROFILE:
+			Keeps track of plot region ID's for each PQLPROFILE
+			window that has been generated.
+
+ Restrictions: The !P/!D/!X/!Y system variables describing the image
+		or plot axes must have been stored with PSTORE.
+		The EVENT coordinates passed to the routine must be
+		inside the CLIP region of the displayed window - if
+		not - nothing happens.
+		NOTE If XSCALE is not supplied, the routine assumes that 
+		the data array is equispaced and fills the whole plot 
+		region, i.e., plotting x versus y, the xrange must be 
+		set to [min(x),max(x)], and xstyle must be set to 1
+
+
+ Side effects: 
+               
+ Category    : Display, QuickLook
+               
+ Prev. Hist. : Written on the basis of the QuickLook Zoom routine.
+
+ Written     : Stein Vidar Hagfors Haugan, Des. -93
+               
+ Modified    : SVHH, March 1994
+			Length/vertical/average are not reset upon the next
+			call.
+		SVHH, Version 2, May 1994
+			Using PSTORE/PRESTORE/PFIND instead of SERTS window
+			routines. Profile of 1-D plots are now possible.
+		SVHH, Version 3, 2 June 1994
+			Added incremental positioning a la PQLZOOM
+               PB, 10 July 1994
+                      Added HELP functionality  and Line fit button
+               PB,   Sept 21 - 94    Added Help using WIDG_HELP
+		SVHH, 11-Dec-94, Added CMOUSE/CMOUSE_ACTION mouse
+			control functionality, and zoom in/out buttons.
+
+ Version     : 3.5  11-December 1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PQLZOOM
+               
+ Purpose     : General purpose draw-window zoom.
+               
+ Explanation : Passing an event generated in a draw widget inside
+		a stored plot region will cause a new widget to be 
+		created, with a zoomed image taken from the originating 
+		draw window. 
+               
+ Use         : PQLZOOM,DATA
+    
+ Inputs      : DATA:	The data that is displayed in the plot region.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOSCALE: Set to disable initial rescaling of
+			the data before TV'ing.
+
+		TITLE = title of the zoom plot window
+
+		SUBTITLE = subtitle of zoom plot window.
+
+		X/YTITLE = X/Y titles.
+
+		XYSIZE = size of zoom window display. Default 220.
+
+		MARGIN = Total margin (in device coord's) around the zoom
+			plot window.
+
+		ORIGIN = [x0,y0] The lower left corner (in device coord's)
+			of the zoom plot window.
+
+		EVENT =	A WIDGET_DRAW event structure generated in
+			a widget_draw window.
+
+		P_reg: The plot region ID (as returned by pfind())
+			identifying which plot that is affected.
+
+		CHANGE : Set to indicate that a change of the DATA 
+			in the plot region has been made.
+			If there is a profile widget for this plot
+			region then this will update it's display
+			and the markings. If not, nothing happens.
+			If the data has not been changed, just 
+			redisplayed, DATA need not be supplied.
+
+		ZOOMFACT = Initial zoom factor 
+
+		GROUP = Widget ID for the top level base that is to
+			be group leader (zoom window dies upon death of
+			the group leader).
+
+		KILL: 	Set to kill any zoom widget from the specified
+			plot region.
+
+		ACTIVE: Set to a named variable to return 1 if there is
+			a profile window for the specified plot region
+	
+		RESET:  Set to reset the common block.
+
+ Calls       : CDSCONGRID(), CDSNOTIFY, CLIPBOX, CMOUSE, CMOUSE_ACTION(), 
+		DATATYPE(), PCONVERT(), PFIND(), PRESTORE, PSTORE(), 
+		SETWINDOW, TLB_PLACE(), TRIM(), WIDGET_BASE(), WIDGET_TEXT(), 
+		WIDG_HELP
+		(11-Dec-94)
+
+ Common      : PQLZOOM:
+			Keeps track of window ID's for each PQLZOOM
+			window that has been generated.
+               
+ Restrictions: The correct subwindow must have been selected..
+               
+ Side effects: 
+               
+ Category    : Display
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan
+               
+ Modified    : SVHH, 17 Nov. -- added setwindow call for non-
+                                interference with Bill T. 
+                                display routines
+		SVHH, 19 Nov. -- Documentation brush-up
+		SVHH, March 1994, Switched to pstore/prestore/pfind routines.
+		SVHH, May/June 1994,
+			Added plot axes and most keywords.
+               PB,   28 Nov. -- added Read Cursor Position functionality,
+				 Text_widget for output,
+                                Plot to file/printer 
+                                Default size increased to 220
+               PB,   Sept 21 - 94    Added Help using WIDG_HELP
+		SVHH, Nov 19 - 94 -- Made "Read position" report
+			continuously when middle button is pressed down
+			and fixed a POSITION keyword roundoff problem.
+		SVHH, Dec 10 - 94 -- Added a calls to CMOUSE/CMOUSE_ACTION,
+			and added x/y-format/units
+
+ Version     : 2.5  10-Dec-1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PR_CAL_HDR
+               
+ Purpose     : Easy print of FITS file header.
+               
+ Explanation : FITS file header is read and printed out.
+               
+ Use         : IDL> pr_cal_hdr, file [,/hard]
+    
+ Inputs      : file  - FITS file name  (assumes current directory)
+               
+ Opt. Inputs : None
+               
+ Outputs     : None
+               
+ Opt. Outputs: None
+               
+ Keywords    : hard  - if present sent to a file and print it.
+
+ Calls       : FXHREAD
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Data_handling, FITS, i_o
+               
+ Prev. Hist. : None
+
+ Written     : CDP,  RAL, 4-Mar-94
+               
+ Modified    : 
+
+ Version     : Version 1, 4-Mar-94
+;-
+;+
+ Project     : SOHO - CDS
+
+ Name        : READ_TEST (temporarily a PRO)
+
+ Purpose     : Used to read in the RAW GIS data file from the EGSE S/W. (TEST)
+
+ Explanation : NONE!!
+
+ Use         : IDL> ¿?¿?
+
+ Inputs      : 
+
+ Opt. Inputs : As above
+
+ Outputs     : None
+
+ Opt. Outputs: None
+
+ Keywords    : None
+
+ Calls       : PROC_GIS, PLOT_GIS, WRT_RAW_GIS, WRT_PHA_GIS
+
+ Restrictions: None
+
+ Side effects: ¿?¿?
+
+ Category    : Data Handling, Telem ????
+
+ Prev. Hist. : None
+
+ Written     : E Alam, 14 Dec 1993
+
+ Modified    :
+
+ Version     : Version 1
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : PTEST
+               
+ Purpose     : Demonstration of the PQLPROFILE/PQLZOOM routines.
+               
+ Explanation : Two displays, one with a plot of a function, and
+		one with a TVSCL'ed image are made, and the user
+		may click the right mouse button in the TVSCL'ed
+		image to invoke PQLZOOM, or the left mouse button 
+		in either window in order to invoke PQLPROFILE.
+
+		The middle mouse button changes the displayed data,
+		demonstrating the update functionality of the
+		PQL routines.
+
+		If the "Kill" button in the bottom of the PTEST
+		window is pushed in, the left/right mouse buttons
+		will kill any copy of PQLPROFILE/PQLZOOM for that
+		plot region.
+
+ Use         : PTEST
+    
+ Inputs      : NONE
+               
+ Opt. Inputs : NONE
+               
+ Outputs     : NONE
+               
+ Opt. Outputs: NONE
+               
+ Keywords    : NONE
+
+ Calls       : CDSCONGRID(), PFIND(), PQLPROFILE, PQLZOOM, PSTORE()
+		SETWINDOW, TRIM(), WIDGET_BASE(), WIDGET_TEXT()
+
+ Common      : PTEST -- Used to store the plotted data.
+               
+ Restrictions: Just a demo.
+               
+ Side effects: XMANAGER starts..
+               
+ Category    : QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : S. V. H. Haugan, December 1994
+               
+ Modified    : SVHH, 19 Jan 1994 Documentation header added
+
+ Version     : 1.0
+;-
+;+
+ Project     :	SOHO - CDS
+
+ Name        :	QL_BSCALE()
+
+ Purpose     :	Scales VDS data for display with QL_COLTABLE color table.
+
+ Explanation :	This procedure scales simulated VDS data for display with the
+		color table loaded by the routine TP_COLTABLE.  The array is
+		scaled logarithmically, so that values in the approximate range
+		0-41 are in the lower third of the color table (blue), 41-410
+		in the middle third (orange) and 410-4095 in the upper third
+		(white).  Values of 4096 and above are displayed as red pixels.
+
+ Use         :	TV, QL_BSCALE(ARRAY)
+		EXPTV, QL_BSCALE(ARRAY), /NOSCALE
+
+ Inputs      :	ARRAY	= Simulated VDS data array from VDS_DUMMY, or
+		equivalent.
+
+ Opt. Inputs :	None.
+
+ Outputs     :	The result of the function is a logarithmically scaled byte
+		array with the values matched to the number of colors for the
+		currently selected graphics device.
+
+ Opt. Outputs:	None.
+
+ Keywords    :	TOP	= The maximum value of the scaled image array, as used
+			  by BSCALE.  The default is !D.N_COLORS-1.
+
+ Calls       :	BSCALE
+
+ Common      :	None.
+
+ Restrictions:	None.
+
+ Side effects:	None.
+
+ Category    :	Planning, Technical.
+
+ Prev. Hist. :	None.
+
+ Written     :	William Thompson, GSFC, 23 September 1993.
+
+ Modified    :	Version 1, William Thompson, GSFC, 23 September 1993.
+
+ Version     :	Version 1, 23 September 1993.
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QL_DIMENSIONS
+               
+ Purpose     : Returns information on the dimensionality of a QLDS
+               
+ Explanation : Based on the information in the QuickLook Data Stucture,
+		an IDL structure describing the dimensionality of the 
+		detector data is returned with the following tags:
+
+		WAVELNTH : TRUE if the spectral dimension is present
+			   and non-singular
+		SOLAR_X:   TRUE if the SOLAR_X dimension is present
+			   and non-singular
+		SOLAR_Y:   TRUE if the SOLAR_Y dimension is present
+			   and non-singular
+		DEL_TIME:  TRUE if the DEL_TIME dimension is present
+			   and non-singular.
+		NDIMS:     The number of non-singular dimensions
+
+		There is also a tag for each of the dimensions that
+		describes the size of the dimension, named SWAVELNTH,
+		SSOLAR_X, SSOLAR_Y, SDEL_TIME.
+               
+ Use         : info = QL_DIMENSIONS(QLDS)
+    
+ Inputs      : QLDS: QuickLook Data Structure, see CDS software note #9
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Returns a structure with information on the dimensionality
+		of the data windows in the QLDS
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOCHECK : Set to avoid checking the validity of the QLDS
+
+ Calls       : None.
+
+ Common      : None.
+               
+ Restrictions: QLDS should conform to CDS software not #9
+               
+ Side effects: None known.
+               
+ Category    : CDS QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 20-Feb-1995
+               
+ Modified    : Never.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QL_MENU
+ 
+ Purpose     : Executive menu for QL software
+               
+ Explanation : Enables reading of a new CDS FITS file.
+               
+ Use         : QL_MENU
+    
+ Inputs      : None.
+
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : DSP_MENU, READCDSFITS()
+
+ Common      : None.
+               
+ Restrictions: ..
+               
+ Side effects: ..
+               
+ Category    : CDS, QL, DISPLAY
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, March 16 1994
+               
+ Modified    : Not yet.
+
+ Version     : 1 (very experimental)
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QL_RD_LLIST
+               
+ Purpose     : Read a CDS line list into the returned structure.
+               
+ Explanation : Reads a line list file into the structure required by the 
+               technical planning procedure.  The line list file is assumed
+               to have the following contents:
+               Line 1 - header text
+               Line 2 - blank
+               Line 2 - line identification, wavelength, order, band, pixel
+               .
+               .
+               .
+               Line N - ditto
+
+               
+ Use         : IDL> ql_rd_llist, in_file [, header=header]
+    
+ Inputs      : in-file    -   the name of the file with the line list.
+               
+ Opt. Inputs : None
+               
+ Outputs     : None
+               
+ Opt. Outputs: header  -  the header line from the line-list file
+               
+ Keywords    : None
+
+ Calls       : BELL, CDSNOTIFY, RD_LINE_LIST,STR2ARR(),VALID_NUM()
+               
+ Restrictions: 
+               
+ Side effects: None.
+               
+ Category    : QuickLook.
+               
+ Prev. Hist. : Taken from C D Pike's RD_LINE_LIST, V 3, 26-Nov 1993
+
+ Written     : C D Pike, 14-May-1993
+               
+ Modified    : New input file format.  CDP 17-Nov-1993
+               Limit number of lines to 20.  CDP 26-Nov-93
+		SVHH, Version 1, 7-June-1994
+			Adapted for use with QL software (skipped common 
+			blocks, flash_info calls etc.)
+			Changed limit to 50 lines.
+
+ Version     : Version 1, 7-June-1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QL_SIZE
+               
+ Purpose     : Avoid disappearance of singular trailing dimensions
+               
+ Explanation : If an array with singular trailing dimensions, e.g.,
+		fltarr(10,1,1) is passed to SIZE(), the singular 
+		dimensions are obliterated. Given the true number of
+		dimensions, this routine returns the expected value
+		of SIZE(), e.g.:
+
+		PRINT,SIZE(fltarr(10,1,1))
+		IDL> print,size(fltarr(10,1,1))
+		           1          10           4          10
+		but:
+
+		PRINT,QL_SIZE(fltarr(10,1,1),3)
+
+ Use         : SZ = QL_SIZE(array_expr,NDIMS)
+    
+ Inputs      : array_expr : Array expression (wow!)
+		NDIMS :      The known number of dimensions
+		
+ Opt. Inputs : None.
+               
+ Outputs     : Return value has same meaning as with the builtin SIZE()
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : None.
+
+ Common      : None.
+               
+ Restrictions: None.
+               
+ Side effects: None known.
+               
+ Category    : CDS QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 20-Feb-1995
+               
+ Modified    : Never.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QLDS_CHECKIN
+               
+ Purpose     : Swap the specified QLDS into the cache (QLDS in QLSAVE).
+               
+ Explanation : The CDS QuickLook memory management system is designed
+		to minimize the time spent by display routines fetching
+		their data. This is done by having a common block (QLSAVE)
+		that functions as a cache memory, storing the most recently
+		used QuckLook Data Structure. Other QLDS'es are stored
+		as UVALUES of non-realized WIDGET_BASEs.
+		Typically an event routine has the QLSAVE common block,
+		and would call QLDS_CHECKIN before accessing the QLDS
+		in the common block. Needles memory-swapping is avoided
+		by QLDS_CHECKIN by first checking whether the correct
+		QLDS is there already. For IDL v 3.1 and up, the
+		NO_COPY keyword is used in calls to WIDGET_CONTROL
+		to avoid any copying of data.
+               
+ Use         : QLDS_CHECKIN,QL_NO
+    
+ Inputs      : QL_NO : The unique number assigned to a QLDS by QLMGR,
+			on the tag "QL_NO" in the structure.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : WIDGET : Set to a widget base ID that has the QL_NO as
+			UVALUE. QL_NO need not be supplied explicitly
+			in this case.
+
+		TEST : Set to avoid a crash if the QLDS could not be
+			found. Used by e.g. QLDS_INVENTORY
+ Calls       : CDSNOTIFY, DATATYPE(), QLDS_STORE
+		QLMGR, TRIM()
+
+ Common      : QLSAVE: QLDS : The cache slot. The specified QLDS is
+			stored in this variable (if found).
+			SAVED : A status variable used in IDL 3.0 to
+			signify that the QLDS has already been stored
+			on its storage base.
+
+               QLMGR: See QLMGR
+
+ Restrictions: Requires that the QLDS actually can be found
+               
+ Side effects: 
+               
+ Category    : QuickLook, Management
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, ItA/UiO, 11-June-1994
+               
+ Modified    : SVHH, 2-March-1995, Removed some CDSNOTIFY calls
+
+ Version     : 1.1, 2-March-1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QLDS_FETCH
+               
+ Purpose     : Fetch the specified QLDS into a named variable
+               
+ Explanation : The CDS QuickLook memory management system is designed
+		to minimize the time spent by display routines fetching
+		their data. This is done by having a common block (QLSAVE)
+		that functions as a cache memory, storing the most recently
+		used QuckLook Data Structure. Other QLDS'es are stored
+		as UVALUES of non-realized WIDGET_BASEs.
+               
+		In the case of a crash of the display routines, the
+		data supplied in the call may appear lost under IDL
+		version 3.1 or later. This is due to the fact that
+		setting a UVALUE with the NO_COPY keyword actually
+		swaps the memory dynamically, leaving the "source
+		variable" undefined! The data are, however, still
+		stored as user values of unrealized widget bases.
+		Use QLDS_INVENTORY to get a display of the structure
+		of each stored QLDS, and use the value of the tag
+		QL_NO to fetch back the QLDS into a named variable
+		of your choice.
+
+ Use         : QLDS_FETCH,QL_NO,NAMED_VARIABLE
+    
+ Inputs      : QL_NO : The unique number assigned to a QLDS by QLMGR,
+			on the tag "QL_NO" in the structure.
+
+ Opt. Inputs : None.
+               
+ Outputs     : NAMED_VARIABLE : Any such.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : QLDS_CHECKIN, ASSIGN_NOCOPY
+
+ Common      : QLSAVE: See QLDS_CHECKIN
+               
+ Restrictions: Requires that the QLDS actually can be found
+               
+ Side effects: None.
+               
+ Category    : QuickLook, Management
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, ItA/UiO, 11-June-1994
+               
+ Modified    : SVHH, 2-March-1995. Added !DEBUG test in ON_error handling.
+
+ Version     : 1.1, 2-March-1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QLDS_INVENTORY
+               
+ Purpose     : Display all QLDS'es that are stored in the QLMGR scheme.
+               
+ Explanation : Looks for all possible stored QLDS'es and makes a call
+		to dsp_struct for each one.
+               
+ Use         : QLDS_INVENTORY
+    
+ Inputs      : None.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : QLDS_CHECKIN, DSP_STRUCT, DATATYPE()
+
+ Common      : QLSAVE : See QLDS_CHECKIN
+		QLMGR  : See QLMGR
+               
+ Restrictions: None.
+               
+ Side effects: None.
+               
+ Category    : QuickLook, Management
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, ItA/UiO, 11-June-1994
+               
+ Modified    : Never.
+
+ Version     : 1, 11-June-1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QLDS_REPORT
+               
+ Purpose     : Make a connection between the Widget ID and a managed QLDS
+               
+ Explanation : The CDS QuickLook memory management system is designed
+		to minimize the time spent by display routines fetching
+		their data. This is done by having a common block (QLSAVE)
+		that functions as a cache memory, storing the most recently
+		used QuickLook Data Structure. Other QLDS'es are stored
+		as UVALUES of non-realized WIDGET_BASEs.
+
+		Typically an event routine has the QLSAVE common block,
+		and would call QLDS_CHECKIN before accessing the QLDS
+		in the common block. 
+
+		The main routine needs to setup a connection to the
+		specific QLDS, so that the event routine knows which
+		one to ask for. This is normally done by QLDS_REPORT,
+		which sets the UVALUE of a widget base to the QL_NO that
+		is otherwise used in the call to QLDS_CHECKIN.
+
+		Due to the frequent use of this scheme, it is also
+		possible to call QLDS_CHECKIN with just the widget
+		ID of the base carrying the QL_NO, through the
+		keyword WIDGET.
+               
+ Use         : QLDS_REPORT,WIDGET_ID,QLDS
+    
+ Inputs      : WIDGET_ID : The widget whose UVALUE should be used.
+	
+		QLDS : Standard CDS QLDS.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : STORE : If this is set, the QLDS is actually put into
+			the storage scheme. If not set, it is assumed
+			that it is already accessible through a call
+			to QLDS_CHECKIN.
+
+ Calls       : ASSIGN_NOCOPY, CDSNOTIFY, QLDS_STORE, QLMGR
+		TRIM(), WIDGET_BASE()
+
+ Common      : QLSAVE: See QLDS_CHECKIN
+		QLMGR : See QLMGR
+               
+ Restrictions: QLDS must be real.
+               
+ Side effects: In IDL version 3.1 or later, the supplied QLDS "disappears",
+		but may be retrieved by QLDS_FETCH.
+               
+ Category    : QuickLook, Management
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, ItA/UiO, 11-June-1994
+               
+ Modified    : SVHH, 2-March-1995, Removed CDSNOTIFY calls
+
+ Version     : 1.1, 2-March-1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QLDS_STORE
+               
+ Purpose     : Store any QLDS in the cache on it's storage base.
+               
+ Explanation : The CDS QuickLook memory management system is designed
+		to minimize the time spent by display routines fetching
+		their data. This is done by having a common block (QLSAVE)
+		that functions as a cache memory, storing the most recently
+		used QuckLook Data Structure. Other QLDS'es are stored
+		as UVALUES of non-realized WIDGET_BASEs.
+		If there is a QLDS stored in the cache and if it is not
+		already been saved, we make sure that there is a 
+		storage base for it, and stores the QLDS there.
+		
+ Use         : QLDS_STORE
+    
+ Inputs      : None.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : CDSNOTIFY, DATATYPE(), QLMGR, TRIM(), WIDGET_BASE()
+
+ Common      : QLSAVE: See QLDS_CHECKIN
+
+		QLMGR: See QLMGR
+               
+ Restrictions: None.
+               
+ Side effects: None.
+               
+ Category    : QuickLook, Management
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, ItA/UiO, 11-June-1994
+               
+ Modified    : SVHH, 2-March-1995, Commented out the CDSNOTIFY calls
+
+ Version     : 1.1, 2-March-1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QLDS_STORE_CURRENT
+               
+ Purpose     : Store any QLDS in the cache on it's storage base.
+               
+ Explanation : The CDS QuickLook memory management system is designed
+		to minimize the time spent by display routines fetching
+		their data. This is done by having a common block (QLSAVE)
+		that functions as a cache memory, storing the most recently
+		used QuckLook Data Structure. Other QLDS'es are stored
+		as UVALUES of non-realized WIDGET_BASEs.
+		If there is a QLDS stored in the cache and if it is not
+		already been saved, we make sure that there is a 
+		storage base for it, and stores the QLDS there.
+		
+ Use         : QLDS_STORE_CURRENT
+    
+ Inputs      : None.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : CDSNOTIFY, DATATYPE(), QLMGR, TRIM(), WIDGET_BASE()
+
+ Common      : QLSAVE: See QLDS_CHECKIN
+
+		QLMGR: See QLMGR
+               
+ Restrictions: None.
+               
+ Side effects: None.
+               
+ Category    : QuickLook, Management
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, ItA/UiO, 11-June-1994
+               
+ Modified    : SVHH, 2-March-1995, Removed CDSNOTIFY calls
+
+ Version     : 1.1, 2-March-1995
+;-
+;+
+ Project     :	SOHO - CDS
+
+ Name        :	QLHELP
+
+ Purpose     :	Widget to select help topics related to the QL Software.
+
+ Explanation :	Create a widget that lists and displays the help text explaining
+    		how to use the various features available in the CDS QUICKLOOK 
+		Software. A brief description of the data structure is also included.
+
+ Use         :	QLHELP, [GROUP=GROUP, MODULE=MODULE]
+		QLHELP,'DSPWAV'
+
+ Inputs      :	None.
+
+ Opt. Inputs :	None.
+
+ Outputs     :	None.
+
+ Opt. Outputs:	None.
+
+ Keywords    :	GROUP	= The widget ID of a calling widget. Destroying that
+			  widget will kill this widget.
+
+ Calls       :	None.
+
+ Common      :	None.
+
+ Restrictions:	None.
+
+ Side effects:	None.
+
+ Category    :	 Display, Data analysis, Help utility
+
+ Prev. Hist. :	Based on the CDS PLANHELP.PRO routine written by 
+		Elaine Einfalt, GSFC (HSTX), April 1994
+
+ Written     :	Paal Brekke, ITA, July 7 1994
+
+ Modified    :	
+
+ Version     :	Version 1, 7 July 1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QLMGR
+               
+ Purpose     : Management of CDS QuickLook data structure variables.
+
+ Explanation : In order to manage the windows displaying information 
+		concerning a specific CDS QL data structure, all QL 
+		data structures (QLDSs) are given an ID with a 
+		registration number. The registration number serves 
+		as an index to the array QL_DATA, which contains
+		a structure for each registered QLDS.
+
+		This structure contains the widget IDs of each base window 
+		that may be generated for a specific QLDS, so that, for 
+		instance, the position of any earlier copy of a window
+		that is to be created may be retrieved, and used to
+		position the new window at the same screen offset.
+
+               To avoid confusion when IDL's SAVE/RESTORE 
+		commands are used to store QLDSs between sessions, the
+		QL_ID variable in common block QLMGR is set to
+		the value of SYSTIME(1) upon initialization of QLMGR,
+		and every QLDS' QL_ID are set to this value upon
+		registration.
+
+		If the QLDS's QL_ID is identical to the one in the
+		QLMGR common block, the QLDS is taken as already
+		registered.
+
+		QLMGR will also check as far as possible whether
+		the supplied parameter is a valid QLDS, and it is
+		recommended that this routine be used in every
+		procedure that needs to be sure of this, by
+		using the optional output parameter VALID
+
+
+ Use         : QLMGR, QL_data_struct
+    
+ Inputs      : QL_data_struct : 
+			A CDS QL Data structure, as described in 
+			"CDS QL data format", version 1.1
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: VALID:	If supplied, it is set to TRUE (NOT 0) if
+			the supplied QL_data_struct is a valid
+			QLDS
+               
+ Keywords    : INIT:	When set, the QLMGR is reset, invalidating
+			any previous registration of QLDSs.
+
+ Calls       : DATATYPE()
+
+ Common      : QLMGR:
+			QL_ID:	The identification of the current
+				QLMGR session. Set to SYSTIME(1)
+				upon initialization of QLMGR
+			QL_DATA:An array of structures containing
+				wiget base ID's of windows with
+				information concerning a specific
+				QLDS
+
+		QLSAVE: QLDS : Cache for display routines
+			SAVED: Set to 1 if current QLDS has been
+				saved on a storage base.
+
+ Restrictions: None.
+               
+ Side effects: Alters the QL_ID and QL_NO tags of the supplied
+		QLDS to reflect the current QLMGR's registration.
+               
+ Category    : Data_Handling, CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 7 October 1993
+               
+ Modified    : SVHH, 8 October 1993 -
+			Fixed bug: VALID is now set to NOT 0 to
+			handle 'if NOT valid ...' constructs in
+			caller program.
+		SVHH, 19 October 1993
+			Additional tags in the QLINFO structure.
+		SVHH, 20 November 1993
+			Additional tags.
+
+ Version     : 1.02
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : QLMGRCLEAN
+               
+ Purpose     : Clean out a TopLevelBase widget ID from the QLMGR data.
+
+ Explanation : In order to manage the windows displaying information 
+		concerning a specific CDS QL data structure, all QL 
+		data structures (QLDSs) are given an ID with a 
+		registration number. The registration number serves 
+		as an index to the array QL_DATA, which contains
+		a structure for each registered QLDS.
+
+		This structure contains the widget IDs of each base window 
+		that may be generated for a specific QLDS, so that, for 
+		instance, the position of any earlier copy of a window
+		that is to be created may be retrieved, and used to
+		position the new window at the same screen offset.
+
+		In order to avoid killing unsuspecting widgets
+		having been assigned the widget ID of an earlier
+		(but destroyed) copy of another widget window,
+		each widget should make sure they don't store
+		their widget base ID after having been killed
+		(i. e., after that ID number has been freed).
+
+ Use         : QLMGRCLEAN,DYING_WIDGET_ID
+    
+ Inputs      : DYING_WIDGET_ID
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : TAG_NAMES, EXECUTE
+
+ Common      : QLMGR:
+			QL_ID:	The identification of the current
+				QLMGR session. Set to SYSTIME(1)
+				upon initialization of QLMGR
+			QL_DATA:An array of structures containing
+				wiget base ID's of windows with
+				information concerning a specific
+				QLDS
+
+ Restrictions: None.
+               
+ Side effects: None.
+               
+ Category    : Window_handling, CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 29 October 1993
+               
+ Modified    : SVHH, November 1993 - It's now generic in checking
+			all tags in the QL_DATA structures.
+
+ Version     : 1.02
+;-
+;+
+ Project     :	SOHO - CDS
+
+ Name        :	READ_CDS
+
+ Purpose     :	Reads CDS data from a column in a FITS binary table.
+
+ Explanation :	Reads data stored within a column of a CDS FITS binary table
+		into a structure variable containing the array and associated
+		information.
+
+ Use         :	READ_CDS, UNIT, DATA, COLUMN  [, ROW ]
+
+		FXBOPEN, UNIT, 'testdata.fits', 1	;Opens the table
+		READ_CDS, UNIT, HE304, 'he304'		;Reads HE 304 data
+		FXBCLOSE, UNIT				;Closes the table
+
+ Inputs      :	UNIT	= Logical unit number corresponding to the file
+			  containing the binary table.
+
+		COLUMN	= Column in the binary table to read data from, either
+			  as a character string containing a column label
+			  (TTYPE), or as a numerical column index starting from
+			  column one.
+
+ Opt. Inputs :	ROW	= Either row number in the binary table to read data
+			  from, starting from row one, or a two element array
+			  containing a range of row numbers to read.  If not
+			  passed, then the entire column is read in.
+
+			  Row must be passed for variable length arrays.
+
+			  It is anticipated that CDS binary table files will
+			  consist of a single row, and that there will be no
+			  variable length arrays.  However, the ROW parameter
+			  is retained for possible future use.
+
+ Outputs     :	DATA	= The output data will be read into an anonymous
+			  structure variable with the following tag names:
+
+				ARRAY	= The actual data array.  If /HEADER is
+					  set, then this is simply the number
+					  zero.
+				LABEL	= The column label from TTYPEn.
+				UNITS	= The units of the data.
+				MISSING	= Value representing missing data.
+				AXES	= The labels for the axes of ARRAY.
+				ORIGIN	= The value of the first point along
+					  each of the axes of ARRAY.
+				SPACING	= The pixel spacing along each axis.
+				ROTATION= The rotation of each axis relative to
+					  the standard coordinate system.  This
+					  is only relevant for spatial
+					  dimensions.
+
+			  There will also be the following additional tag names
+			  for columns containing detector data windows.
+
+				DETY	= Starting detector column in pixels.
+				DETZ	= Starting detector row in pixels (NIS
+					  only).
+				WAVELENGTH = Wavelength of observation, in
+					  Angstroms.
+				WAVEMIN	= Minimum wavelength.
+				WAVEMAX	= Maximum wavelength.
+
+ Opt. Outputs:	None.
+
+ Keywords    :	NANVALUE = Value signalling data dropout.  All points
+			   corresponding to IEEE NaN (not-a-number) are
+			   converted to this number.  Ignored unless DATA is of
+			   type float, double-precision or complex.  If used,
+			   then the MISSING tag in the returned DATA structure
+			   reflects this value.  The default is -1.
+
+			   It is anticipated that the CDS data files will
+			   always be stored as integers, so that the use of
+			   this keyword should be unnecessary.
+
+		HEADER	= If set, then only the header is read in.
+
+ Calls       :	DATATYPE, FXBCOLNUM, FXBHEADER, FXBISOPEN, FXBREAD, FXBTDIM,
+		FXPAR, TRIM
+
+ Common      :	None.
+
+ Restrictions:	The binary table must have been opened with FXBOPEN.
+
+		This routine is intended solely for CDS data.  It makes certain
+		assumptions about what keywords will be present in the FITS
+		binary table header.  The present version of this routine was
+		written to be compatible with the sample file "testdata.fits"
+		generated based on SERTS data.
+
+		Currently, the returned value of DATA.ORIGIN will not be
+		correct if all values of TRPIXn are not equal to 1.  However,
+		it is not anticipated that any other values of TRPIX will be
+		used for the foreseeable future.
+
+ Side effects:	If multiple rows are read, then the last entry in DATA.AXES
+		will be "RECORD".  DATA.ORIGIN, DATA.SPACING, and DATA.ROTATION
+		will be similarly updated to reflect this additional dimension.
+
+ Category    :	Data_Handling, I_O, FITS, CDS
+
+ Prev. Hist. :	None.
+
+ Written     :	William Thompson, GSFC, 2 July 1993.
+
+ Modified    :	Version 1, William Thompson, GSFC, 2 July 1993.
+		Version 2, William Thompson, GSFC, 15 December 1993.
+			Modified so that additional dimension is annotated when
+			multiple rows are read.
+		Version 3, William Thompson, GSFC, 27 May 1994.
+			Added HEADER keyword.
+
+ Version     :	Version 3, 27 May 1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : read_cds_im
+               
+ Purpose     : Read a cds image file from disk
+               
+ Explanation : 
+               
+ Use         : IDL> read_cds_im,image-array,line-name
+    
+ Inputs      : None
+               
+ Opt. Inputs : None
+               
+ Outputs     : CDS-image with fits header
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO, 19-July-1993
+               
+ Modified    : Version 1.1 Nils Brynildsen, ITA, UiO, 25-Oct-1993
+
+		Corrected file directory for testdata.fits
+               Changed test data file to testdata3.fits.  CDP, 20-Apr-95
+
+ Version     : Version 3, 20-Apr-95
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : read_hrts_im
+               
+ Purpose     : Read a hrts image file from disk
+               
+ Explanation : 
+               
+ Use         : IDL> read_hrts_im,inf-array,anf-array,image-array
+    
+ Inputs      : None
+               
+ Opt. Inputs : None
+               
+ Outputs     : Header info. (inf,anf), HRTS-image
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: Can only read one special HRTS image at the moment
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Nils Brynildsen, ITA, UiO, 29-June-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 29-June-1993
+
+ Version     : Version 1 29-June-1993
+;-
+;+
+ Project     : SOHO - CDS
+
+ Name        : READ_GIS (main prog)
+
+ Purpose     : Used to read in the RAW GIS data file from the EGSE S/W. (TEST)
+
+
+ Written     : E Alam, 08 Feb 1994
+
+ Modified    :
+
+ Version     : Version 1
+;-
+;+
+ Project     :	SOHO - CDS
+
+ Name        :	READCDSCOL
+
+ Purpose     :	Reads CDS data from a column in a FITS binary table.
+
+ Explanation :	Reads data stored within a column of a CDS FITS binary table
+		into a structure variable containing the array and associated
+		information.
+
+ Use         :	READCDSCOL, UNIT, DATA, COLUMN  [, ROW ]
+
+		FXBOPEN, UNIT, 'testdata.fits', 1	;Opens the table
+		READCDSCOL, UNIT, HE304, 'he304'	;Reads HE 304 data
+		FXBCLOSE, UNIT				;Closes the table
+
+ Inputs      :	UNIT	= Logical unit number corresponding to the file
+			  containing the binary table.
+
+		COLUMN	= Column in the binary table to read data from, either
+			  as a character string containing a column label
+			  (TTYPE), or as a numerical column index starting from
+			  column one.
+
+ Opt. Inputs :	ROW	= Either row number in the binary table to read data
+			  from, starting from row one, or a two element array
+			  containing a range of row numbers to read.  If not
+			  passed, then the entire column is read in.
+
+			  Row must be passed for variable length arrays.
+
+			  It is anticipated that CDS binary table files will
+			  consist of a single row, and that there will be no
+			  variable length arrays.  However, the ROW parameter
+			  is retained for possible future use.
+
+ Outputs     :	DATA	= The output data will be read into an anonymous
+			  structure variable with the following tag names:
+
+				ARRAY	= The actual data array.  If /HEADER is
+					  set, then this is simply the number
+					  zero.
+				LABEL	= The column label from TTYPEn.
+				UNITS	= The units of the data.
+				MISSING	= Value representing missing data.
+				AXES	= The labels for the axes of ARRAY.
+				ORIGIN	= The value of the first point along
+					  each of the axes of ARRAY.
+				SPACING	= The pixel spacing along each axis.
+				ROTATION= The rotation of each axis relative to
+					  the standard coordinate system.  This
+					  is only relevant for spatial
+					  dimensions.
+
+			  There will also be the following additional tag names
+			  for columns containing detector data windows.
+
+				DETX	= Starting detector column in pixels.
+				DETY	= Starting detector row in pixels (NIS
+					  only).
+				WAVELENGTH = Wavelength of observation, in
+					  Angstroms.
+				WAVEMIN	= Minimum wavelength.
+				WAVEMAX	= Maximum wavelength.
+				WAVEBAND= Wavelength band.
+				GR_ORDER= Grating order.
+
+ Opt. Outputs:	None.
+
+ Keywords    :	NANVALUE = Value signalling data dropout.  All points
+			   corresponding to IEEE NaN (not-a-number) are
+			   converted to this number.  Ignored unless DATA is of
+			   type float, double-precision or complex.  If used,
+			   then the MISSING tag in the returned DATA structure
+			   reflects this value.  The default is -1.
+
+			   It is anticipated that the CDS data files will
+			   always be stored as integers, so that the use of
+			   this keyword should be unnecessary.
+
+		HEADER	= If set, then only the header is read in.
+
+		STATUS	= If defined and passed, then any error messages will
+			  be returned to the user in this parameter rather than
+			  depending on the MESSAGE routine in IDL.  If no
+			  errors are encountered, then a null string is
+			  returned.  In order to use this feature, STATUS must
+			  be defined first, e.g.
+
+				STATUS = ''
+				READCDSCOL, STATUS=STATUS, ...
+				IF STATUS NE '' THEN ...
+
+ Calls       :	DATATYPE, FXBCOLNUM, FXBHEADER, FXBISOPEN, FXBREAD, FXBTDIM,
+		FXPAR, TRIM
+
+ Common      :	None.
+
+ Restrictions:	The binary table must have been opened with FXBOPEN.
+
+		This routine is intended solely for CDS data.  It makes certain
+		assumptions about what keywords will be present in the FITS
+		binary table header.  The present version of this routine was
+		written to be compatible with the sample file "testdata.fits"
+		generated based on SERTS data.
+
+		Currently, the returned value of DATA.ORIGIN will not be
+		correct if all values of TRPIXn are not equal to 1.  However,
+		it is not anticipated that any other values of TRPIX will be
+		used for the foreseeable future.
+
+ Side effects:	If multiple rows are read, then the last entry in DATA.AXES
+		will be "RECORD".  DATA.ORIGIN, DATA.SPACING, and DATA.ROTATION
+		will be similarly updated to reflect this additional dimension.
+
+ Category    :	Data_Handling, I_O, FITS, CDS
+
+ Prev. Hist. :	None.
+
+ Written     :	William Thompson, GSFC, 2 July 1993.
+
+ Modified    :	Version 1, William Thompson, GSFC, 2 July 1993.
+		Version 2, William Thompson, GSFC, 15 December 1993.
+			Modified so that additional dimension is annotated when
+			multiple rows are read.
+		Version 3, William Thompson, GSFC, 27 May 1994.
+			Added HEADER keyword.
+		Version 4, William Thompson, GSFC, 21 June 1994.
+			Changed from Y-Z to X-Y coordinate system.
+			Added WAVEBAND and GR_ORDER tags.
+			Added STATUS keyword.
+			Renamed from READ_CDS to READCDSCOL
+		Version 5, William Thompson, GSFC, 23 June 1994
+			Modified so that STATUS is not touched if not defined.
+
+ Version     :	Version 5, 23 June 1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : READCDSFITS()
+               
+ Purpose     : Read and return the contents of a CDS FITS level-1 file
+               
+ Explanation : Reads:
+			- header data (for the whole file), 
+			- fits variables for all detector data windows
+			- detector data 
+               	- fits variables for auxiliary data
+			- auxiliary data
+
+		Returns all data in one IDL structure (the CDS QL
+		data format)
+
+ Use         : VAR = READCDSFITS( FILENAME )
+    
+ Inputs      : FILENAME = the name of the CDS FITS level-1 file.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Returns an IDL structure with data from the FITS file
+		(CDS QL data format)
+               
+ Opt. Outputs: None.
+               
+ Keywords    : /DISPLAY : set this keyword to invoke DSP_INFO
+		to display information about the data in the
+		file. 
+
+		/SELECT : set to prompt for selection of only some
+		of the detector data windows.
+
+		/HEADER : Set to only read descriptive information
+		about detector data windows -- no data will be loaded
+
+		/AUTO : Set to force silent truncation of the data
+		by reading just those detector data windows that
+		fit below the memory limit
+
+		MEMLIMIT : Set to the maximum size of memory that
+		the detector data are allowed to occupy.
+
+		STATUS : Set to a initialized, named variable to 
+		return an error message instead of crashing. If
+		everything's ok, a null string will be returned.
+
+
+ Calls       : AUXREAD(), DATATYPE(), DETSELECT(), DETREAD, 
+		DSP_INFO, FXBCLOSE FXBOPEN, HDRREAD(), QLMGR, 
+		READCDSFITS()
+
+ Common      : None.
+
+ Restrictions: The file MUST be a CDS FITS level-1 file.
+               
+ Side effects: Starts QLMGR if not installed.
+               
+ Category    : Data_Handling, I_O, FITS, CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 27 September 1993
+               
+ Modified    : SVHH, 1 October 1993  - Added keyword inheritance to DSP_INFO.
+		SVHH, 2 October 1993  - QLMGR registration included
+		SVHH, 5 October 1993  - SELECT keyword/functionality included
+               CDP  25-Oct-93  cut out _EXTRA
+		SVHH, Version 2, 8-June-1994
+			Added /header, /auto, memlimit=memlimit,status=status
+		SVHH, Version 3, 11-June-1994
+			Split DETREAD into DETSELECT + DETREAD, to minimize
+			memory overhead.
+               CDP, Search for input files in CDS_FITS_DATA if not in
+                    curent (or specified) directory and make default 
+                    extension .fits.  1-Jun-95
+		Version 5, William Thompson, GSFC, 2 June 1995
+			Use FIND_WITH_DEF to accomplish changes of version 4
+
+ Version     : Version 4, 2 June 1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : RECOVER
+               
+ Purpose     : A general crash recovery procedure -- recovers stored QLDS
+               
+ Explanation : If anyghing goes wrong, type "@recover", and the data
+		you've given to the QL routines are recovered.
+               
+ Use         : @recover
+    
+ Inputs      : None.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Global variables a,b,c,.....
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : CONCAT_DIR(), DATATYPE(), QLDS_CHECKIN, QLMGR, TRIM()
+
+ Common      : QLMGR : See qlmgr.pro
+               QLSAVE : See qlmgr.pro
+
+ Restrictions: 
+               
+ Side effects: Kills all widgets
+               
+ Category    : 
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 10-December 1994
+               
+ Modified    : Never.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : SET_QLDS()
+               
+ Purpose     : Put back QLDS that the display routine is working on.
+               
+ Explanation : In order to avoid multiple storage of the data
+		structures operated upon by the display routines,
+		the _FIRST_ display routine invoked interactively
+		by the user has the responsibility to keep the
+		QLDS as the UVALUE of its top level base. 
+
+		The window generated in this way is called the MASTER
+		window. All display routines called by the MASTER
+		window's event handling routine should be passed
+		the widget ID of the MASTER window in the keyword
+		GROUP_LEADER, and this should be stored in the
+		UVALUE of the invoked, (SLAVE) TOP_LEVEL_BASE.
+ 
+		If a SLAVE window event handling routine invokes another
+		display routine, (a sub-SLAVE), it passes the widget ID 
+		of its own TOP_LEVEL_BASE so that GET_QLDS can follow the
+		trace of widget IDs up to the MASTER, to retrieve the
+		QLDS. SET_QLDS should then also be used to "put back" 
+		the QLDS after use/alteration.
+               
+ Use         : SET_QLDS,EV.TOP,QLDS
+    
+ Inputs      : EV.TOP -- the widget ID of the TOP_LEVEL_BASE of 
+		a window generated by a CDS QL display routine.
+               
+		QLDS:	The CDS QL Data Structure to be put back
+
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : DATATYPE()
+
+ Common      : None.
+               
+ Restrictions: See 'Explanation'
+               
+ Side effects: The use of this scheme reserves the user value (UVALUE)
+		of the TOP_LEVEL_BASE of any display window.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 10 October, 1993
+               
+ Modified    : CDP,  25 October 1993 -- cut /no_copy keyword
+		SVHH, 21 November 1993 - Documentation added.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : SET_SERTSW
+               
+ Purpose     : Set current SERTS window to the one in the descriptor
+               
+ Explanation : 
+               
+ Use         : SET_SERTSW,SERTSW
+    
+ Inputs      : SERTSW: a SERTS window descriptor as returned by GET_SERTSW()
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : None.
+
+ Common      : IMAGE_AREA, from Bill Thompsons image routines
+               
+ Restrictions: There must be a data coordinate system associated with
+		the SERTS window.
+               
+ Side effects: Changes the current SETIMAGE settings.
+               
+ Category    : QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein V Hagfors Haugan, December -93
+               
+ Modified    : 
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : simpson_a()
+               
+ Purpose     : Simpson integration
+               
+ Explanation : Simpson integration when the function to be 
+               integrated is given in array y calculated for
+               eqidistant intervals in x. Integration proceeds
+               from beginning to end of the given array if the
+               number of array points is odd.
+               
+ Use         : IDL> value = simpson_a(array, dispersion)
+    
+ Inputs      : array, dispersion, 
+               
+ Opt. Inputs : None
+               
+ Outputs     : Integrated value
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Olav Kjeldseth-Moe, ITA, UiO 
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 1-July-1993
+
+ Version     : Version 1 1-July-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : SLITPOS
+               
+ Purpose     : Show slit/image position of a QLDS on an image of the sun.
+               
+ Explanation : An image of the sun is displayed in a window, and the
+		coordinates in the QLDS are used to plot a box depicting
+		the position where the exposures are stemming from.
+               
+ Use         : SLITPOS,QLDS
+    
+ Inputs      : QLDS:	A "CDS QL Data Structure"
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : GROUP_LEADER:
+			Set to the widget ID of the TOP_LEVEL_BASE
+			of the window whose event handling procedure
+			is invoking this routine, to conform with the
+			QLDS handling scheme.
+
+ Calls       : QLMGR, DATATYPE(), QLMGRCLEAN, CONCAT_DIR()
+
+ Common      : QLMGR
+               
+ Restrictions: Requires the file $CDS_GDS_MODEL/bigb.dat 
+		(should be more general..)
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Paal Brekke, November 1993
+               
+ Modified    : SVHH, 21 November 1993 - Added documentation template.
+		Version 2, William Thompson, GSFC, 24 March 1995
+			Changed so that axes are not reversed.
+
+ Version     : 2, 24 March 1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : SLITPOS_B
+               
+ Purpose     : Show slit/image posn of a QLDS on a BigBear solar image.
+               
+ Explanation : An image of the sun is displayed in a window, and the
+		coordinates in the QLDS are used to plot a box depicting
+		the position where the exposures are stemming from.
+               
+ Use         : SLITPOS_B,QLDS
+    
+ Inputs      : QLDS:	A "CDS QL Data Structure"
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : GROUP_LEADER:
+			Set to the widget ID of the TOP_LEVEL_BASE
+			of the window whose event handling procedure
+			is invoking this routine, to conform with the
+			QLDS handling scheme.
+
+ Calls       : QLMGR, DATATYPE(), QLMGRCLEAN
+
+ Common      : QLMGR
+               
+ Restrictions: Requires the file $CDS_VDS_MODEL/940425h.fits
+
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Paal Brekke, November 1993
+               
+ Modified    : SVHH, 21 November 1993 - Added documentation template.
+		PB, 2 July 1994 - Added text widget to display info
+		   	about image.
+		Version 2, William Thompson, GSFC, 24 March 1995
+			Changed so that axes are not reversed.
+
+ Version     : 2, 24 March 1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : SLITPOS_K1
+               
+ Purpose     : Show slit/image position of a QLDS on a Kit Peak solar image
+               
+ Explanation : An image of the sun is displayed in a window, and the
+		coordinates in the QLDS are used to plot a box depicting
+		the position where the exposures are stemming from.
+               
+ Use         : SLITPOS_K1,QLDS
+    
+ Inputs      : QLDS:	A "CDS QL Data Structure"
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : GROUP_LEADER:
+			Set to the widget ID of the TOP_LEVEL_BASE
+			of the window whose event handling procedure
+			is invoking this routine, to conform with the
+			QLDS handling scheme.
+
+ Calls       : QLMGR, DATATYPE(), QLMGRCLEAN
+
+ Common      : QLMGR
+               
+ Restrictions: Requires the file $CDS_VDS_MODEL/940425m.fits
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Paal Brekke, November 1993
+               
+ Modified    : SVHH, 21 November 1993 - Added documentation template.
+		PB, 2 July 1994 - Added text widget to display info
+		   	about image.
+		Version 2, William Thompson, GSFC, 24 March 1995
+			Changed so that axes are not reversed.
+
+ Version     : 2, 24 March 1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : SLITPOS_K2
+               
+ Purpose     : Show slit/image position of a QLDS on a Kit Peak solar image
+               
+ Explanation : An image of the sun is displayed in a window, and the
+		coordinates in the QLDS are used to plot a box depicting
+		the position where the exposures are stemming from.
+               
+ Use         : SLITPOS_K2,QLDS
+    
+ Inputs      : QLDS:	A "CDS QL Data Structure"
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : GROUP_LEADER:
+			Set to the widget ID of the TOP_LEVEL_BASE
+			of the window whose event handling procedure
+			is invoking this routine, to conform with the
+			QLDS handling scheme.
+
+ Calls       : QLMGR, DATATYPE(), QLMGRCLEAN
+
+ Common      : QLMGR
+               
+ Restrictions: Requires the file $CDS_VDS_MODEL/940425h.fits
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Paal Brekke, November 1993
+               
+ Modified    : SVHH, 21 November 1993 - Added documentation template.
+		PB, 2 July 1994 - Added text widget to display info
+		   	about image.
+		Version 2, William Thompson, GSFC, 24 March 1995
+			Changed so that axes are not reversed.
+
+ Version     : 2, 24 March 1995
+
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : SLITPOS_Y
+               
+ Purpose     : Show slit/image posn of a QLDS on a Yohkoh solar image.
+               
+ Explanation : An image of the sun is displayed in a window, and the
+		coordinates in the QLDS are used to plot a box depicting
+		the position where the exposures are stemming from.
+               
+ Use         : SLITPOS_Y,QLDS
+    
+ Inputs      : QLDS:	A "CDS QL Data Structure"
+               
+ Opt. Inputs : None.
+               
+ Outputs     : None.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : GROUP_LEADER:
+			Set to the widget ID of the TOP_LEVEL_BASE
+			of the window whose event handling procedure
+			is invoking this routine, to conform with the
+			QLDS handling scheme.
+
+ Calls       : QLMGR, DATATYPE(), QLMGRCLEAN
+
+ Common      : QLMGR
+               
+ Restrictions: Requires the file $CDS_VDS_MODEL/sf_fits940425.030632 
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Paal Brekke, November 1993
+               
+ Modified    : SVHH, 21 November 1993 - Added documentation template.
+		PB, 2 July 1994 - Added text widget to display info
+		   	about image.
+		Version 2, William Thompson, GSFC, 24 March 1995
+			Changed so that axes are not reversed.
+
+ Version     : 2, 24 March 1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : STORE_WND
+               
+ Purpose     : Store data from read_cds into a CDS QLDS
+               
+ Explanation : Stores detector data from Data.Array into:
+
+ 			Det.DetData(currentix:stopix 
+					[,0:size_dimension_2 
+					[,0:size_dimension_3]] )
+
+ 		The number of indexes depends on the dimensionality of the 
+		data.
+
+		- Updates CurrentIx to point to the next free index.
+
+ 		- Stores indexes (to Det.DetData) for this data window into
+ 		Det.DetDesc(WndNo).ixstart/ixstop
+               
+ Use         : STORE_WND,WINDOW_NO,CURRENT_INDEX,DET,DATA
+    
+ Inputs      : WINDOW_NO : 
+			The index (into DET.DETDESC) of the
+			detector data window in question.
+               
+		CURRENT_INDEX: 
+			The index (into DET.DETDATA's first dimension) of
+			where a block of detector data may be placed.
+
+		DET :	An IDL structure containing the tags DetDesc and
+			DetData, as described in the CDS QL Data Format.
+
+		DATA:	An IDL structure returned from READ_CDS after
+			a successful read of detector data.
+
+		DDIMS:  The number of dimensions in the data block
+
+ Opt. Inputs : None.
+               
+ Outputs     : CURRENT_INDEX:
+			is updated to point to the room after
+			the current block of data in DET.DETDATA
+               
+		DET.DETDATA: The data from DATA.ARRAY i stored here.
+
+		DET.DETDESC.IXSTART,
+		DET.DETDESC.IXSTOP: 
+			Indexes into DET.DETDATA for the current detector
+			data window.
+
+ Opt. Outputs: None.
+               
+ Keywords    : None.
+
+ Calls       : QL_SIZE
+
+ Common      : None.
+               
+ Restrictions: See the data formats.
+               
+ Side effects: None.
+               
+ Category    : Data_Handling, CDS, QuickLook, Internal
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 27 September 1993
+               
+ Modified    : SVHH, 20-Feb-1995: Uing QL_SIZE() instead of 
+			SIZE() to stop trailing singular dimensions
+			from disappearing.
+
+ Version     : 1.1
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : three_moment
+               
+ Purpose     : calculate 3-moment of line profile
+               
+ Explanation : 3-moment calculated using simpson intergration
+               
+ Use         : IDL> three_moment, x-array, y-array, dispersion,
+                    max. intensity, line shift, line width   
+    
+ Inputs      : x-array, y-array, dispersion
+               
+ Opt. Inputs : None
+               
+ Outputs     : intensity, shift, width 
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : simpson_a
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : ?
+
+ Written     : Olav Kjeldseth-Moe, ITA, UiO
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 1-July-1993
+
+ Version     : Version 1 1-July-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : tot_int
+               
+ Purpose     : Calculate the totel line intensity
+               
+ Explanation : The total line intensity is calculated in three 
+		different ways: 1) By adding the pixel values
+				   across the selected line
+				2) By finding the FWHM and maximum
+ 				   intensity
+				3) By fitting with a gaussian and 
+				   routine LSTSQR.
+               
+ Use         : IDL> tot_int, 'selected spectral line', x posisjon
+	             in raster, y posisjon in raster
+    
+ Inputs      : line to fine total intensity of and its raster
+		position
+               
+ Opt. Inputs : None
+               
+ Outputs     : Total intensities (only displayed in widget!!)
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : read_cds_im, int_sum, int_fwhm, lstsqr
+
+ Common      : tot.com
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : None
+
+ Written     : Nils Brynildsen, ITA, UiO 20-Sep.-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 20-Sep.-1993
+
+ Version     : Version 1 20-Sep.-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : tot_int_w
+               
+ Purpose     : Set up widget window
+               
+ Explanation : 
+               
+ Use         : IDL> tot_int_w
+    
+ Inputs      : None
+               
+ Opt. Inputs : None
+               
+ Outputs     : None
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : None
+
+ Common      : tot.com
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : None
+
+ Written     : Nils Brynildsen, ITA, UiO 20-Sep.-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 20-Sep.-1993
+
+ Version     : Version 1 20-Sep.-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : tot_int_w_event
+               
+ Purpose     : Widget control
+               
+ Explanation : Controls widget
+               
+ Use         : ?
+    
+ Inputs      : None
+               
+ Opt. Inputs : None
+               
+ Outputs     : None
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : tot_int
+
+ Common      : tot.com
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : ?
+               
+ Prev. Hist. : None
+
+ Written     : Nils Brynildsen, ITA, UiO 20-Sep.-1993
+               
+ Modified    : Version 1 Nils Brynildsen, ITA, UiO, 20-Sep.-1993
+
+ Version     : Version 1 20-Sep.-1993
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : V_MAP
+               
+ Purpose     : Creates 2-d maps of intensity, velocity and line width 
+               
+ Explanation : Creates 2-d maps of intensity, velocity and line width for
+               a spectral line.
+               
+ Use         : map = V_MAP(image, fit, line, /display)
+    
+ Inputs      : QLDS, fitting routine, spectral line
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Array with maps of intensity, velocity and line width
+               
+ Opt. Outputs: None.
+               
+ Keywords    : Display
+
+ Calls       : One of the following fitting routines: lstsqr, curvefit,
+               amoeba, moment or parab.
+               If keyword display is set: sigrange, reform, loadct, 
+               combine_vel, put, color_bar
+
+ Common      : None.
+               
+ Restrictions: 
+               
+ Side effects: None.
+               
+ Category    : Data_Handling, CDS, QuickLook
+               
+ Prev. Hist. : 
+
+ Written     : Nils Brynildsen, 27 September 1994
+               
+ Modified    : 
+
+ Version     : 1.0
+;-
+;+
+ Project     :	SOHO - CDS
+
+ Name        :	VDS_CALIB
+
+ Purpose     :	Applies calibration factors to VDS images.
+
+ Explanation :	This procedure takes VDS images read with READCDSFITS and
+		applies the appropriate calibration factors.  It is assumed
+		that a correction for the CCD bias as a function of readout
+		quadrant has already been applied.  First the images
+		are divided by the appropriate parts of the flat field image.
+		The exposure time is corrected and divided into the data.  If
+		necessary, a nonlinear correction term is applied.  Finally,
+		the VDS throughput is divided into the data to convert from
+		ADC to photon-events.
+
+ Use         :	VDS_CALIB, DATA, PROGVOL
+
+ Inputs      :	DATA	= Structure variable as read by READCDSFITS.
+		PROGVOL	= The programmable voltage setting controlling the
+			  voltage across the MCP.  Allowed values are 0-255.
+
+ Opt. Inputs :	None.
+
+ Outputs     :	DATA	= The calibrated data will be returned as a new
+			  structure variable with the same format as the input.
+			  The units of the calibrated data will be
+			  photon-events/pixel/sec.
+
+ Opt. Outputs:	None.
+
+ Keywords    :	None.
+
+ Calls       :	FIND_WITH_DEF, FXREAD, FXPAR, AVERAGE, TRIM, CONCAT_DIR,
+		DATATYPE
+
+ Common      :	None.
+
+ Restrictions:	Before this procedure can be used, a correction for the readout
+		bias in the four quadrants of the CCD--which may also include
+		a scattered light component--must be applied.  Since there are
+		numerous ways this bias can be determined, correcting for it is
+		not included here.
+
+		It is assumed that the first two dimensions of the data array
+		are equivalent to the detector pixel positions.
+
+ Side effects:	None.
+
+ Category    :	Calibration, VDS, Intensity.
+
+ Prev. Hist. :	None.
+
+ Written     :	William Thompson, GSFC, 17 February 1994.
+
+ Modified    :	Version 1, William Thompson, GSFC, 17 February 1994.
+		Version 2, William Thompson, GSFC, 2 March 1994.
+			Changed to use XY instead of YZ coordinate system.
+
+ Version     :	Version 2, 2 March 1994.
+;-
+;+
+ Project     :	SOHO - CDS
+
+ Name        :	VDS_DEBIAS
+
+ Purpose     :	Removes CCD biases from VDS images.
+
+ Explanation :	This procedure takes VDS images read with READCDSFITS and
+		removes the CCD bias--which may also include a scattered light
+		component--as a function of readout quadrant.  The resulting
+		output can then be used with VDS_CALIB.
+
+ Use         :	VDS_DEBIAS, DATA, BIASES
+
+ Inputs      :	DATA	= Structure variable as read by READCDSFITS.
+		BIASES	= Array containing the CCD biases for the quadrants
+
+			     Index	Quadrant
+
+				0	A - Upper left
+				1	B - Upper right
+				2	C - Lower left
+				3	D - Lower right
+
+ Opt. Inputs :	None.
+
+ Outputs     :	DATA	= The calibrated data will be returned as a new
+			  structure variable with the same format as the input.
+
+ Opt. Outputs:	None.
+
+ Keywords    :	None.
+
+ Calls       :	FIND_WITH_DEF, FXREAD, FXPAR, AVERAGE, TRIM, CONCAT_DIR,
+		DATATYPE
+
+ Common      :	None.
+
+ Restrictions:	It is assumed that the first two dimensions of the data array
+		are equivalent to the detector pixel positions.
+
+ Side effects:	None.
+
+ Category    :	Calibration, VDS, Intensity.
+
+ Prev. Hist. :	None.
+
+ Written     :	William Thompson, GSFC, 3 March 1994.
+
+ Modified    :	Version 1, William Thompson, GSFC, 3 March 1994.
+
+ Version     :	Version 1, 3 March 1994.
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : WAVE2PIX
+               
+ Purpose     : Calculate the CDS detector pixel given a wavelength.
+               
+ Explanation : Uses dummy transformations to translate a wavelength to a
+               pixel value for any of the CDS's six spectral regions.
+               
+ Use         : IDL> pixel = wave2pix(spectrum,wavelength [,/limit])
+    
+ Inputs      : spectrum  -  the spectrum identifier (string).  Only the first
+                            and last characters are used to identify the
+                            spectrum so inputs such as NIS1 and N1 are
+                            equivalent.  Valid entries are NIS1, NIS2, GIS1,
+                            GIS2, GIS3, GIS4 (and their abbreviations).
+               
+               wavelength - the wavelength to translate. Can be an array.  
+               
+
+ Opt. Inputs : None
+
+ Outputs     : The function value returned is the corresponding pixel.
+               A value of -1 is returned for an error condition.
+               
+ Opt. Outputs: None
+               
+ Keywords    : Limit  - if present an appropriate limiting pixel is returned
+                        for out of range wavelengths, else -1 is returned.
+
+ Calls       : None
+               
+ Restrictions: Only dummy transformations at present, to be updated when
+               calibrations are known.
+               
+ Side effects: None
+               
+ Category    : Calibration, GDS, VDS, Wavelength
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, RAL, 28-May-1993
+               
+ Modified    : Change of constants in VDS wavelengths  CDP 16-Nov-93
+               Include Limit keyword, CDP, 2-Feb-94
+               Updated wavelength ranges.  CDP, 30-Jan-95
+               Replaced calls to NINT by ROUND.  CDP, 17-Jun-95
+
+ Version     : Version 5, 17-Jun-95
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : WAVESIZE()
+               
+ Purpose     : Return no. of dispersion pixels in a Spectral Window
+               
+ Explanation : Straightforward.
+               
+ Use         : N_DISPERSION_PIXELS = WAVESIZE(QLDS,WINDOW)
+    
+ Inputs      : QLDS:	A "CDS QL data structure"
+
+		WINDOW:	The number or name of a Spectral Window in the
+			QLDS.
+               
+ Opt. Inputs : None.
+               
+ Outputs     : Return value.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOCHECK:Set to avoid call to QLMGR.
+
+ Calls       : QLMGR, QL_DIMENSIONS(), WINDOWNO()
+
+ Common      : None.
+               
+ Restrictions: QLDS == CDS QL data structure.
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, October 1993
+               
+ Modified    : SVHH, 21 November - Documentation added.
+		SVHH, 7-March-1995 - Added call to QL_DIMENSIONS() to 
+			cope with new data formats.
+
+ Version     : 1.1, 7-March-1995
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : WAVESLICE()
+               
+ Purpose     : Return slice of Spectral Window at a wavelength index.
+		
+ Explanation : Straightforward.
+               
+ Use         : image = WAVESLICE(QLDS,window,Waveix)
+    
+ Inputs      : QLDS:	A CDS QL data structure.
+		
+		window:	The number or name of a detector window.
+
+		waveix: The index of the desired wavelength within
+			the detector data window
+
+ Opt. Inputs : VALID:	Supply to return a value of 0 instead of
+			generating an error message.
+               
+ Outputs     : Returns a 1- or 2-dimensional array corresponding to 
+		the spatial cross section of the data in the QLDS at 
+		the specified wavelength index.
+               
+ Opt. Outputs: VALID:	Returns TRUE (NOT 0) if the slice went ok
+			and 0 if some error was detected.
+               
+ Keywords    : NOCHECK :
+			Set to skip QLMGR parameter check.
+
+ Calls       : WINDOWNO(), QLMGR
+
+ Common      : None.
+               
+ Restrictions: QLDS must be a valid CDS QL data structure
+		WINDOW must be a scalar integer or string,
+		with the number or name of an existing detector
+		data window.
+		WAVEIX must be <0, ... , wavesize(QLDS,WINDOW) - 1 >
+               
+ Side effects: 
+               
+ Category    : 
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, 10 October 1993
+               
+ Modified    : SVHH, 17 October 1993
+			Added NOCHECK keyword
+
+ Version     : 1.1
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : WINDOWNO()
+               
+ Purpose     : Return the number of a window within a QL data structure.
+               
+ Explanation : If the (text) name of a detector data window present in the
+		QLDS is supplied, the corresponding number (from 1..up)
+		of the window is returned.
+
+		If the number of a window is supplied, the return
+		value will be the same number, as an integer.
+		If the name of a detector data window is not found,
+		or if the supplied number is not between 1 and the
+		number of windows present, zero will be returned.
+               
+ Use         : window = WINDOWNO(QLDS,WINDOW_ID)
+    
+ Inputs      : QLDS:	CDS QuickLook data structure
+               
+		WINDOW_ID:
+			Either a text with the name of a detector
+			data window (corresponding to TTYPEx), or
+			the number of a window.
+
+ Opt. Inputs : 
+               
+ Outputs     : Returns the number of the window, or 0 if not a
+		valid window ID.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOCHECK :
+			Set to skip QLMGR checking
+			Use to speed up processing inside QL software
+
+ Calls       : QLMGR, DATATYPE
+
+ Common      : None.
+               
+ Restrictions: WINDOW_ID must be scalar.
+               
+ Side effects: Initiation of QLMGR if not running.
+               
+ Category    : Data_Handling, CDS, QuickLook
+               
+ Prev. Hist. : Extracted from DETDATA
+
+ Written     : Stein Vidar Hagfors Haugan, 8 October, 1993
+               
+ Modified    : SVHH, 17 October 1993 -
+			Added NOCHECK keyword
+
+ Version     : 1.1
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : WMAX()
+               
+ Purpose     : Return the max value of the data in a Spectral Window.
+               
+ Explanation : Straightforward.
+               
+ Use         : MAX_COUNT = WMAX(QLDS,WINDOW)
+    
+ Inputs      : QLDS:	A "CDS QL data structure"
+               
+		WINDOW:	String or number specifying a spectral window 
+		in the QLDS
+			
+ Opt. Inputs : None.
+               
+ Outputs     : Return value.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOCHECK:Set to skip call to QLMGR
+
+ Calls       : QLMGR, WINDOWNO()
+
+ Common      : None.
+               
+ Restrictions: None.
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, October 1993
+               
+ Modified    : SVHH, 20 November 1993 - Documentation added.
+
+ Version     : 1.0
+;-
+;+
+ Project     : SOHO - CDS
+
+ Name        : WRT_TEST
+
+ Purpose     : Used to write GIS data to <file>.pha (TEST)
+
+ Explanation : NONE!!
+
+ Use         : IDL> ¿?¿?
+
+ Inputs      : PHA (array)
+
+ Opt. Inputs : As above
+
+ Outputs     : <file>.pha
+
+ Opt. Outputs: As above
+
+ Keywords    : None
+
+ Calls       : None
+
+ Restrictions: None
+
+ Side effects: ¿?¿?
+
+ Category    : Data Handling, Telem ????
+
+ Prev. Hist. : None
+
+ Written     : E Alam, 14 Dec 1993
+
+ Modified    :
+
+ Version     : Version 1
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : ZSIZE()
+               
+ Purpose     : Return no. of "pixels along slit" in a QLDS
+               
+ Explanation : "Pixels along slit" is another term for the size of 
+		the SOLAR_Y (!!) dimension in the FITS files.
+		This routine should really be named YSIZE()!.
+               
+ Use         : N_SLIT_PIXELS = ZSIZE(QLDS)
+    
+ Inputs      : QLDS:	A "CDS QL data structure"
+
+ Opt. Inputs : None.
+               
+ Outputs     : Return value.
+               
+ Opt. Outputs: None.
+               
+ Keywords    : NOCHECK:Set to avoid call to QLMGR.
+
+ Calls       : QLMGR, QL_DIMENSIONS()
+
+ Common      : None.
+               
+ Restrictions: QLDS == CDS QL data structure.
+               
+ Side effects: None.
+               
+ Category    : CDS, QuickLook
+               
+ Prev. Hist. : None.
+
+ Written     : Stein Vidar Hagfors Haugan, October 1993
+               
+ Modified    : SVHH, 21 November - Documentation added.
+		SVHH, 6-March-1995, Introduced the use of QL_DIMENSIONS().
+
+ Version     : 1.1, 6-March-1995
+;-

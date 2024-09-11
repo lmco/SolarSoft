@@ -1,0 +1,92 @@
+#!/bin/csh -f 
+#################################################
+#                                               
+#      Yohkoh-Gen Environmental Setup           
+#                                               
+#   Define YOHKOH-WIDE Wide enviromentals      
+#   5-March-1996 - S.L.Freeland (from Yohkoh $ys/gen/setup_dirs for SSW)    
+#   13-feb-1997  - S.L.Freeland (Integrate Yohkoh->>SSW)
+#   14-feb-1997  - S.L.Freeland (add adb default) 
+#   29-May-1998  - S.L.Freeland (add online_hosts)
+#   21-Jul-1998  - S.L.Freeland (GOES 10)
+#   17-Nov-1998  - S.L.Freeland remove DIR_GEN_SPECTRA (now SSW/gen/data/spectra)
+#################################################
+# presumes ys and $ydb are already defined
+#################################################
+
+#SITE#
+#########################################################
+setenv DIR_SITE_SETUP           $ys/site/setup
+setenv DIR_SITE_SETUPD          $DIR_SITE_SETUP/data
+setenv DIR_SITE_SCRIPT          $ys/site/script
+setenv DIR_SITE_SETUPD          $ys/site/setup/data
+setenv DIR_SITE_LOGS            $ys/site/logs
+setenv DIR_SITE_DOC             $ys/site/doc
+setenv DIR_SITE_BATCH           $ys/site/idl/batch_jobs
+#########################################################
+
+#GEN#
+#########################################################
+setenv adb			$ydb/asca_db
+setenv DIR_GEN_SHOWPIX		$ydb/showpix/
+setenv DIR_GEN_ORBIT		$ydb/orbit
+setenv DIR_GEN_ORBIT_RAW	$ydb/orbit_raw
+setenv DIR_GEN_ORBIT_SOL	$ydb/orbit_sol
+setenv DIR_GEN_OBS		$ydb/obs
+setenv DIR_GEN_OBD		$ydb/obd
+setenv DIR_GEN_OSF		$ydb/osf
+setenv DIR_GEN_OSP		$ydb/osp
+setenv DIR_GEN_OWH		$ydb/owh
+setenv DIR_GEN_FEM		$ydb/fem
+setenv DIR_GEN_XBD		$ydb/xbd
+setenv DIR_GEN_XAD		$ydb/xad
+setenv DIR_GEN_TAPECOPY		$ydb/tapecopy
+setenv DIR_GEN_EVN		$ydb/evn
+setenv DIR_GEN_GEV		$ydb/gev
+setenv DIR_GEN_GXT		$ydb/gxt
+setenv DIR_GEN_G91		$ydb/g91
+setenv DIR_GEN_G95		$ydb/g95
+setenv DIR_GEN_G81		$ydb/g81
+setenv DIR_GEN_G85		$ydb/g85
+setenv DIR_GEN_G71		$ydb/g71
+setenv DIR_GEN_G75		$ydb/g75
+setenv DIR_GEN_G61		$ydb/g61
+setenv DIR_GEN_G65		$ydb/g65
+setenv DIR_GEN_G0D		$ydb/g0d
+setenv DIR_GEN_G01		$ydb/g01
+setenv DIR_GEN_G05		$ydb/g05
+setenv DIR_GEN_NAR		$ydb/nar
+setenv DIR_GEN_PNT		$ydb/pnt	#slf, 21-oct-1992
+setenv DIR_GEN_SYNOPTIC		$ydb/synoptic	#mdm, 29-oct-1992
+setenv DIR_GEN_MO		$ydb/mo_disk
+setenv DIR_GEN_ATR		$ydb/atr
+setenv DIR_GEN_ATT		$ydb/att
+setenv DIR_GEN_ORBIT_SW		$ys/gen/idl/orbit
+setenv DIR_GEN_SETUP		$ys/gen/setup
+setenv DIR_GEN_SETUPD		$ys/gen/setup/data	#slf, 17-dec-1992
+setenv DIR_GEN_SETUPDBACK	$ys/gen/setup/data_back #slf, 17-dec-1992
+setenv DIR_GEN_SCRIPT		$ys/gen/script
+setenv DIR_GEN_DOC		$ys/gen/doc		#slf, 15-jan-1993
+setenv DIR_GEN_STATUS		$ys/gen/status		#mdm, 28-Jan-1993
+setenv DIR_GEN_DATA		$ys/gen/data		#mdm, 12-Jun-1993
+setenv DIR_GEN_UCONDATA		$ys/gen/data/ucon	#slf, 11-Apr-1994
+setenv DIR_GEN_TBB		$ys/gen/tbb/		#slf, 17-Feb-1994
+setenv DIR_GEN_GUF		$ydb/guf
+setenv DIR_GEN_GBE		$ydb/batse
+setenv DIR_GEN_GBL		$ydb/batse
+setenv DIR_GEN_NEL		$ydb/nobeyama
+setenv DIR_GEN_NTS		$ydb/nobeyama
+setenv DIR_GEN_GOL		$ydb/gol
+#########################################################
+
+#OTHER# For SSW and Backwards ys compatibility 
+setenv IDL_YSLIB		$ys/SSWGEN/idl_libs     #slf, 13-feb-1997
+setenv DIR_IDL_OLD		$ys/SSWGEN/idl_fix/soft	#slf, 13-feb-1999
+setenv DIR_GSN_OBS		$ydb/gsn
+setenv DIR_ASCA_ORBIT_SOL	$adb/orbit_sol
+setenv DIR_ASCA_FEM		$adb/fem
+setenv DIR_ASCA_ORBIT		$adb/orbit
+
+setenv DIR_ATEST_NEWSW 		$ys/atest/idl
+setenv DIR_ATEST_BACK 		$ys/atest_back/soft
+#########################################################

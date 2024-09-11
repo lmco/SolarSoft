@@ -1,0 +1,42 @@
+#!/bin/csh -f
+######################################################################
+# S.L.Freeland - rewrite an ancient script in slightly more effcient way
+# S.L.Freeland -  7-oct-1997 - allow optional delimiter via parameter
+# S.L.Freeland -  9-oct-1997 - reinstate GMT option , add /yyyy (4 digit year)
+######################################################################
+#
+#  Calling Sequence:
+#     set date=`date2fid [/gmt] [delimiter] [/yyyy]`
+#
+#  Calling Example
+#        set date=`date2fid /yyyy _`     # 4 digit year, delimiter="_"
+#        echo $date
+#     >> 19971009_110447
+#    
+#    Output = YYMMDD.HHMMSS
+#             YYMMDD[delimiter]HHMMSS if delimiter passed
+#           = YYMMDD.HHMMSS in GMT if /gmt switch set
+######################################################################
+set type=" "
+set delim="."
+set year="y"
+foreach argx ($argv)
+   switch ($argx)   
+   case /yyyy:
+   case yyyy:
+      set year="Y"
+   breaksw
+   case gmt:
+   case /gmt:
+   case GMT:
+   case /GMT:
+      set type=" -u "
+      breaksw
+   default:
+      set delim="$argx"
+      breaksw
+   endsw
+end
+
+set cmd="date$type +%$year%m%d$delim%H%M%S"
+echo `$cmd`

@@ -1,0 +1,116 @@
+#!/usr/local/bin/perl
+#
+# Yet another program to do a directory tree
+#
+# By Brian Blackmore (bnb@ukc.ac.uk)
+# Modified by Thorsten Meinecke (kaefer@aglaia.in-berlin.de)
+# Modified by Liyun Wang (Liyun.Wang.1@gsfc.nasa.gov), June 27, 1995
+#    Added escape sequence control for a more "graphical" like format 
+#    (use -e to turn off)
+
+if ($ENV{'PWD'}) {
+    $pwd = $ENV{'PWD'}; 
+} else {
+    chop ($pwd = `sh -c "pwd"`);
+}
+
+while ($ARGV[0] =~ /^-(.*)/ && shift) {
+    if ($1 =~ /^e/i) {$not_vterm = 1;}
+}
+
+if ($#ARGV+1) {
+    $dir = &resolve($ARGV[0],$pwd);
+} else    {
+    $dir = &resolve(".",$pwd);
+}
+
+print;
+s/./ /g;
+&tree($dir, $_);
+
+# This function resolves a pathname into its shortest version
+# Removing any references to the directory . , any references
+# to // , any references to directory/.. and any final /
+sub resolve {
+    local($file,$direct) = @_;
+
+    $_ = $file.'/';
+    m#^/# || s#^#$direct/#;
+    while (s#/\.?/#/# || s#/[^/]+/\.\./#/# || s#/\.?$##) { }
+    $_ = '/'    if ($_ eq "");
+    return $_;
+}
+
+# This function does all the work, it scans a directory and
+# then prints out the files in each directory in a pretty format
+# Note: It is recursive
+sub tree    {
+    local($dir,$level) = @_;
+
+    local(@files) = ();
+    local(%subdirs)= ();
+
+    local($dash, $dashw, $vbar, $vtee, $rl);
+    unless ($not_vterm) {
+        $dash = "\e(0qqq\e(B";
+        $dashw = "\e(0qwq\e(B";
+        $vbar = "\e(0x\e(B";
+        $vtee = "\e(0tq\e(B";
+        $rl   = "\e(0mq\e(B";
+    } else {
+        $dash = "---";
+        $dashw = "---";
+        $vbar = "|";
+        $vtee = "|-";
+        $rl   = '\-';
+    }
+
+    if (!opendir(DIRECT,"$dir")) {
+        warn "Could not open directory $dir, bailing out\n";
+        return;
+    }
+    while ($name = readdir(DIRECT)) {
+        unless ($name =~ /^\.\.?$/) {   # Skip . && ..
+            &resolve($name,$dir);
+            if (-d) {
+                if (-l) {           # Do not follow symlinks
+                    $name .= " -> " . readlink() . "\n";
+                } elsif (-r && -x) {
+                # We must be able to enter a directory in order to tree it  
+                    $subdirs{$name} = $_;
+                } else {
+                    $name .= " (unreadable)\n";
+                }
+                push (@files, $name);
+            }
+        }
+    }
+    closedir(DIRECT);
+    @files = sort @files;
+    {
+        print ("\n"), last     	unless ($_ = shift @files);
+        if (@files) {
+            print "$dashw"; 
+        } else {
+            print "$dash"; 
+        }
+    } continue { 
+        print;
+        if ($newname = $subdirs{$_}) {  
+            s/./ /g;
+            if (@files) {
+                &tree ($newname, "$level " . $vbar. " $_");
+            } else {
+                &tree ($newname, "$level   $_");
+            }
+        }
+        last    unless ($_ = shift @files);
+        if (@files) {
+            print "$level $vtee";
+        } else {
+            print "$level $rl";
+        }
+        next;
+    }
+    %subdirs = ();
+}

@@ -1,0 +1,18 @@
+#!/bin/csh -f
+#
+##################################################################
+# system independent 'printenv' (printenv is not always available)
+# S.L.Freeland
+# Calling Sequence:
+#   set translation=`print_env XXXX`	#XXXX = environmental
+#
+if ($#argv == 0) then 
+   set envi="qxrerx"	# no environmental passed so force null return via failure
+else
+   set envi="$argv"     # environmental passed
+endif
+
+# "grep" all environment for 'XXXX=' and return piece following "="
+set retval=`env | grep "$envi""=" | cut -f2 -d =`
+echo "$retval[1]"
+exit

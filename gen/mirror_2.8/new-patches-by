@@ -1,0 +1,26 @@
+Erez HWank1 Zadok <ezk@cs.columbia.edu>
+			perl5, socks, PASV !!
+			ignore certain error string on get failingo
+			call ftp'close not ftp'quit
+Seth Robinson <seth@cs.columbia.edu>
+Pieter Immelman <pi@itu2.sun.ac.za>
+			store_remote_listing
+m.koster@nexor.co.uk	supertcp/chameleon ftp lsparse,
+			125 response on get also means go ahead
+Mark Dapoz <md@bsc.no>	proxy_gateway default
+Richard Schedler <schedler@pa.dec.com>
+			skip "No such file or directory" in listsing
+Aaron Wohl <aw0g+@andrew.cmu.edu>
+			corrected delete_source
+			call ftp'close not ftp'quit
+Paul Szabo <szabo_p@maths.su.oz.au>
+			corrected flag handling for recursive/recurse_hard
+Eric Pettersen <pett@cgl.ucsf.edu>
+			corrected delete file count allowing for exclusions
+cqui.Caren@ig.co.uk	added remote delete directories
+
+
+socks needs:
+	ftp://ftp.cs.columbia.edu/pub/ezk/perl5+socks/{README,config.sh}
+
+

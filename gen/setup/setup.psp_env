@@ -1,0 +1,14 @@
+#!/bin/csh -f
+#
+#################################################
+#						#
+#   Parker Solar Probe Gen Environmental Setup	#
+# 						#
+# Define Parker Solar Probe wide enviromentals	#
+#						#
+#################################################
+
+# SPICE ephemerides
+
+setenv PSP_SPICE		$SSW/psp/gen/data/spice
+setenv PSP_SPICE_ATTITUDE	$SSWDB/psp/gen/spice/attitude_history

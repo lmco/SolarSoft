@@ -1,0 +1,2772 @@
+%VERSION:2
+106
+888
+0:ADJHDR
+516:AWBINCHK
+582:CAL_FIG_MICH
+972:CAL_FIG_POL
+1931:CAL_LOG
+2470:CAL_POL
+3256:CCD_HDR_INFO
+3939:CHKALG2
+4400:CHKALIGN
+5838:CHKALIGN2
+6656:CHKALIGN3
+7117:CHKAWIMG
+7220:CHKFFSCL
+7672:CHKTWAVG
+7983:CHKVWIMG
+8467:CKIP
+8533:CONVERT_HK
+9548:DISP_FOCUS
+10132:DO_DISP_MMAP1
+10409:DO_FIT_GCROSS
+10858:DTMAP
+11780:FIG_SUMMARY
+12170:FIND_KEY
+12802:FIT_GCROSS
+13080:FITS2MEM
+13698:FITSBASIC
+14290:FITSLOOK
+15264:FITSMOVIE
+16411:FITSRD
+17867:FITSREPORT
+18841:FITSREPORT20
+19815:FITSREPORT30
+20789:FITSW
+21343:FZTOFITS
+21950:FZW
+22540:GAUSSFIT2
+23835:GAUSSFIT3
+25049:GET1HK_INFO
+26370:GET_DPC_INFO
+27274:GET_HK
+27651:GET_HK_INFO
+29811:GET_TF_REC
+30524:GETFITSVAL
+31034:GRADCONT
+32078:HIS_DIRS
+32424:HIST_COUNT
+32910:HIST_SUMMARY
+33955:HKPLOT_INFO
+34795:IDL_SAMPLE
+35090:INFO
+35442:IPCOM
+35762:LIST_TFI
+36416:LTC
+36446:LXFR
+36641:MDI_DISPLAY2
+37406:MDI_DISPLAY3
+38321:MDI_PLOTS
+39945:MDI_PLOTS0
+41569:MDIDUST
+42830:MDIFOCUS2
+43651:MDIISS
+44100:MDILASER
+44709:MDIMROT
+45673:MDIPDIST
+47184:MDIPICT
+47749:MDIPROT
+48868:MK_MDI_IAP
+49843:MK_TFI
+50727:MKAWBIN
+51055:MMAP_IMGNUM
+52099:MMAP_UNWRAP
+52341:MYTV
+53402:MYTVCONT
+54541:NEXT_FNAME
+54954:NIMG_IN_TFR
+55121:PATCHEXT
+56333:PLOT_GCROSS
+57271:PR_HK_INFO
+57867:RD_CCDH_FIL
+58378:RD_HIST_DBASE
+59072:RD_HK
+60324:RD_PKT_HEAD
+60670:RDPIX
+61730:RDSCI
+62016:RDSCI1
+62303:RDTFR
+66060:RDTFR0
+66184:RDTFR2
+66473:READ_MDI
+70324:RFITS
+72241:RT_DISPLAY_3
+72324:SAT_OBS_LOC
+72915:SGN
+73198:SHARPFOCUS2
+73345:START_FFILES
+73970:STARTFITS
+74722:SWABI
+74920:TFR_DECOM
+75508:TFR_SUMMARY
+75736:TV2
+77550:TVC
+78720:TVCONT
+79783:VIEW_IMAGE
+80230:XCHECKIP
+80943:XHKPLOT
+81405:XREAD_HIST
+;+
+ NAME:
+	ADJHDR
+ PURPOSE:
+	Adjust size of a FITS header, if required.
+ CATEGORY:
+	File IO. FITS. Low Level.
+ CALLING SEQUENCE:
+	ADJHDR,HEADER,ROWNO
+ INPUTS:
+	HEADER, a FITS header.
+	ROWNO, current output row number.
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+	HEADER, may have size increased or reduced by one FITS block.
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Jul. 1992  I. Zayer    LPARL, extended for flexibility in both directions
+	Oct. 1990  P. Milford  Stanford University.
+;-
+;+
+ro awbinchk, fn
+ 
+ Checks Arbitrarily weighted binned data
+
+;-
+;+
+NAME:
+	cal_fig_mich
+PURPOSE:
+	To display the spatial map for the Michelson calibration results
+SAMPLE CALLING SEQUENCE:
+	cal_fig_mich
+	cal_fig_mich, 1
+OPTIONAL INPUT:
+	code	- the pages to display (setting bits)
+HISTORY:
+	Written 29-Jun-94 by M.Morrison
+	30-Aug-94 (MDM) - Added temperature plot to OVEN plot
+V2.1	12-Sep-94 (MDM) - Added plotting of spatial non-uniformity fit figures
+;-
+;+
+NAME:
+       cal_fig_pol
+PURPOSE:
+       display the fit results of 'cal_pol' - read the fits files created
+	by 'cal_pol' and calculate the contrast, and sigma in % and display
+	the four results of the fit on a summary page (phase, contrast, offset
+	sigma)
+INPUT:
+	reads the fits files from 'indir'
+OPTIONAL INPUT:
+	when /test is specified:
+	res	optional user supplied image array to be displayed; 
+		must be an array of (x,y,4) where x,y are the dimensions of
+		each image
+OPTIONAL KEYWORD INPUT:
+	hc	hard copy: will print summary page instead of display to screen
+	test	only displays supplied image array 'res'
+OUTPUT:
+	the summary page; either on paper or on screen depending on 'hc'
+OPTIONAL OUTPUT:
+	when /test is NOT specified:
+	res	the image array as last read from the fitsfiles is stored in
+		this variable
+HISTORY:
+       Written 9-September-94 by I. Zayer (Ver. 1.0)
+       Ver 2.0 12-Sep-94 IZ: added display for fixed input & rotating PAW.
+;-
+;+
+NAME:
+	cal_log
+PURPOSE:
+	To create a full listing of the calibration data available
+HISTORY:
+V1.0	13-May-94 by M.Morrison
+V2.0	25-May-94 (MDM) - Added CCD and Oven temperature information
+			- Added check of CMD_HIST for control file that was
+			  run.
+V2.1	31-May-94 (MDM) - Modified to not print out the scratch disk number
+			  if the data is on-line.
+V2.2	 1-Jun-94 (MDM) - Modified to not print the temperatures if they are
+			  more than 200 degrees or less than -200
+V2.3	15-Jun-94 (MDM) - Modified to check DSDS for datasets
+;-
+;+
+NAME:
+       cal_pol
+PURPOSE:
+       analyze polarization test data: for each paw position do a sine-fit
+	to resulting intensity (cal and obs) as input polarization is rotated
+	- for lcp/rcp use rotating input quarterwave (behind fixed polarizer)
+	- for s/p use rotating input halfwave (behind fixed polarizer)
+	store resulting phase, amplitude, offset and sigma as fits images
+	to be read later and displayed by 'cal_fig_pol'
+INPUT:
+OPTIONAL INPUT:
+OPTIONAL KEYWORD INPUT:
+OUTPUT:
+	four fits files per set, 32 total in directory 'outdir'
+HISTORY:
+       Written  9-Sep-94 by I. Zayer (Ver. 1.0)
+	Ver 1.1 12-Sep-94 IZ: fixed bug when switching to lin. pol.
+	Ver 2.0 12-Sep-94 IZ: add fit for fixed input & rotating PAW, and also
+		add fit fo rotating input for all PAW positions.
+;-
+;+
+NAME:
+	ccd_hdr_info
+PURPOSE:
+	To extract information from the telemetry CCD header array
+SAMPLE CALLING SEQUENCE:
+	ccd_temps = ccd_hdr_info(ccd_hdr, /ccdtemps)
+INPUT:
+	ccd_hdr	- the integer array telemetry header
+OPTIONAL KEYWORD INPUT:
+	ccdtemps- If set, return the CCD temperatures
+	m1tune	- If set, return the M1 tuning value
+	m2tune	- If set, return the M2 tuning value
+	nwords	- If set, return the total number of words telemetered
+		  down for the data product (includes camera/IP header
+		  of 549 words)
+HISTORY:
+	Written 5-Apr-94 by M.Morrison (taking GET_CAMERA_TEMPS from LTC.PRO)
+	 6-Apr-94 (MDM) - Added /M1TUNE and /M2TUNE
+	12-Apr-95 (MDM) - Added /NWORDS option
+;-
+;+
+ro chkalign3, rawimg, algnimg, df_x
+
+ Checks XYALIGN instruction results.
+
+
+
+rimg = long(rawimg) and '0000ffff'x
+img1 = long(algnimg) and '0000ffff'x
+
+rimg = reform(lrimg(0:262143),512,512)
+img1= reform(limg1(0:262143),512,512)
+
+pbuf = lonarr(512,512)
+
+or j = 0, 510 do $
+   opbuf(*,j) = ((lrimg(j,*) * (16384-df_x)) + $
+                   (lrimg(j+1,*) * df_x)) / 16384
+
+if = where (opbuf(0:510,*) ne limg1(0:510,*))
+if_inf = size(dif)
+elp, dif
+
+top
+
+nd
+;-
+;+
+ro chkalign, rimg, ximg, yimg, nerr, label
+
+ Checks XALIGN and YALIGN instruction results.
+
+      /md60/log/sci160k/950114_004628
+
+;read_mdi, fn, 0, rimg, hdr
+;read_mdi, fn, 1, ximg, hdr
+;read_mdi, fn, 2, yimg, hdr
+
+abel = 'ALIGN: ' + ['X', 'Y']
+err = [999, 999]
+f (n_elements(rimg) lt 512*512L) then return
+f (n_elements(ximg) lt 512*512L) then return
+f (n_elements(yimg) lt 512*512L) then return
+
+rimg = long(rimg) and '0000ffff'x
+ximg = long(ximg) and '0000ffff'x
+yimg = long(yimg) and '0000ffff'x
+
+rimg = reform(lrimg(0:'3FFFF'x),512,512)
+ximg = reform(lximg(0:'3FFFF'x),512,512)
+yimg = reform(lyimg(0:'3FFFF'x),512,512)
+
+_opbuf = lonarr(512,512)
+_opbuf = lonarr(512,512)
+
+*************
+f_x = 4096
+f_y = 3072
+*************
+
+or j = 0, 510 do $
+   x_opbuf(j,*) = ((lrimg(j,*) * (16384-df_x)) + $
+                   (lrimg(j+1,*) * df_x)) / 16384
+
+if_x_inf = size (where (x_opbuf(0:510,*) ne lximg(0:510,*)))
+
+or j = 0, 510 do $
+   y_opbuf(*,j) = ((x_opbuf(*,j) * (16384-df_y)) + $
+                   (x_opbuf(*,j+1) * df_y)) / 16384
+
+if_y_inf = size (where (y_opbuf(0:510,0:510) ne lyimg(0:510,0:510)))
+
+
+rint, ' '
+rint, '--------------------------'
+err_x = 0
+f (dif_x_inf(0) ne 0) then nerr_x = dif_x_inf(1)
+rint, nerr_x, ' Errors in XALIGN'
+
+err_y = 0
+f (dif_y_inf(0) ne 0) then nerr_y = dif_y_inf(1)
+rint, nerr_y, ' Errors in YALIGN'
+rint, '--------------------------'
+
+err = [nerr_x, nerr_y]
+abel = 'ALIGN: ' + ['X', 'Y']
+
+nd
+;-
+;+
+ro chkalign2, rawimg, df_x, xalgnimg, df_y, yalgnimg
+
+ Checks XALIGN and YALIGN instruction results.
+
+
+
+rimg = long(rawimg) and '0000ffff'x
+img1 = long(xalgnimg) and '0000ffff'x
+img2 = long(yalgnimg) and '0000ffff'x
+
+rimg = reform(lrimg(0:'FFFFF'x),1024,1024)
+img1= reform(limg1(0:'FFFFF'x),1024,1024)
+img2= reform(limg2(0:'FFFFF'x),1024,1024)
+
+_opbuf = lonarr(1024,1024)
+_opbuf = lonarr(1024,1024)
+
+or j = 0, 1022 do $
+   x_opbuf(j,*) = ((lrimg(j,*) * (16384-df_x)) + $
+                   (lrimg(j+1,*) * df_x)) / 16384
+
+if_x = where (x_opbuf(0:1022,*) ne limg1(0:1022,*))
+if_inf = size(dif_x)
+
+or j = 0, 1022 do $
+   y_opbuf(*,j) = ((x_opbuf(*,j) * (16384-df_y)) + $
+                   (x_opbuf(*,j+1) * df_y)) / 16384
+
+if_y = where (y_opbuf(0:1022,0:1022) ne limg2(0:1022,0:1022))
+
+elp, dif_x, dif_y
+
+top
+
+nd
+;-
+;+
+ro chkalign3, rawimg, algnimg, df_x
+
+ Checks XYALIGN instruction results.
+
+
+
+rimg = long(rawimg) and '0000ffff'x
+img1 = long(algnimg) and '0000ffff'x
+
+rimg = reform(lrimg(0:262143),512,512)
+img1= reform(limg1(0:262143),512,512)
+
+pbuf = lonarr(512,512)
+
+or j = 0, 510 do $
+   opbuf(j,*) = ((lrimg(*,j) * (16384-df_x)) + $
+                   (lrimg(*,j+1) * df_x)) / 16384
+
+if = where (opbuf(0:510,*) ne limg1(0:510,*))
+if_inf = size(dif)
+elp, dif
+
+top
+
+nd
+;-
+;+
+ro chkawimg, rawimg, awimg, awbin, ground_data, nerr
+ 
+ Checks Arbitrarily weighted binned data
+
+;-
+;+
+ro chkffscl, filename, img_list, nerr_arr, label
+ 
+ A program to check the IP instructions FLATFLD and SCALE.
+ This program uses the decom file generated by the dofftst.src control file.
+ (The IP program is contained in the file mk_ff.src).
+
+HISTORY:
+	Created Jan-95 by D.Mathur
+	   Apr-95 (MDM) - slight changes for logging purposes
+	 8-Jun-95 (MDM) - Corrected error - nerr_arr was not being passed out
+			  (nerr was being passed out instead)
+;-
+;+
+ Program to check data generated by the IP instruction TWAVG.
+ 
+ The program expects the name of a decom file containing 13
+ images, the first 12 being data images while the 13th is the 
+ weighted average of the images.
+ This data set is generated by the control procedures, DOTWAVG
+ (which calls TWAVG).
+;-
+;+
+NAME:
+	chkvwimg
+PURPOSE:
+ This procedure performs vector weighted binning on a raw image and compares
+ it with the binned image processed by the IP. It also creates a 1024x1024 
+ byte array (out) from  the medium-l list (cl).  Elements of the array 
+ corresponding to the areas specified in the list are filled from the 
+ binned array. 
+HISTORY:
+	Written Apr-95 by D.Mathur
+	11-Apr-95 (MDM) - Modified to work in double precision and to
+			  not flag false errors (off by 1 DN)
+;-
+;+
+ Program to display data generated by the ip_test procedure
+;-
+;+
+NAME:
+	convert_hk
+PURPOSE:
+	To extract a given value of a mnemonic from a HK packet,
+	and convert it to the proper units (degrees/volts/...)
+SAMPLE CALLING SEQUENCE:
+	out = convert_hk(rec, mnem)
+	out = convert_hk(rec, 'm-15ae', /raw)
+INPUT:
+	rec	- The HK record structure
+	mnem	- The mnemonic to extract.  (single mnemonic input)
+OPTIONAL KEYWORD INPUT:
+	raw_value - Do not convert to engineering units.  Simply grab
+		    the right byte(s) and mask as necessary
+	qstop	- If set, then stop inside the program
+	read_dbase - If set, simply read the database file and return
+	infil	- the input database file to read
+	force_rd - Force the database file to be re-read
+	nostring - If set, then do not make the output string type (ie:
+		  do not use lookup table for "mnemonic" -- just send the
+		  raw value).  This only applies to digital mnemonics.
+HISTORY:
+	Written Apr-94 by M.Morrison
+	16-Jan-95 (MDM) - Modifications to allow SCHK1, SCHK2, SCHK4
+			- Added /FORCE_RD
+	 6-Feb-95 (MDM) - Added /NOSTRING option
+;-
+;+
+NAME:
+	disp_focus
+PURPOSE:
+	To display the focus information
+SAMPLE CALLING SEQUENCE:
+	disp_focus, sharp
+INPUT:
+	sharp	- A 2xN array with the sharpness information for each image
+	fd_loc	- A structure with the information on the location used for
+		  sharpness derivation for full disk images
+	hr_loc	- A structure with the information on the location used for
+		  sharpness derivation for high res images
+OPTIONAL KEYWORD INPUT:
+	title	- The title information to display
+	hc	- If set, then make a hardcopy
+HISTORY:
+	Written 6-Apr-94 by M.Morrison using Zayer's "plotfocus.pro"
+;-
+;+
+NAME:
+	do_disp_mmap1
+PURPOSE:
+	An interactive driver for the DISP_MMAP routine
+HISTORY:
+	Written 15-Mar-94 by M.Morrison
+	30-Mar-94 (MDM) - Modified to describe to the user how to 
+			  analyze LFFT datasets
+	 4-Apr-94 (MDM) - Modified to be able to do several positions
+;-
+;+
+NAME:
+	make_fake_dark
+PURPOSE:
+	Calculate a simple fake dark image from the corners of a FD image
+HISTORY:
+	Written 15-Nov-94 by I. Zayer
+CALLING SEQUENCE:
+	dark=make_fake_dark(seq_filnam)
+INPUT:
+	seq_filnam: file name of the datafile (string)
+OUTPUT:
+	dark: 2-D array of same dimensions as 1st image in seq_filnam
+	      which mimics a dark frame (with gradient calculated from
+	      the corners of the above image assumed to be a FD frame)
+;-
+;+
+NAME:
+	DTMAP
+PURPOSE:
+	Derives Michelson maps and corrected images from a detune sequence
+INPUT:
+	L 	- array of wavelength settings of M2
+	    findgen(10)/9*400 - 200
+	AMP, PHAS, OFF = results of SINFIT for M1 detuning at each of
+		the positions of M2
+OUTPUT:
+	M1,M2	- Michelson tunings at solar line center, in mA
+ 	LCTR (CONT) - intensity at line center (continuum) for
+		properly tuned Michelsons
+	M2CONT	- Michelson 2 tuning at continuum
+OPTIONAL KEYWORD INPUT:
+	noreorder- If set, then do not shift the data around 
+		  Normally the data must be shifted so that the
+		  minimum intensities are centered in the array
+		  so that splines will work
+	reorder	- The order of the images that should be sorted
+		  The default is: [1,2,3,4,5,6,7,8, 9, 1,2]
+		  (9 and 0 are the same)
+HISTORY:
+	Written by Ted Tarbell 17-Jul-1993
+	16-Feb-94 (MDM) - Modified to generalize
+	26-May-94 (MDM) - Added REORDER keyword option
+;-
+;+
+NAME:
+	fig_summary
+PURPOSE:
+	To display image, contour, plots or values information on a figure.
+INPUT:
+OPTIONAL INPUT:
+OPTIONAL KEYWORD INPUT:
+	xshift	- Shift plots by normalized amount
+		  xshift = [0, .05]	;move right plots over 5%
+HISTORY:
+	Written 27-Jun-94 by M.Morrison
+V1.1	 6-Sep-94 (MDM) - Added XSHIFT option
+V1.2	12-Sep-94 (MDM) - Allowed SCL_MIN and SCL_MAX to be arrays
+;-
+;+
+ NAME:
+	FIND_KEY
+ PURPOSE:
+	Find a keyword in a fits header.
+ CATEGORY:
+	LP. FITS. Low level.
+ CALLING SEQUENCE:
+	returns=FIND_KEY(HEADER,VALUE)
+ INPUTS:
+	HEADER, fits header.
+	VALUE, string with keyword to find assumed to be valid!
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+	returns, either -1, keyword not found before END, or end of data, or
+	row number of header with the first occurance of the keyword.
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+	Seach from start of header for matching keyword, or END.
+ MODIFICATION HISTORY:
+	Jul. 1992  I. Zayer    LPARL, fixed to work
+	Jul. 1991  P. Milford  Stanford University.
+;-
+;+
+NAME:
+	fit_gcross
+PURPOSE:
+	To fit a gaussian curve to a grid cross in an image
+HISTORY:
+	Written Feb-94 by M.Morrison
+	27-Apr-94 (MDM) - Modified first guess parameter to be where the
+			  minimum lies, not where the extraction was guessing
+			  the grid location to be.
+;-
+;+
+ NAME:
+	FITS2MEM
+ PURPOSE:
+	Read a sequence of fits files into memory.
+ CATEGORY:
+	MDI. Optical testing
+ CALLING SEQUENCE:
+	result = FITS2MEM(basename,startimage,endimage)
+ INPUTS:
+	basename, base input filename
+	startimage, endimage, start and end image numbers to read
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Dec. 1992  P. Milford  Stanford University. Add more fits naming
+	Nov. 1992  P. Milford  Stanford University. Add pipe option
+	Oct. 1992  P. Milford  Stanford University.
+;-
+;+
+ NAME:
+	FITSBASIC
+ PURPOSE:
+	Setup basic FITS header information for a given array.
+ CATEGORY:
+	File IO. Low level.
+ CALLING SEQUENCE:
+	HEADER=FITSBASIC(ARRAY)
+ INPUTS:
+	ANARRAY, an n dimensional array of byte, word or longs.
+	BITPIX, NAXIS, NAXISi, DATE are set.
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+	HEADER, FITS header to created and updated.
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+	ROWNO in FITSW common block is updated.
+ RESTRICTIONS:
+	Only one open file.
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Jul. 1992  I. Zayer    LPARL. get rid of BSCALE & BZERO.
+	Oct. 1990  P. Milford  Stanford University.
+;-
+;+
+ NAME:
+	FITSREPORT
+ PURPOSE:
+	Read a sequence of fits files printing as we go.  Print a
+	summary page too.
+ CATEGORY:
+	MDI. Optical testing
+ CALLING SEQUENCE:
+	FITSREPORT,basename,startimage,endimage
+ INPUTS:
+	basename, base input filename including extension. e.g. N.fits
+	startimage, endimage, start and end image numbers to read
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+       SCALE, scale factor for images, 0 or [0,0] for autocale, [min,max]
+       for manual scaling.
+       SKIP, skip this many images at start of fil
+       DIV, Scale image down by this fator before display.
+       Image size must be evenly divisible by this factor (uses REBIN).
+       RASTER, select a subraster from image. [x,y,size]. Not present
+       or size=0 for no subraster.
+       FTYPE, set to force file type.
+ OUTPUTS:
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	May 93	P. Milford, Stanford University.
+;-
+;+
+ NAME:
+	FITSMOVIE
+ PURPOSE:
+	Read a sequence of fits files displaying as we go
+ CATEGORY:
+	MDI. Optical testing
+ CALLING SEQUENCE:
+	FITSMOVIE,basename,startimage,endimage
+ INPUTS:
+	basename, base input filename including extension. e.g. N.fits
+	startimage, endimage, start and end image numbers to read
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+       SCALE, scale factor for images, 0 or [0,0] for autocale, [min,max]
+       for manual scaling.
+       TAPE, set to 1 for raw tape format.
+       SKIP, skip this many images at start of fil
+       DIV, Scale image down by this fator before display.
+       Image size must be evenly divisible by this factor (uses REBIN).
+       RASTER, select a subraster from image. [x,y,size]. Not present
+       or size=0 for no subraster.
+       FTYPE, set to force file type.
+       RECORD, optionally record the image on video disk player.
+ OUTPUTS:
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Dec. 1992  P. Milford  Stanford University. Update to permit list
+	of files to be viewed
+	Oct. 1992  P. Milford  Stanford University.
+;-
+;+
+ NAME:
+	FITSRD
+ PURPOSE:
+	READS FITS FORMAT DATA FROM A FILE
+	INTO HEADER AND DATA OUTPUT VARIABLES
+ CATEGORY:
+	DATA INPUT/OUTPUT
+ CALLING SEQUENCE:
+	FITSRD,ifile,DATA,HDR
+ INPUTS:
+	Input file ifile must be present
+ OPTIONAL INPUT PARAMETERS:
+
+ KEYWORD PARAMETERS:
+
+ OUTPUTS:
+	Data is the name of the output structure containing FITS
+	  data.  
+ OPTIONAL OUTPUT PARAMETERS:
+	NONE
+ COMMON BLOCKS:
+	NONE
+ SIDE EFFECTS:
+	NONE
+ RESTRICTIONS:
+	Data is assumed to be compatible with FITS formats for BYTE,
+	  INTEGER*2, and INTEGER*4 data types.  This has not yet been tested.
+ PROCEDURE:
+	FITSRD,ifile,Data,Hdr
+	User is prompted for the name of the file to be read.  If the keyword
+	'SIMPLE =' with a value of 'T' or 'F' is not found, the message 'This
+	is not a FITS FORMAT File' is printed, and no values are returned.
+	If 'SIMPLE = F', a warning message is printed, but no automatic termin-
+	ation is applied (in deference to AAT FITS tapes which write out data
+	in REAL*4 format).
+	Degenerate (NAXIS=0) FITS files are supported.
+ MODIFICATION HISTORY:
+	Modified Sep 1992 IZ. Modified for hdr to be bytarr & use getfitsval.
+	Modified Jan 1991 PNM. Fixed bug when 'END' appeard not at start of
+	line.
+	Modified Oct 1990, PNM.  Hack for 3D data. Hack for real data.
+	Modified Jan 1990, PNM.  Split interactive and non interactive
+	portions of FITSRD2.
+	Written JUNE 1988 EMH.  Uses function YESNO and procedure GET_KEYWORD.
+	Also uses function DECI-STR.
+;-
+;+
+ NAME:
+	FITSREPORT
+ PURPOSE:
+	Read a sequence of fits files printing as we go.  Print a
+	summary page too.
+ CATEGORY:
+	MDI. Optical testing
+ CALLING SEQUENCE:
+	FITSREPORT,basename,startimage,endimage
+ INPUTS:
+	basename, base input filename including extension. e.g. N.fits
+	startimage, endimage, start and end image numbers to read
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+       SCALE, scale factor for images, 0 or [0,0] for autocale, [min,max]
+       for manual scaling.
+       SKIP, skip this many images at start of fil
+       DIV, Scale image down by this fator before display.
+       Image size must be evenly divisible by this factor (uses REBIN).
+       RASTER, select a subraster from image. [x,y,size]. Not present
+       or size=0 for no subraster.
+       FTYPE, set to force file type.
+ OUTPUTS:
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	May 93	P. Milford, Stanford University.
+;-
+;+
+ NAME:
+	FITSREPORT
+ PURPOSE:
+	Read a sequence of fits files printing as we go.  Print a
+	summary page too.
+ CATEGORY:
+	MDI. Optical testing
+ CALLING SEQUENCE:
+	FITSREPORT,basename,startimage,endimage
+ INPUTS:
+	basename, base input filename including extension. e.g. N.fits
+	startimage, endimage, start and end image numbers to read
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+       SCALE, scale factor for images, 0 or [0,0] for autocale, [min,max]
+       for manual scaling.
+       SKIP, skip this many images at start of fil
+       DIV, Scale image down by this fator before display.
+       Image size must be evenly divisible by this factor (uses REBIN).
+       RASTER, select a subraster from image. [x,y,size]. Not present
+       or size=0 for no subraster.
+       FTYPE, set to force file type.
+ OUTPUTS:
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	May 93	P. Milford, Stanford University.
+;-
+;+
+ NAME:
+	FITSREPORT
+ PURPOSE:
+	Read a sequence of fits files printing as we go.  Print a
+	summary page too.
+ CATEGORY:
+	MDI. Optical testing
+ CALLING SEQUENCE:
+	FITSREPORT,basename,startimage,endimage
+ INPUTS:
+	basename, base input filename including extension. e.g. N.fits
+	startimage, endimage, start and end image numbers to read
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+       SCALE, scale factor for images, 0 or [0,0] for autocale, [min,max]
+       for manual scaling.
+       SKIP, skip this many images at start of fil
+       DIV, Scale image down by this fator before display.
+       Image size must be evenly divisible by this factor (uses REBIN).
+       RASTER, select a subraster from image. [x,y,size]. Not present
+       or size=0 for no subraster.
+       FTYPE, set to force file type.
+ OUTPUTS:
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	May 93	P. Milford, Stanford University.
+;-
+;+
+ NAME:
+	FITSW
+ PURPOSE:
+	Write a FITS format image/header to disk.
+ CATEGORY:
+	File IO. Low level.
+ CALLING SEQUENCE:
+	FITS,OFILE,IMAGE,HEADER
+ INPUTS:
+	OFILE, output file name
+	IMAGE, LP image, int*2 data to be saved.
+	HEADER, optional image header (f0 or fits)
+ KEYWORD PARAMETERS:
+	none.
+ OUTPUTS:
+	Writes to OFILE.
+ SIDE EFFECTS:
+ RESTRICTIONS:
+	Does not check errors.
+ PROCEDURE:
+	Write the two structures.
+ MODIFICATION HISTORY:
+	Jul. 1992  I. Zayer    LPARL. Modified to be stand-alone & renamed
+	Jan. 1990  P. Milford  Stanford University.
+;-
+;+
+ NAME:
+	FZTOFITS
+ PURPOSE:
+	Convert a LP format file into a FITS format file.  Each image in the
+	LP format file is written to a different FITS file.
+ CATEGORY:
+	LP. File IO. High level.
+ CALLING SEQUENCE:
+	FZTOFITS,IFILE,OFILE
+ INPUTS:
+	IFILE, input file name.
+	OFILE, output file name.
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+	Creates a fits file
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+	Write to disk.
+ RESTRICTIONS:
+	Must have sufficient disk space.
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	July  1992  I. Zayer    LPARL, simplified to be stand-alone & 1 image per ifile...
+	Sept. 1990  P. Milford  Stanford University.
+;-
+;+
+ NAME:
+	FZW
+ PURPOSE:
+	Write a LP format image/header to disk.
+ CATEGORY:
+	File IO. Low level.
+ CALLING SEQUENCE:
+	FZW,OFILE,IMAGE,HEADER,ENG
+ INPUTS:
+	OFILE, output file name
+	IMAGE, LP image, int*2 data to be saved.
+	HEADER, optional image header (f0 or fits)
+	ENG, optional engineering data line
+ KEYWORD PARAMETERS:
+	none.
+ OUTPUTS:
+	Writes to OFILE.
+ SIDE EFFECTS:
+ RESTRICTIONS:
+	Does not check errors.
+ PROCEDURE:
+	Write the two structures.
+ MODIFICATION HISTORY:
+	Jul. 1992  I. Zayer    LPARL. Modified to be stand-alone & renamed
+	Jan. 1990  P. Milford  Stanford University.
+;-
+;+
+ NAME:
+	GAUSSFIT
+
+ PURPOSE:
+ 	Fit the equation y=f(x) where:
+
+ 		F(x) = A0*EXP(-z^2/2) + A3 + A4*x + A5*x^2
+ 			and
+		z=(x-A1)/A2
+
+	A0 = height of exp, A1 = center of exp, A2 = sigma (the width).
+	A3 = constant term, A4 = linear term, A5 = quadratic term.
+ 	The parameters A0, A1, A2, A3 are estimated and then CURVEFIT is 
+	called.
+
+ CATEGORY:
+	?? - fitting
+
+ CALLING SEQUENCE:
+	Result = GAUSSFIT(X, Y [, A])
+
+ INPUTS:
+	X:	The independent variable.  X must be a vector.
+	Y:	The dependent variable.  Y must have the same number of points
+		as X.
+
+ OUTPUTS:
+	The fitted function is returned.
+
+ OPTIONAL OUTPUT PARAMETERS:
+	A:	The coefficients of the fit.  A is a six-element vector as 
+		described under PURPOSE.
+
+ COMMON BLOCKS:
+	None.
+
+ SIDE EFFECTS:
+	None.
+
+ RESTRICTIONS:
+	The peak or minimum of the Gaussian must be the largest
+	or smallest point in the Y vector.
+
+ PROCEDURE:
+	If the (MAX-AVG) of Y is larger than (AVG-MIN) then it is assumed
+	that the line is an emission line, otherwise it is assumed there
+	is an absorbtion line.  The estimated center is the MAX or MIN
+	element.  The height is (MAX-AVG) or (AVG-MIN) respectively.
+	The width is found by searching out from the extrema until
+	a point is found less than the 1/e value.
+
+ MODIFICATION HISTORY:
+	DMS, RSI, Dec, 1983.
+;-
+;+
+ NAME:
+	GAUSSFIT
+
+ PURPOSE:
+ 	Fit the equation y=f(x) where:
+
+ 		F(x) = A0*EXP(-z^2/2)
+ 			and
+		z=(x-A1)/A2
+
+	A0 = height of exp, A1 = center of exp, A2 = sigma (the width).
+ 	The parameters A0, A1, A2, A3 are estimated and then CURVEFIT is 
+	called.
+
+ CATEGORY:
+	?? - fitting
+
+ CALLING SEQUENCE:
+	Result = GAUSSFIT(X, Y [, A])
+
+ INPUTS:
+	X:	The independent variable.  X must be a vector.
+	Y:	The dependent variable.  Y must have the same number of points
+		as X.
+
+ OUTPUTS:
+	The fitted function is returned.
+
+ OPTIONAL OUTPUT PARAMETERS:
+	A:	The coefficients of the fit.  A is a six-element vector as 
+		described under PURPOSE.
+
+ COMMON BLOCKS:
+	None.
+
+ SIDE EFFECTS:
+	None.
+
+ RESTRICTIONS:
+	The peak or minimum of the Gaussian must be the largest
+	or smallest point in the Y vector.
+
+ PROCEDURE:
+	If the (MAX-AVG) of Y is larger than (AVG-MIN) then it is assumed
+	that the line is an emission line, otherwise it is assumed there
+	is an absorbtion line.  The estimated center is the MAX or MIN
+	element.  The height is (MAX-AVG) or (AVG-MIN) respectively.
+	The width is found by searching out from the extrema until
+	a point is found less than the 1/e value.
+
+ MODIFICATION HISTORY:
+	DMS, RSI, Dec, 1983.
+;-
+;+
+NAME:
+	get1hk_info
+PURPOSE:
+	To return information from the HK database given a time and
+	a mnemonic.  Should have one call per packet type (MDIHK, SC1, ...).
+	Use GET_HK_INFO as the front end.
+INPUT:
+	times	- A list of the dates/times of interest
+	mnem	- A list of the memonics to return info for
+OPTIONAL KEYWORD INPUT:
+	every	- Can specify to only return every N values.  This is
+		  useful when specifying a long time range
+	nostring - If set, then do not make the output string type (ie:
+		  do not use lookup table for "mnemonic" -- just send the
+		  raw value).  This only applies to digital mnemonics.
+OUTPUT:
+	info 	- A structure with the following tags:
+			.time	- N element array of times
+			.day	- N element array of days
+			.value	- NxM array of values
+			.mnem	- M array of mnemonic names
+			.descr	- M array of short description
+RESTRICTIONS:
+	* The list of mnemonics must be all from MDI or all from the S/C packet
+	* Do not mix mnemonic types unless you are using the /RAW_VALUE switch
+	  (since floating point and string type do not mix well)
+HISTORY:
+	Written 23-Jan-95 by M.Morrison taking GET_HK_INFO as starting point
+	 6-Feb-95 (MDM) - Added /NOSTRING option
+			- Patched up case where CONVERT_HK returns a string
+	 7-Jun-95 (MDM) - Modifications to work on new flight like HK 
+			  database
+;-
+;+
+NAME:
+	get_dpc_info
+PURPOSE:
+	To read a database file and return information on the data product
+SAMPLE CALLING SEQUENCE:
+	get_dpc_info, dpc, nx, ny, npix, sum, err, mnemonic
+	get_dpc_info, dpc_struct, /struct
+INPUT:
+	dpc	- The data product to return the info for
+OUTPUT:
+	nx	- The number of "X" pixels (columns)
+	ny	- The number of "Y" pixels (lines)
+	npix	- The total number of pixels
+	err	- Error (0=no error, 1=error)
+	mnemonic- The mnemonic that is associated with that data product
+OPTIONAL KEYWORD INPUTS:
+	qforce_rd - If set, force the database file to be read again
+	qprint	- If set, print a summary of the data products to the screen
+	struct	- If set, return the structure which holds all of the DPC info
+	infil	- The input file to read.  The default is 
+		  $MDI_CAL_INFO/dpc_table.txt
+HISTORY:
+	Written 18-Apr-94 by M.MOrrison
+	21-Sep-94 (MDM) - Added IMIN/IMAX values to the structure
+;-
+;+
+ function get_hk, mnemonic, filename, time_arr, data_arr
+
+ This fuction obtains the data for the item specified by mnemonic from the
+ file "filename". It returns two array. A time array containing the time of
+ each data point relative to the first point and a data array containing the
+ data requested.
+
+ The result of the function is the number of data points returned.
+;-
+;+
+NAME:
+	get_hk_info
+PURPOSE:
+	To return information from the HK database given a time and
+	a mnemonic.  
+SAMPLE CALLING SEQUENCE:
+	info = get_hk_info(times, mnem, /list)
+	info = get_hk_info('16-mar-94 09:00', 'mtopts5')
+	info = get_hk_info(['16-mar-94 5:00', '16-mar-94 14:00'], 'mtopts5')
+	info = get_hk_info(['16-dec-94', '18-dec-94'], ['qtopts1n', 'qtopts2n'])
+	info = get_hk_info(['7-jun-95', '7-jun-95 23:00'], 'mksqref'+strtrim(indgen(6),2),/qdebug, /raw)
+INPUT:
+	times	- A list of the dates/times of interest
+	mnem	- A list of the memonics to return info for
+OPTIONAL KEYWORD INPUT:
+	list	- If set, then the "times" input are a list of times
+		  to find the discrete values for.  Default is a starting
+		  and ending time.
+	every	- Can specify to only return every N values.  This is
+		  useful when specifying a long time range.  It must be
+		  less than 1000.
+	nostring - If set, then do not make the output string type (ie:
+		  do not use lookup table for "mnemonic" -- just send the
+		  raw value).  This only applies to digital mnemonics.
+OUTPUT:
+	info 	- A floating point array of dimensions
+		  NxM where N is the number of different times requested
+		  and M is the number of mnemoics.
+RESTRICTIONS:
+	* Do not mix mnemonic types unless you are using the /RAW_VALUE switch
+	  (since floating point and string type do not mix well)
+HISTORY:
+	Written 23-May-94 by M.Morrison
+	24-May-94 (MDM) - Continued to develop
+	25-May-94 (MDM) - Continued to develop
+	24-Aug-94 (MDM) - Corrected for error when no valid input files
+			  available for requested time
+	12-Jan-95 (MDM) - Added EVERY option
+			- Added access to SC1, SC2, and SC4 database files
+	16-Jan-95 (MDM) - Continued to add access to SC1, SC2 and SC4
+			- Changed to do 1000 records at a time
+	23-Jan-95 (MDM) - Broke into two routines:  GET_HK_INFO and
+			  GET1HK_INFO.  Made GET_HK_INFO derive which packet 
+			  the mnemonic comes from and derive the file names.
+	24-Jan-95 (MDM) - Corrected error in how MAP2PACK was being derived
+	 6-Feb-95 (MDM) - Added /NOSTRING option
+	 7-Jun-95 (MDM) - Added MDI_MDIHK_LOG_DIR to the list of directories
+			  to check for HK database files.
+;-
+;+
+ function get_tf_rec, fname, filnum, recnum
+
+ Purpose: To return the a record from a ".tfr" file.
+          
+ Arguments: 
+    1. fname - Name of the tfr file, not including the file number of the 
+               extension. (INPUT)
+    2. filnum - File Number
+    3. recnum - record number in file.
+
+  This procedure can be used to read a set of tfr files as though they were a 
+ a single file. The procedure procedure updates filnum and recnum after
+ reading the specified record, opening the next file in the series if 
+ necessary.
+HISTORY:
+	Written 1994 by D.Mathur  
+       25-Apr-95 (MDM) - Added capability to get around FINDFILE
+                         limitations which were causing a false failure
+;-
+;+
+ NAME:
+	GETFITSVAL
+ PURPOSE:
+	Extract a string parameter from a FITS header.
+ CATEGORY:
+	File IO. 
+ CALLING SEQUENCE:
+	STRING=GETFITSVAL,HEADER,KEYWORD
+ INPUTS:
+	HEADER, fitsheader
+	KEYWORD, keyword whose value to extract
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+	STRING, extracted string from header, following the blank after the '=' sign.
+ SIDE EFFECTS:
+ RESTRICTIONS:
+	Assumes absolutely correct syntax of fits header (quotes at right places, etc)
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Jul. 1992  I. Zayer LPARL
+;-
+;+
+ NAME:
+	gradcont
+ PURPOSE:
+	contour plot of mdi gradient data
+ CATEGORY:
+	General graphics.
+ CALLING SEQUENCE:
+	tvcont, A, overl
+ INPUTS:
+	A = 2 dimensional array to display.
+	overl = 2 dimensional array to contour and overlay.
+ KEYWORD PARAMETERS:
+	/WINDOW_SCALE = set to scale the window size to the image size,
+		otherwise the image size is scaled to the window size.
+		Ignored when outputting to devices with scalable pixels.
+	/ASPECT = set to retain image's aspect ratio.  Assumes square
+		pixels.  If /WINDOW_SCALE is set, the aspect ratio is
+		retained.
+	/INTERP = set to bi-linear interpolate if image is resampled.
+	title, set the image title
+ OUTPUTS:
+	No explicit outputs.
+ COMMON BLOCKS:
+	none.
+ SIDE EFFECTS:
+	The currently selected display is affected.
+ RESTRICTIONS:
+	None that are obvious.
+ PROCEDURE:
+	If the device has scalable pixels then the image is written over
+	the plot window.
+ MODIFICATION HISTORY:
+	PNM, May, 1993.		Modified further...
+	PNM, Feb, 1990.		Modified image_cont to use second image
+	DMS, May, 1988.
+;-
+;+
+NAME:
+	his_dirs
+PURPOSE:
+	To return a list of the directories where .HIS files exist.
+HISTORY:
+	Written 23-May-94
+	18-Aug-94 (MDM) - added '/md60/archive/england/history.may94'
+			  and '/md60/archive/england/history.jun94'
+	 9-Jan-95 (MDM) - Added /big/mdi_europe/history
+	11-Jan-95 (MDM) - Modified to use reorganized history directories
+;-
+;+
+NAME: 
+	hist_count
+PURPOSE: 
+	To search the telemetry command history for certain strings and make
+	a table of how often they are found for each month
+SAMPLE CALLING SEQUENCE:
+	hist_count
+	hist_count, ['mdipict', 'mdiltc', 'mdifocus'] 
+OPTIONAL INPUT: 
+	list - An array holding the list of words to search for 
+OPTIONAL KEYWORD INPUT:
+	default - If set, use a long list of routines something like:
+HISTORY:
+	Written Feb-94 by M.Morrison
+V1.1	25-Apr-94 (MDM) - Made it a procedure
+;-
+;+
+NAME: 
+	hist_summary
+PURPOSE: 
+	To search the telemetry command history for certain strings
+SAMPLE CALLING SEQUENCE:
+	hist_summary 
+	hist_summary, ['mdipict', 'mdiltc', 'mdifocus'] 
+	hist_summary,/eurlog,/default
+OPTIONAL INPUT: 
+	list - An array holding the list of words to search for 
+OPTIONAL KEYWORD INPUT:
+	default - If set, use a long list of routines something like:
+		'mdipict', 'mdiltc', 'mdifocus', 'mdiiss', 'mdidust', 'mdilaser', 
+		'shutest', 'mdicom', 'lcmcom', 'ipcom', 'ipmemtst', 'iptbltst',
+		'ipdmatst', 'ipdynmac', 'ipseqtst', 'lsqcom',  'mdidtune', 'bigtune',
+		'supersun', 'vfdlscan', 'mtmtune', 'maplaser', 'mapgrad',  'mdiprot',
+		'mdimrot', 'mdipdist'
+	cal_log - If set, then use the CAL_LOG.TXT file instead of the CMD_HIST.*
+		  files.
+	eurlog	- If set, then use the EURLOG.TXT file instead of the CMD_HIST.*
+		  files
+HISTORY:
+	Written Feb-94 by M.Morrison
+V1.1	   Mar-94 (MDM)
+V1.2	25-Apr-94 (MDM) - Made it a procedure
+V2.0	 3-Jun-94 (MDM) - Added /CAL_LOG option
+V3.0	 3-May-95 (MDM) - Added /EURLOG option
+;-
+;+
+NAME:
+	hkplot_info
+PURPOSE:
+	To extract information out of the HK structure
+SAMPLE CALLING SEQUENCE:
+	out = hkplot_info(hk, /tit)
+	out = hkplot_info(hk, /mnem, /nums)
+INPUT:
+	hk	- The HK structure returned by GET_HK_INFO
+OPTIONAL KEYWORD INPUTS:
+	tit	- If set, then return the titles for the mnemonics
+	nums	- If set, then return the mnemonic number in front
+		  of the title or mnemonic name
+	times	- If set, get the discrete values for the list of
+		  input times.  TODO: Right now it re-reads the 
+		  database.  It would be nice to do it from the
+		  structure in memory.
+	mnemlist - If set, match the mnemonic name to the "code"
+		  number in the structure.
+OUTPUT:
+	out	- Varies - see optional inputs.  Default is the
+		  mnemonic names
+HISTORY:
+	Written Jan-95 by M.Morrison
+	 9-Feb-94 (MDM) - Modified how TIMES option worked
+;-
+;+
+ NAME:
+	
+ PURPOSE:
+	
+ CATEGORY:
+	OP_TEST. 
+ CALLING SEQUENCE:
+	
+ INPUTS:
+	
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Oct. 1992  P. Milford  Stanford University.
+;-
+;+
+ NAME:
+	INFO.PRO
+ PURPOSE:
+	Include file defining the F0 image header format.
+ CATEGORY:
+	File IO.  Low level.
+ CALLING SEQUENCE:
+	N/A
+ INPUTS:
+	N/A
+ KEYWORD PARAMETERS:
+	N/A
+ OUTPUTS:
+	Definition of strucure INFO.
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Aug. 1992  Igor ZAYER, LOCKHEED PARL
+	updated to contemporary header definition
+;-
+;+
+NAME:
+	ipcom
+PURPOSE:
+	TO evaluate the IP commision LFFT test
+SAMPLE CALLING SEQUENCE:
+	ipcom, '/md66/log/sci160k/940417_033526
+INPUT:
+	seq_filnam - The sequence or telemetry file name
+OPTIONAL KEYWORD INPUT:
+	hc	- If set, produce a hardcopy (don't display to the screen)
+HISTORY:
+	Written 18-Apr-94 by M.Morrison
+;-
+;+
+ro list_tfi, fnam, info, quiet=quiet
+
+ Procedure to list an index file
+HISTORY:
+	20-Sep-94 (MDM) - Added INFO output
+			- Changed format statement
+	 6-Feb-95 (MDM) - Changed to print out start time of data
+			  product based on packet time
+	 6-Feb-95 (MDM) - Added common block to save host name so
+			  don't have to spawn with call to GET_HOST
+			- Added FREE_LUN call
+			- Added check for non zero number of datasets
+	31-Mar-95 (MDM) - Changed format statement to display SeqID
+			- Print out a title line
+	 3-Apr-95 (MDM) - Added /QUIET keyword
+			- Added end file and frame to the output structure
+	 3-Apr-95 (MDM) - Close the unit if no data
+;-
+;+
+unction read_ltc, file 
+;-
+;+
+unction exp_scale, min_exp, max_exp
+
+ Calculates the exposures for the light transfer data set from minimum and 
+ maximum exposure times. The exposures are closer together at the extreams.
+;-
+;+
+NAME:
+	mdi_display2
+PURPOSE:
+	To display the images as they are received by the EGSE.
+	The executable "mdi_sci" is used to copy the telemetry data through
+	shared memory
+HISTORY:
+	Written 1993 by M.Levay (?)
+	21-Sep-94 (MDM) - Modified to use GET_DPC_INFO and a database
+			  file to get the data product information rather than
+			  case statements in the program
+			- Allow continuous display to the window as the
+			  data is assembled.
+			- Added a "-a" to the mdi_sci call if EGSE_VER is
+			  greater than or equal to 3.1
+			- Added /RESTART option
+			- Incorporated changes made in RC.PRO
+			- Added /QDISP_CON and /NODIFF
+	25-Oct-94 (RAC) - changed /retain=1 to /retain=2 (full backing store)
+			- Added /retain=2 to window,7 call that didn't have one
+;-
+;+
+NAME:
+	mdi_display3
+PURPOSE:
+	To display the images as they are received by the EGSE.
+	The executable "mdi_sci" is used to copy the telemetry data through
+	shared memory
+HISTORY:
+	Written 1993 by M.Levay (?)
+	21-Sep-94 (MDM) - Modified to use GET_DPC_INFO and a database
+			  file to get the data product information rather than
+			  case statements in the program
+			- Allow continuous display to the window as the
+			  data is assembled.
+			- Added a "-a" to the mdi_sci call if EGSE_VER is
+			  greater than or equal to 3.1
+			- Added /RESTART option
+			- Incorporated changes made in RC.PRO
+			- Added /QDISP_CON and /NODIFF
+	25-Oct-94 (RAC) - changed /retain=1 to /retain=2 (full backing store)
+			- Added /retain=2 to window,7 call that didn't have one
+       13-Apr-95 (DPM) - Created mdi_display3; Uses R0-R9 to obtain temperatures
+                         commented out Count and Page number display
+;-
+;+
+ MDI_plots.pro 
+
+ This file contains a collection of procedures to plot
+ MDI housekeeping data. The routines are listed below;
+
+  1. line_ok         Checks if command is valid
+  2. check_date      validates user input date in format: dd-mmm-yy 
+  3. check_time      validates user input time in format: hh:mm or hh:mm:ss
+  4. check_duration  validates user input duration in format: hh:mm or hh:mm:ss
+                     or with local time specifier: hh:mmL or hh:mm:ssL
+  5. get_input       Gets plot times and items.
+  6. get_hk          Read in data for an item for a specified time period.
+  7. plot_it         plots data 
+  8. plot_hc         plots data to a postscript file for hardcopy
+  9. set_plotdata    Initializes variables in plotdata common block
+ 10. do_plot         Obtains requested data and sets up plot parameters
+ 11. do_oplot        Sets up overplot parameters
+ 12. do_average      Plots averages of specified items
+
+ (RTPLOT and HKPLOT programs make use of the above routines.)
+
+ The MDI HK data is read using the read_hist utility. It assumes
+ that the history files are in the directory MDI_HISTORY_DIR.
+
+ To access history files from another directory:
+  1) Abort this program
+  2) exit IDL
+  3) Type: setenv MDI_HISTORY_DIR <dir>
+     where <dir> is the new history file directory
+  4) start IDL
+  5) Run rtplot or hkplot.
+
+ NOTE: In order for this program to remove the temporary files generated
+ by read_hist in the temporary files directory, the directory must be
+ writable by the user. Currently anyone in the mdi group can access
+ MDI data because a 'chmod g+w $MDI_TEMP_DIR' was done.
+;-
+;+
+ MDI_plots.pro 
+
+ This file contains a collection of procedures to plot
+ MDI housekeeping data. The routines are listed below;
+
+  1. line_ok         Checks if command is valid
+  2. check_date      validates user input date in format: dd-mmm-yy 
+  3. check_time      validates user input time in format: hh:mm or hh:mm:ss
+  4. check_duration  validates user input duration in format: hh:mm or hh:mm:ss
+                     or with local time specifier: hh:mmL or hh:mm:ssL
+  5. get_input       Gets plot times and items.
+  6. get_hk          Read in data for an item for a specified time period.
+  7. plot_it         plots data 
+  8. plot_hc         plots data to a postscript file for hardcopy
+  9. set_plotdata    Initializes variables in plotdata common block
+ 10. do_plot         Obtains requested data and sets up plot parameters
+ 11. do_oplot        Sets up overplot parameters
+ 12. do_average      Plots averages of specified items
+
+ (RTPLOT and HKPLOT programs make use of the above routines.)
+
+ The MDI HK data is read using the read_hist utility. It assumes
+ that the history files are in the directory MDI_HISTORY_DIR.
+
+ To access history files from another directory:
+  1) Abort this program
+  2) exit IDL
+  3) Type: setenv MDI_HISTORY_DIR <dir>
+     where <dir> is the new history file directory
+  4) start IDL
+  5) Run rtplot or hkplot.
+
+ NOTE: In order for this program to remove the temporary files generated
+ by read_hist in the temporary files directory, the directory must be
+ writable by the user. Currently anyone in the mdi group can access
+ MDI data because a 'chmod g+w $MDI_TEMP_DIR' was done.
+;-
+;+
+NAME:
+	mdidust
+PURPOSE:
+	Program to make dust images at various positions through
+	the instrument.
+SAMPLE CALLING SEQEUENCE:
+	mdidust, '/md66/log/sci160k/940402_033500'
+INPUT:
+	seq_filnam
+OPTIONAL KEYWORD INPUT:
+	obsmode	- Set if the observations are in obs mode (default is
+		  cal mode)
+	fd	- Set if you wish to analyze the Full Disk images
+		  (default is to analyze the high res (HR) images)
+	hole_man- If set, allow the user to manually select the hole
+		  positions
+	hole_centroid - If set, derive the hole positions by finding
+		  the center of gravity of the images
+	rad_arr	- The radius array of the positions through the 
+		  instrument which should be checked in "funny" units
+		  (see Jesper Schou)
+OUTPUT:
+	pox	- input images used
+	cpox	- dust image for each radius location 
+METHOD:
+	Corrects for number of images used at each point
+	reads raw images and removes gradients and limb-darkening
+HISTORY:
+	Originally Jesper Schou's DUST2.PRO
+	Written 4-Apr-94 by M.Morrison
+V1.0	 4-Apr-94 (MDM) - Made it a procedure, not a program
+			- Removed all of the questions and
+			  added keywords for the options
+			- Changed format of output quite a bit
+V1.1	 5-Apr-94 (MDM) - Changed format/info printed
+V1.2	25-Apr-94 (MDM) - Added /ONE_PAGE option
+;-
+;+
+NAME:
+	mdifocus2
+PURPOSE:
+	To digest and display the MDI focus data
+SAMPLE CALLING SEQUENCE:
+	mdifocus2, '/md66/log/sci160k/940402_045113'
+INPUTS:
+	seq_filnam- The sequence number (ie: 750) or the telemetry file name
+OPTIONAL KEYWORD INPUT:
+	title	- A title to be displayed
+	cal	- If set, ??
+	hc	- If set, make a hardcopy
+OUTPUTS:
+	img	- The 3-D data (nx,ny,N) cube with the images which were used
+		  (N is normally 73)
+	sharp	- A 2-D array (2,N) with the sharpness for each image (except
+		  the dark image) (N is normally 72)
+	norm	- ??
+	dark	- The dark image used
+HISTORY:
+V1.0	Written 6-Apr-94 by M.Morrison taking Igor's "mdifocus.pro" and
+							"anafocus.pro"
+V1.1	25-Apr-94 (MDM) - Slight change to logic of when to ask if want
+			  a hardcopy
+V1.2	26-Apr-94 (MDM) - Remove the text file before writing it
+;-
+;+
+NAME:
+	mdiiss
+PURPOSE:
+	To analyze the MDI ISS performance
+SAMPLE CALLING SEQUENCE:
+	mdiiss, '/md66/log/sci160k/940425_213204'
+INPUT:
+	seq	- Telemetry or series number
+OUTPUT:
+	a	- the image array
+	sharp	- The sharpness
+	norm	- The normalization array
+OPTIONAL KEYWORD INPUT:
+	hc	- If set, make a hardcopy
+HISTORY:
+	Written ?? by ??
+	26-Apr-94 (MDM) - Added /HC option
+			- Replaced call to RDTFR with READ_MDI
+			- Added documentation header
+;-
+;+
+NAME:
+	mdilaser
+PURPOSE:
+	To process the LFFT "mdilaser" results for Michelson wavelengths
+SAMPLE CALLING SEQUENCE:
+	mdilaser, '/md66/log/sci160k/940402_033500'
+	mdilaser, '/md66/log/sci160k/940402_033500', str_ipos='0'
+	mdilaser, '/md66/log/sci160k/940402_033500', str_ipos='3,4,5'
+INPUT:
+	seq_filnam - the sequence number of telemetry file name
+OPTIONAL KEYWORD INPUT:
+	str_ipos - A string array with a list of the positions to
+		   process
+HISTORY:
+	Written 6-Apr-94 by M.Morrison
+V1.1	25-Apr-94 (MDM) - Added STR_IPOS optional keyword input
+			- Changed to pass 27 images to DISP_MMAP instead of 22
+;-
+;+
+NAME:
+	mdimrot
+INPUT:
+	seq_filnam - The series number or telemetry file name
+INPUT/OUPTUT:
+	mat	- The matrix of cross locations
+OPTINAL KEYWORD INPUT:
+	force_calc - If set, then force the grid calculation to be done over
+		  even if it is already done.  The default is to not 
+		  recalculate the cross locations if already done.
+	hc	- If set, make a hardcopy
+	qdisp	- If set, when doing the fitting of the cross locations, 
+		  display the image and the first guess
+	qplot	- If set, when doing the fitting of the cross locations,
+		  display the fit to the cross
+       plot_list - If set, only plot the plots listed in that string
+                   String items: rawp, smoop, diff, m1, m2, pol
+HISTORY:
+	Written 26-Apr-94 by M.Morrison (using PLOT_GROSS2 as a start)
+V1.1    3-Jun-94 (MDM) - Added capability to only do single plot
+                         (so that we can do guide plots)
+                         (added PLOT_LIST optional keyword input)
+;-
+;+
+NAME:
+	mdipdist
+INPUT:
+	seq_filnam - The series number or telemetry file name
+INPUT/OUPTUT:
+	mat	- The matrix of cross locations
+OPTINAL KEYWORD INPUT:
+	force_calc - If set, then force the grid calculation to be done over
+		  even if it is already done.  The default is to not 
+		  recalculate the cross locations if already done.
+	all_boxes- If set, then display the grid distortion for all of the
+		  boxes (not just the center box)
+	hc	- If set, make a hardcopy
+	qdisp	- If set, when doing the fitting of the cross locations, 
+		  display the image and the first guess
+	qplot	- If set, when doing the fitting of the cross locations,
+		  display the fit to the cross
+	zero_net - If set, then adjust the net "pixel coordinate change"
+		  to be zero.
+       plot_list - If set, only plot the plots listed in that string
+                   String items: rawp, lr_abs, lr_siz, 045_abs, 045_siz
+       nodark - If set, assume no dark image present and don't correct for it
+
+HISTORY:
+	Written 27-Apr-94 by M.Morrison (using PLOT_GROSS3C as a start)
+V1.1	 5-May-94 (MDM) - Added /ZERO_NET option
+V1.2	12-May-94 (MDM) - Adjusted how distgrid_offset worked (tolerance
+			  and figuring out the map)
+V1.3    3-Jun-94 (MDM) - Added capability to only do single plot
+                         (so that we can do guide plots)
+                         (added PLOT_LIST optional keyword input)
+V1.4	 7-Jun-94 (MDM) - Corrected small typo in V1.3
+V1.5	 2-Nov-94 (IZ) 	- Added /nodark keyword to analyse "dark-less" data
+;-
+;+
+NAME:
+	mdipict
+PURPOSE:
+	To display a summary page for each "mdipict" image
+SAMPLE CALLING SEQUENCE:
+	mdipict, '/md66/log/sci160k/940401_143902
+INPUT:
+	seq_filnam - The sequence or telemetry file name
+OPTIONAL KEYWORD INPUT:
+	hc	- If set, produce a hardcopy (don't display to the screen)
+	stimg	- The starting image to display (default is first image)
+	enimg	- The ending image to display (default is last image)
+HISTORY:
+	Written 5-Apr-94 by M.Morrison
+V1.2	19-Apr-94 (MDM) - Added MARGIN keyword to IMG_SUMMARY call
+			- Changed format of comments somewhat
+;-
+;+
+NAME:
+	mdiprot
+INPUT:
+	seq_filnam - The series number or telemetry file name
+INPUT/OUPTUT:
+	mat	- The matrix of cross locations
+OPTINAL KEYWORD INPUT:
+	force_calc - If set, then force the grid calculation to be done over
+		  even if it is already done.  The default is to not 
+		  recalculate the cross locations if already done.
+	hc	- If set, make a hardcopy
+	qdisp	- If set, when doing the fitting of the cross locations, 
+		  display the image and the first guess
+	qplot	- If set, when doing the fitting of the cross locations,
+		  display the fit to the cross
+	qiss	- If set, then "mdiprot.src" was run for one set of repeats
+		  with ISS off and then on.
+       plot_list - If set, only plot the plots listed in that string
+                   String items: rawp, smoop, diff, m1, m2, pol, iss_on, iss_off
+HISTORY:
+	Written 26-Apr-94 by M.Morrison (using PLOT_GROSS2 as a start)
+V1.1	12-May-94 (MDM) - Added /QISS option
+V1.2    3-Jun-94 (MDM) - Added capability to only do single plot
+                         (so that we can do guide plots)
+                         (added PLOT_LIST optional keyword input)
+;-
+;+
+NAME:
+	mk_mdi_iap
+PURPOSE:
+	To make a quick template/starting point for an MDI IAP
+	(Instrument Activity Plan)
+SAMPLE CALLING SEQUENCE:
+	mk_mdi_iap, '1-may-95'
+	mk_mdi_iap, '2-may-95', /edit
+	mk_mdi_iap, '2-may-95', /edit, /vi
+INPUTS:
+	date	- The IAP date to create or edit
+OPTIONAL KEYWORD INPUTS:
+	edit	- If set, then edit an existing IAP and write it out
+		  with a new version number
+	vi	- If set, edit with VI instead of XEDIT
+METHOD:
+	Read the EAP and do the following
+		1. Create a header
+		2. Have SCIPLAN Structure program running the whole 24 hours
+		3. Identify all "TLM_MDI_M" (which is VC2) and specify
+		   SCIPLAN "Standard VC2" activity entry for each occurance
+		4. Identify all "TLM_MDI_H" (which is VC3) and specify
+		   SCIPLAN "Campaign ??" activity entry for each occurance
+		5. Have SCIPLAN "Full Disk Magnetogram" entry running the
+		   whole 24 hours and list the times of the magnetogram
+		   images.
+HISTORY:
+	Written 27-Apr-95 by M.Morrison
+;-
+;+
+ro mk_tfi, fname, qdebug=qdebug
+
+ PURPOSE: To create an index file for specified data set
+
+ PARAMETERS: fname - Data set name
+ HISTORY:
+	Written 1994 by D.Mathur
+	31-Mar-95 (MDM) - Modified to write the end record number 
+			  properly for compressed data and for cases
+			  of non-compressed when no fill is used
+			- Added SeqID to the info saved
+	31-Mar-95 (MDM) - Modified to have the proper end record number
+			  for the case where the EOF is causing the write.
+			  Added "+eof(lun_tfr)"
+	18-Apr-95 (MDM) - Added /QDEBUG
+			- Changed the format statement slightly
+			- Corrected the 31-Mar-95 patch (it did not
+			  handle the case where EOF was found but there
+			  was one fill record after the data product --
+			  ie: two matched for the end of DP cases)
+	25-Apr-95 (MDM) - Added capability to get around FINDFILE 
+			  limitations which were causing a false failure
+;-
+;+
+ro wrt_ld_cmd, lun, segment, offset, buf
+
+ Creates a control file to load data contained in "buf".
+     Parameters:
+        lun     - logical unit on which the output file is open
+        segment - DEP Load Address Segment
+        offset  - DEP Load Address Offset
+        buf     - An array containing data to be loaded
+
+;-
+;+
+NAME:
+	mmap_imgnum
+PURPOSE:
+	To figure out which images are which in a Michelson tuning
+SAMPLE CALLING SEQUENCE:
+	mmap_imgnum, imgarr, idark, iobs, im1, im2, comment
+INPUT:
+	imgarr	- The integer array saying which images to use,
+				 OR
+		  the number of images in the cube.  COMMENT is not
+		  passed back if this is the case
+OUTPUT:
+	idark	- The subscript(s) in imgarr which signify the dark 
+		  image(s)
+	iobs	- The subscript in imgarr which is the OBS image
+	im1	- The subscript in imgarr where the 10 position M1 tuning starts
+	im2	- The subscript in imgarr where the 10 position M2 tuning starts
+	comment	- The comment line used in DISP_MMAP describing which images were used
+COMMENTS:
+	29 set: 1 obs, 1 dark, 10 m1 varies, 10 m2 varies, 
+	        1 obs, 1 dark, 4 "nominal", 1 "continuum"
+	27 set: 1 obs, 4 "nominal", 1 dust (?), 1 dark
+		10 m1 varies, 10 m2 varies
+	21 set: 1 dark, 10 m1 varies, 10 m2 varies
+	22 set: 1 dark, 1 obs, 10 m1 varies, 10 m2 varies
+HISTORY:
+	Written 15-Jun-94 by M.Morrison (removed it from MAPLASER)
+;-
+;+
+NAME:
+	mmap_unwrap
+PURPOSE:
+	To look at an phase image and see if there is wrap around within
+	the image and to correct it if there is
+INPUTS:
+	phas	- the phase image
+HISTORY:
+	Written 17-Jun-94 by M.Morrison (extracted from MAP_LASER)
+;-
+;+
+ NAME:
+	MYTV
+ PURPOSE:
+	Overlay an image and a contour plot. of a second image
+ CATEGORY:
+	General graphics.
+ CALLING SEQUENCE:
+	tvcont, A, overl
+ INPUTS:
+	A = 2 dimensional array to display.
+	overl = 2 dimensional array to contour and overlay.
+ KEYWORD PARAMETERS:
+	/WINDOW_SCALE = set to scale the window size to the image size,
+		otherwise the image size is scaled to the window size.
+		Ignored when outputting to devices with scalable pixels.
+	/ASPECT = set to retain image's aspect ratio.  Assumes square
+		pixels.  If /WINDOW_SCALE is set, the aspect ratio is
+		retained.
+	/INTERP = set to bi-linear interpolate if image is resampled.
+	title, set the image title
+ OUTPUTS:
+	No explicit outputs.
+ COMMON BLOCKS:
+	none.
+ SIDE EFFECTS:
+	The currently selected display is affected.
+ RESTRICTIONS:
+	None that are obvious.
+ PROCEDURE:
+	If the device has scalable pixels then the image is written over
+	the plot window.
+ MODIFICATION HISTORY:
+	PNM, May, 1993.		Modified further...
+	PNM, Feb, 1990.		Modified image_cont to use second image
+	DMS, May, 1988.
+;-
+;+
+ NAME:
+	MYTVCONT
+ PURPOSE:
+	Overlay an image and a contour plot. of a second image
+ CATEGORY:
+	General graphics.
+ CALLING SEQUENCE:
+	MYtvcont, A, overl
+ INPUTS:
+	A = 2 dimensional array to display.
+	overl = 2 dimensional array to contour and overlay.
+ KEYWORD PARAMETERS:
+	/WINDOW_SCALE = set to scale the window size to the image size,
+		otherwise the image size is scaled to the window size.
+		Ignored when outputting to devices with scalable pixels.
+	/ASPECT = set to retain image's aspect ratio.  Assumes square
+		pixels.  If /WINDOW_SCALE is set, the aspect ratio is
+		retained.
+	/INTERP = set to bi-linear interpolate if image is resampled.
+	title, set the image title
+	delta, set the distance between contours
+	subtitle, set the subtitle
+	
+ OUTPUTS:
+	No explicit outputs.
+ COMMON BLOCKS:
+	none.
+ SIDE EFFECTS:
+	The currently selected display is affected.
+ RESTRICTIONS:
+	None that are obvious.
+ PROCEDURE:
+	If the device has scalable pixels then the image is written over
+	the plot window.
+ MODIFICATION HISTORY:
+	PNM, May, 1993.		Modified further...
+	PNM, Feb, 1990.		Modified image_cont to use second image
+	DMS, May, 1988.
+;-
+;+
+ NAME:
+	NEXT_FNAME
+ PURPOSE:
+	Compute the next filename to use in a series of fits files.
+ CATEGORY:
+	Opt_test. low level
+ CALLING SEQUENCE:
+	result = NEXT_FNAME,DESC,[image#],PIPE=
+ INPUTS:
+	
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Dec. 1992  P. Milford  Stanford University.
+;-
+;+
+unction nimg_in_tfr, fnam
+
+ Returns number of images in a data set
+HISTORY:
+	17-Mar-94 (MDM) - Renamed from NUM_IMAGES to NIMG_IN_TFR
+			- Added a FREE_LUN call
+;-
+;+
+ NAME:
+	Patchext
+ PURPOSE:
+	Read a sequence of fits files and extract a patch, derotate it too
+	an interpolate to fixed time grid
+ CATEGORY:
+	MDI. Optical testing
+ CALLING SEQUENCE:
+	result=patchext,basename,startimage,endimage,raster=
+ INPUTS:
+	basename, base input filename including extension. e.g. N.fits
+	startimage, endimage, start and end image numbers to read
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+       SCALE, scale factor for images, 0 or [0,0] for autocale, [min,max]
+       for manual scaling.
+       TAPE, set to 1 for raw tape format.
+       SKIP, skip this many images at start of fil
+       DIV, Scale image down by this fator before display.
+       Image size must be evenly divisible by this factor (uses REBIN).
+       RASTER, select a subraster from image. [x,y,size]. Not present
+       or size=0 for no subraster.
+       FTYPE, set to force file type.
+       RECORD, optionally record the image on video disk player.
+ OUTPUTS:
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Dec. 1992  P. Milford  Stanford University. Update to permit list
+	of files to be viewed
+	Oct. 1992  P. Milford  Stanford University.
+;-
+;+
+NAME:
+	plot_gcross
+PURPOSE:
+	To plot the grid cross data - time series and location variation
+SAMPLE CALLING SEQUENCE:
+	plot_gcross, mat, tit0
+INPUT:
+	mat	- The matrix with the FIT_GCROSS output
+	tit0	- The title to display
+	smoo	- The smoothing to display
+OPTIONAL KEYWORD INPUT:
+	xytrend	- If set, Show an additional plot with the X position plotted
+		  versus image number, and Y pos versus image number
+	qscreen	- If set, screen (how?) before choosing the min/max
+	plot_list - If set, only plot the plots listed in that string
+		    String items: rawp, smoop, diff, m1, m2, pol
+HISTORY:
+	Written 26-Apr-94 by M.Morrison
+V3.1	27-Apr-94 (MDM) - Modified to plot the residuals from the RAW-SMOOTH
+			  separated by PAW and M Tuning
+			- Plot the average of all repeats all on one plot
+V3.2	 3-Jun-94 (MDM) - Added capability to only do single plot
+			  (so that we can do guide plots)
+			  (added PLOT_LIST optional keyword input)
+;-
+;+
+NAME:
+	pr_hk_info
+PURPOSE:
+	To display information on the MDI Housekeeping mnemonics
+SAMPLE CALLING SEQUENCE:
+	pr_hk_info
+	pr_hk_info, 'pr_hk_info.txt'
+	pr_hk_info, outfil
+INPUT:
+	outfil	- Optional output file to write to
+HISTORY:
+ V1.0	Feb-94 by M.Morrison
+ V2.0	15-Jul-94 (MDM) - Added information on mnemonic type (A, D, or R)
+			- Added info on total number of bits of data
+			- Added info on which HK summary file the info goes in
+ V2.1	16-Jan-95 (MDM) - Added INFIL option
+ V3.0	24-Jan-95 (MDM) - Added INSIM and LONG option
+ V3.1	 6-Feb-95 (MDM) - Modified LONG option output format
+;-
+;+
+NAME:
+	rd_ccdh_fil
+PURPOSE:
+	To read the 1109 bytes of CCDH transfer frame file 
+SAMPLE CALLING SEQUENCE:
+	ccd_hdr = rd_ccdh_fil(infil, pkt_info=pkt_info, n=n)
+	ccd_hdr = rd_ccdh_fil('/PDS0/D10230/lev0/ffffff02_01h/017191/0000.ccdh')
+INPUT:
+	infil	- The input file name
+OPTIONAL KEYWORD OUTPUT:
+	pkt_info- A structure with the packet information
+OPTIONS
+	ccd_hdr = rd_ccdh_fil(infil)
+	print, ccd_hdr_info(ccd_hdr, /ccdtemp)
+	print, ccd_hdr_info(ccd_hdr, /nwords)
+HISTORY:
+	Written 12-Apr-95 by M.Morrison
+;-
+;+
+NAME:
+	rd_hist_dbase
+PURPOSE:
+	To read the history database definition file READ_HIST.DBS
+SAMPLE CALLING SEQUENCE:
+	rd_hist_dbase, ootc, blktc, lvt_param, lvt_tx, lvt_txs, ca, cas, $
+		hk1, hk2, schk, pdde, pdco, pca, pcdi, infil=infil
+OPTIONAL KEYWORD INPUT:
+	infil	- THe input file to read
+OUTPUT:
+	ootc, blktc, lvt_param, lvt_tx, lvt_txs, ca, cas, $
+		hk1, hk2, schk, pdde, pdco, pca, pcdi
+
+	map2pack - Same length as LVT_PARAM and tells which packet the
+		   mnemonic is present in.
+HISTORY:
+	Written Apr-94 by M.Morrison
+	16-Jan-95 (MDM) - Added SCHK1, SCHK2, and SCHK4
+			- Added MAP2PACK
+	25-Jan-95 (MDM) - Added allowing exit when MSG_TYPE = 0
+			- Print the number of bytes read
+;-
+;+
+NAME:
+	rd_hk
+PURPOSE:
+	To directly read from the .mdihk files
+SAMPLE CALLING SEQUENCE:
+	out = rd_hk(infil)
+	out = rd_hk(infil, head=head)
+	out = rd_hk(infil, strec, enrec, head=head)
+	dummy = rd_hk(infil, head=head, /only_head)
+	head = rd_hk(infil, /only_head)
+INPUT:
+	infil
+	strec
+	enrec
+OUTPUT:
+	out
+OPTIONAL KEYWORD OUTPUT:
+	head
+OPTIONAL KEYWORD INPUT:
+	only_head - If set, then just read the header, and return it
+		    as the function return.
+	new	  - If set, then read the file as the new "REL" organization
+		    which has slightly different structure, and has an
+		    ASCII header.
+HISTORY:
+	Written 23-May-94 by M.Morrison
+	26-May-94 (MDM) - Revised to not have a HEADER structure in
+			  the .mdihk file and to only have it in the
+			  .mdihkx file
+	31-May-94 (MDM) - Modified to figure the number of records properly
+			  when the input file is .schk
+	11-Jan-95 (MDM) - Modified to work on SCHK1,2,4
+	23-Jan-95 (MDM) - Added /NEW option
+			- Added /QDEBUG option
+	 7-Jun-95 (MDM) - Added code to figure out and handle the New flight
+			  HK database (fool it by creating a false roadmap)
+	12-Jun-95 (MDM) - Added /SCI option and recognizing ".sci"
+			- Removed code and started using RD_PKT_HEAD
+			- Removed the hardwired step size
+;-
+;+
+NAME:
+	rd_pkt_head
+PURPOSE:
+	To read the ASCII header at the front of the MDI HK, S/C HK,
+	and SCI5K files.
+INPUT:
+	fil_lun	- The file name or logical unit to read
+OUTPUT:
+	head	- The string array header
+	nbyte	- The number of bytes of the header
+	info	- A structure with information of the header
+HISTORY:
+	Written 12-Jun-95 by M.Morrison
+;-
+;+
+ NAME:
+	RDPIX
+
+ PURPOSE:
+	Interactively display the X position, Y position, and pixel value 
+	of the cursor.
+
+ CATEGORY:
+	Image display.
+
+ CALLING SEQUENCE:
+	RDPIX, Image [, X0, Y0]
+
+ INPUTS:
+	Image:	The array that represents the image being displayed.  This 
+		array may be of any type.  Rather reading pixel values from 
+		the display, they are taken from this parameter, avoiding 
+		scaling difficulties.
+
+ OPTIONAL INPUT PARAMETERS:
+	X0, Y0:	The location of the lower-left corner of the image area on
+		screen.  If these parameters are not supplied, they are
+		assumed to be zero.
+
+ OUTPUTS:
+	None.
+
+ COMMON BLOCKS:
+	None.
+
+ SIDE EFFECTS:
+	The X, Y, and value of the pixel under the cursor are continuously 
+	displayed.
+
+ RESTRICTIONS:
+	None.
+
+ PROCEDURE:
+	Instructions are printed and the pixel values are printed as the 
+	cursor is moved over the image.
+
+	Press the left or center mouse button to create a new line of output,
+	saving the previous line.
+
+	Press the right mouse button to exit the procedure.
+
+ MODIFICATION HISTORY:
+	DMS, Dec, 1987.
+;-
+;+
+ro rdsci, fn
+ 
+ Reads and displays one data block from 5k data files.
+ The argument specifies the base file name, without the number and extension.
+
+ 5k data files contain upto 50 records of 424 bytes each.
+ The records contain a 42 byte header followed by a 382 byte data block.
+;-
+;+
+ro rdsci1, fn
+ 
+ Reads and displays one data block from 5k data files.
+ The argument specifies the base file name, without the number and extension.
+
+ 5k data files contain upto 50 records of 424 bytes each.
+ The records contain a 42 byte header followed by a 382 byte data block.
+;-
+;+
+ro rdtfr, fnam, img, hdr, timeblk, nimg=nimg, first=first, dpc=dpc, qstop=qstop, nodata=nodata
+  This subroutine reads images from a 160k decom file and places the requested
+  images in caller's array.
+
+  Call:
+	fnam:	name of the decom file, without the file number or the .tfr extension.
+	img:	array for image data (will be dimensioned [x,y,nimg])
+       hdr:	array for headers (dimensioned [549,nimg])
+       nimg:	on INPUT specifies number of images: routine will then return 
+			only the first nimg images (or less if file ends sooner)
+		on OUTPUT has the actual number of images read
+		(optional parameter)
+       first:	optional parameter. Used it to specify the first image to be
+               extracted 
+       dpc:    The data product code to be extracted.
+
+  Method:
+       The "index" file is used to determine the file number and record number
+       where the first image begins. If the index file is not found, it is 
+       created using the MK_TFI procedure. Successive records are read, until
+       the entire image is read. The procedure is repeated if more than one image
+       is to be extracted, until the required number of images has been read.
+
+  NOTE:
+       The routine can be used repetitively to extract nimg images of a given type.
+       To use it repetitively, the nimg and the first keywords should be variable
+       names rather than values. The routine will update these variables upon exit.
+
+       If the DPC keyword is absent, the DPC code of the first image is selected.
+
+       The routine creates a temporary disk file to hold all the data for requested
+       images. This file is deleted when control is returned to the caller but the 
+       routine will fail if sufficient disk space is not available.
+HISTORY:
+	Written by Dnyanesh Mathur
+	 4-Apr-94 (MDM) - Added code to work with DEC machines
+			- Modified so that temporary disk file would not have
+			  to be made.
+	12-Apr-94 (MDM) - Expanded to process compressed or packed data also
+			- Added DPC FFFFFF84
+	15-Apr-94 (MDM) - Made MK_TFI use a long word for the record number
+	18-Apr-94 (MDM) - Modified to use GET_DPC_INFO and various other changes
+	 4-May-94 (MDM) - Modified to save the record number as integer*2 since
+			  that is the size of the TFI_REC array.  Fixed some
+			  other problems with reading on DEC versus SGI.
+	 5-May-94 (MDM) - Changed TFX file to be INTEGER*4
+			  Changed .tfx file name to be .tfrx
+	12-May-94 (MDM) - Removed all routines and functions and made their
+			  own files (to avoid compilation problems)
+			- Replaced get_image_params with get_dpc_info
+	21-Sep-94 (MDM) - Modified how the routine worked for unknown DPCs
+			- Added /QSTOP option
+			- Removed the "print, !stime" comments
+	20-Jan-95 (MDM) - Modified to handle the case where a file ends 
+			  exactly at the end of the data product, and the
+			  data product is set up to have a buffer (number of
+			  words) which is the largest possible.  The repeat
+			  loop did not recognize that it is at the end of
+			  the dataset.
+	28-Mar-95 (MDM) - Added the option /NODATA.  Only works if calling
+			  the file to read a single image
+	31-Mar-95 (MDM) - Added call to close the TFR_DECOM unit at the
+			  beginning - to make sure everything is starting
+			  at a known state.
+	20-Apr-95 (MDM) - Added another /OVERWRITE command for REFORM at
+			  the end (for img)
+	25-Apr-95 (MDM) - Added byte swapping for HDR when /NODATA is set
+	26-Apr-95 (MDM) - Modified the REFORM of the HDR so that the 
+			  reform worked properly for cases where there are
+			  missing images
+			- Modified how the /NODATA switch worked (involved
+			  moving how the data/header is extracted)
+	 3-May-95 (MDM) - Modified how the /NODATA grabs the TIMEBLK value
+			  for output
+;-
+;+
+unction get_image_param, dpc, nx, ny, npix
+
+ Returns image dimensions and number of pixels from the data product code
+;-
+;+
+unction get_image_param, dpc, nx, ny, npix
+
+ Returns image dimensions and number of pixels from the data product code
+ HISTORY:
+	Written by D. Mathur
+	18-Apr-94 (MDM) - Stripped out the code and called GET_DPC_INFO
+			  which uses a database file to get the information
+			  needed.
+;-
+;+
+NAME:
+	read_mdi
+PURPOSE:
+	To read MDI FITS files, telemetry files, or Microvax "F0" files
+SAMPLE CALLING SEQUENCES:
+	read_mdi, '/umbradata3/optest/940222_190446', [0,1,2], img, h
+	read_mdi, '/umbradata2/optest/pdist616.',     [3,4,5], img, h
+	read_mdi, 621, indgen(20), img, h
+
+	read_mdi, seq_filnam, images, code, txtnam, /type_info
+
+	read_mdi, seq_filnam, dummy, all_files, /list_files
+INPUT:
+	seq_filnam	- Integer ==> sequence number and it is 
+				      FITS file on quake
+			  (OR 4 character string with first 3 char as integer)
+			- String with first 6 characters as integers
+				  ==> telemetry file
+			- Otherwise ==> Microvax/IDL "F0" file
+	images		- List of images to read
+			  Count from 0, so add one for telemetry reader
+OPTIONAL KEYWORD INPUT:
+	type_info	- if set, then return the type of input file
+			  and a string which is the text file output
+			  filename.
+	list_files	- If set, then return the .FITS files in that
+			  directory
+	nimages		- If set, then return the number of images for
+			  that sequence or telemetry file
+OPTIONAL OUTPUT:
+	code		- if /TYPE_INFO is set, return input data type
+				0 = FITS file on quake	
+				1 = telemetry file	
+				2 = Microvax/IDL "F0" file
+	txtfil		- if /TYPE_INFO is set, return text filename
+			  For the examples above:
+				"940222_190446"
+				"pdist616"
+				"seq612"
+HISTORY:
+	Written Feb-94 by M.Morrison
+	15-Mar-94 (MDM) - Modified to convert the time returned by
+			  RDTFR and create a FITS header
+	18-Mar-94 (MDM) - Modification so that FITS header is created
+			  properly for telemetry file
+	30-mar-94 (MDM) - Modified to allow "SEQ_FILNAM" to be a
+			  4 character string with first 3 char as integer
+			  and be recognized as a FITS file
+	 4-Apr-94 (MDM) - Added /nimages option
+	 5-Apr-94 (MDM) - Modified to put the CCD temperature into the
+			  FITS header from the telemetry integer array hdr
+	 6-Apr-94 (MDM) - Added "tfr_head" optional output
+			- Added M1TUNE and M2TUNE info into FITS header
+	 7-Apr-94 (MDM) - Added /RDHR option
+	12-Apr-94 (MDM) - Modified to recognize telemetry file names
+			  if first three leters are "tlm"
+	15-Apr-94 (MDM) - Modified how CAT series are recognized
+	26-May-94 (MDM) - Added M1TUNE and M2TUNE into FITS header
+			  when reading FITS file (gotten from SEQID)
+			- REMOVED ^^ code
+	15-Jun-94 (MDM) - Add M1TUNE and M2TUNE to FITS header
+			  by first checking DESCR_D and _E and then
+			  check SEQID if it is 0 in _D and _E.
+	17-Jun-94 (MDM) - Added /QSTOP and /QDEBUG
+	21-Jun-94 (MDM) - Added check of /mdisw/dbase/cal/info/lev0log if
+			  /home/soi/data/lev0log did not give results.
+	 9-Aug-94 (MDM) - Added DIR_MANUAL option to override locations
+			  of the FITS files (the default is to figure out
+			  the directory by looking in /home/soi/data)
+			- Modified to figure out FITS files location on
+			  non-stanford machines by looking in /md55/fits.
+	 1-Sep-94 (MDM) - Corrected error introduced 9-Aug-94 when running
+			  on quake
+	 6-Sep-94 (MDM) - Corrected error when rotation of the image was
+			  needed.
+			- Changed logic when reading out of lev0log file 
+			  to use the last entry listed (for case of
+			  double listing as in apr903)
+	 6-Oct-94 (MDM) - Added patch so that the OCT series files which
+			  are not simply 0000.fits can be read.
+	 7-Oct-94 (MDM) - Modified to use "EUR" for datasets over 2000
+	20-Dec-94 (MDM) - Modified to be able to read multiple 1-D 
+			  vector datasets.  Previously it only allowed
+			  multiple 2-D datasets.
+	28-Mar-95 (MDM) - Added /NODATA option
+			- Changed the time calculation to use double
+	20-Apr-95 (MDM) - Modified to work on new DSDS "raw" directory
+	26-May-95 (MDM) - Modified to check $MDI_CAL_INFO for the "lev0log"
+			  file first and then /home/soi/data/lev0log
+			  (it previously did the opposite order)
+	 1-Jun-95 (MDM) - Put more debugging statements in
+;-
+;+
+ NAME:
+        RFITS
+ PURPOSE:
+        Reads a standard FITS disk file into an array.
+ CATEGORY:
+        Input/Output.
+ CALLING SEQUENCE:
+        result = rfits(filename)
+ INPUTS:
+        filename = string containing the file name.
+ OPTIONAL (KEYWORD) INPUT PARAMETERS:
+        index = nonnegative integer. If this parameter is present, a period
+              and the index number are appended to the filename (e.g., '.34').
+              This option makes handling of data in the MCCD file naming
+              convention easier.
+        scale = if set, floating point array is returned, reflecting
+                that true value = read value * bscale + bzero.
+ OUTPUTS:
+        result = byte, integer, or long array, containing the FITS data array.
+               The dimensionality of result reflects the structure of the FITS
+               data.  If keyword scale is set, then floating point array.
+ OPTIONAL (KEYWORD) OUTPUT PARAMETERS:
+        date_obs = date of observation (string).
+        time_obs = time of observation (string).
+        header = string vector, containing the full FITS header (each element
+                 of the vector contains one FITS keyword parameter).
+ COMMON BLOCKS:
+        None.
+ SIDE EFFECTS:
+        None.
+ RESTRICTIONS:
+        Only simple FITS files are read. FITS extensions (e.g., groups and
+        tables) are not supported.
+ MODIFICATION HISTORY:
+        JPW, Nov, 1989.
+        nn, jan, 1992, to add the option to return array containing
+                       true values calculated from bscale and bzero.
+	MDM (16-Sep-92) - Added code to do byte swapping when the output
+			  array is integer*2 or integer*4 and reading on a
+			  DEC machine.
+	MDM (16-May-93) - Expanded to handle REAL*4 and REAL*8 data types.
+	MDM (27-Jan-94) - Corrected so that it could handle long 1 dimensional
+			  arrays (replaced FIX with LONG)
+	MDM (29-Jun-94) - Added /QSTOP option
+;-
+;+
+ro get_image,win_idx
+
+ Program to read and display real time High rate data
+
+;-
+;+
+NAME:
+	sat_obs_loc
+PURPOSE:
+	To return the location of a saturated point source.
+INPUT:
+	img	- a single image or array of images
+OUTPUT:
+	x	- The x location in pixels
+	y	- The y location
+OPTIONAL KEYWORD INPUT:
+	qplot	- If set, display plots of the summed rows/columns
+METHOD:
+	It assumes that there is some scatter and that if you
+	add up all of the line you can find the x location, and
+	the same is true for adding the columns and finding
+	the y location
+HISTORY:
+	Written 4-Apr-94 by M.Morrison
+	27-Apr-94 (MDM) - Patch to work on MDIBBS (??) - segment
+			  fault at "total" line.
+;-
+;+
+ NAME: sgn
+
+ PURPOSE: Return the sign of the argument. 
+	   If the argument is zero, return zero.
+
+ CALLING SEQUENCE:  out=sgn(in)
+
+ PARAMETERS:
+		in	input number
+		out	-/0/+
+
+ RETURN TYPE: INTEGER                               
+
+ HISTORY: Drafted by A.McAllister, Feb. 1993.
+
+;-
+;+
+NAME:
+	sharpfocus
+PURPOSE:
+	To 
+HISTORY:
+	Written 6-Apr-94 by M.Morrison (using Zayer routine as start)
+	26-Apr-94 (MDM) - Added /ISS option
+;-
+;+
+ NAME:
+	START_FFILES
+ PURPOSE:
+	Prepare to start reading fits files in one of several file nameing
+	schemes, or as a list of files.
+ CATEGORY:
+	MDI. Optical testing, low level
+ CALLING SEQUENCE:
+	START_FFILES,FDESC,BASE,STARTV,ENDV,PIPE=
+ INPUTS:
+	basename, base input filename including extension. e.g. N.fits
+	startimage, endimage, start and end image numbers to read
+ OPTIONAL INPUT PARAMETERS:
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+	FDESC, an output file descriptor.
+ OPTIONAL OUTPUT PARAMETERS:
+ COMMON BLOCKS:
+ SIDE EFFECTS:
+ RESTRICTIONS:
+ PROCEDURE:
+ MODIFICATION HISTORY:
+	Dec. 1992  P. Milford  Stanford University.
+;-
+;+
+ NAME:
+	STARTFITS
+ PURPOSE:
+	Create a blank FITS header and insert initial FITS information.
+	(SIMPLE=T)
+ CATEGORY:
+	File IO. 
+ CALLING SEQUENCE:
+	STARTFITS,HEADER
+ INPUTS:
+	
+ KEYWORD PARAMETERS:
+ OUTPUTS:
+	HEADER, a byte array with mostly blanks, updated later with other
+	FITS header information.
+ COMMON BLOCKS:
+	FITSW, used to keep track of output ROW in FITS HEADER.
+ SIDE EFFECTS:
+ RESTRICTIONS:
+	Can only have one FITS HEADER for output at one time - limit in
+	FITW common block keeping rowno...
+ PROCEDURE:
+	Call STARTFITS first. Call FITSVALUE or FITSTRING repeatedly
+	Call ENDFITS when HEADER has all required information.  Write
+	Header followed by byteswapped data.
+ MODIFICATION HISTORY:
+	Jan. 1990  P. Milford  Stanford University.
+;-
+;+
+	SWABI returns byte-swapped values for INTEGER and LONG data types.
+
+ 	Usage:    Result=swabi(num)  where num may be a scalar or array	
+
+					-EMH    15-DEC-1988
+					modified Jul. 1992 by IZ
+;-
+;+
+NAME:
+	tfr_decom
+PURPOSE:
+	To decompress a single telemetry frame
+SAMPLE CALLING SEQUENCE:
+	decom_rec = tfr_decom(rec)
+COMMENTS:
+	idl_speed & read_mdi,'/md54/mdisw_idl_guide/940422_035054',1,img,h  & idl_speed,1
+HISTORY:
+	Written Apr-94 by M.Morrison & R.Chevalier
+	31-Mar-95 (MDM) - Added a new option to use CALL_EXTERNAL
+			  for MDI SGI machines.  The old method is
+			  still available which uses a pipe with STDIO
+			  which is much slower
+	 3-Apr-95 (MDM) - Added umbra to the machines that can use
+			  CALL_EXTERNAL
+	 6-Apr-95 (MDM) - Expanded to work with Ultrix machines
+;-
+;+
+NAME:
+	tfr_summary
+SAMPLE CALLING SEQUENCE:
+	tfr_summary, file_list('/md66/log/sci160k','950329_000458*.tfr', /bydate)
+	tfr_summary, file_list('/md66/log/sci160k','*.tfr', /bydate)
+HISTORY:
+	Written 3-Apr-95 by M.Morrison
+;-
+;+
+NAME:
+	tv2
+PURPOSE:
+	To allow a user to output an image to a PS device and
+	to specify the location (and size) in pixels.
+SAMPLE CALLING SEQUENCE:
+	tv2, image, x0, y0
+	tv2, xsiz_pix, ysiz_pix, /init
+	tv2, xsiz_pix, ysiz_pix, /init, window=0
+INPUTS:
+	image	- The byte scaled image to display 
+		  (except when /INIT is used -- in that case it is 
+		  the X size of the window in pixels)
+	x00	- The left corner pixel coordinate of the image
+		  (except when /INIT is used -- in that case it is
+		  the Y size of the window in pixels)
+	y00	- The lower corner pixel coordinate of the image
+OPTIONAL KEYWORD INPUT:
+	landscape - If set, output in postscript mode
+		  Has no effect when the output device is "X"
+	window	- The window number to create 
+		  Has no effect when the output device is "PS"
+	already	- Do not create the window if it already exists
+		  and is the proper size
+		  Has no effect when the output device is "PS"
+	ppinch	- Force the size of the output to be a fixed number
+		  of "pixels per inch".
+	color	- If set, issue the device commands for color
+		  Has no effect when the output device is "X"
+	hwfont	- If set, use hardware fonts
+		  Has no effect when the output device is "X"
+	revcolor - If set, set !color to 0 for device PS so that
+		  writing will be in black on white paper.  Set
+		  !color to 255 for device X so that writing is
+		  white on a black background.
+METHOD:
+	Since the output size of the window is defined in pixels,
+	TV2, XYOUTS2, and PLOTS2 can convert the pixel coordinates
+	into inches when sending the output to the postscript device.
+	The aspect ratios are all figured out to maintain proper
+	proportions
+HISTORY:
+	Written Feb-94 by M.Morrison
+	 9-Jun-94 (MDM) - 
+	10-Aug-94 (MDM) - Added ppinch optional input
+	 7-Apr-95 (MDM) - Added /COLOR and /HWFONT options
+;-
+;+
+ NAME:
+	TVC
+ PURPOSE:
+	Overlay an image and a contour plot. of a second image
+ CATEGORY:
+	General graphics.
+ CALLING SEQUENCE:
+	tvc, A, overl
+ INPUTS:
+	A = 2 dimensional array to display.
+	overl = 2 dimensional array to contour and overlay.
+ KEYWORD PARAMETERS:
+	/WINDOW_SCALE = set to scale the window size to the image size,
+		otherwise the image size is scaled to the window size.
+		Ignored when outputting to devices with scalable pixels.
+	/ASPECT = set to retain image's aspect ratio.  Assumes square
+		pixels.  If /WINDOW_SCALE is set, the aspect ratio is
+		retained.
+	/INTERP = set to bi-linear interpolate if image is resampled.
+	title, set the image title
+	delta, set the distance between contours
+	subtitle, set the subtitle
+	
+ OUTPUTS:
+	No explicit outputs.
+ COMMON BLOCKS:
+	none.
+ SIDE EFFECTS:
+	The currently selected display is affected.
+ RESTRICTIONS:
+	None that are obvious.
+ PROCEDURE:
+	If the device has scalable pixels then the image is written over
+	the plot window.
+ MODIFICATION HISTORY:
+	IZ,  Jun, 1993.		Modified from mytvcont
+	PNM, May, 1993.		Modified further...
+	PNM, Feb, 1990.		Modified image_cont to use second image
+	DMS, May, 1988.
+;-
+;+
+ NAME:
+	TVCONT
+ PURPOSE:
+	Overlay an image and a contour plot. of a second image
+ CATEGORY:
+	General graphics.
+ CALLING SEQUENCE:
+	tvcont, A, overl
+ INPUTS:
+	A = 2 dimensional array to display.
+	overl = 2 dimensional array to contour and overlay.
+ KEYWORD PARAMETERS:
+	/WINDOW_SCALE = set to scale the window size to the image size,
+		otherwise the image size is scaled to the window size.
+		Ignored when outputting to devices with scalable pixels.
+	/ASPECT = set to retain image's aspect ratio.  Assumes square
+		pixels.  If /WINDOW_SCALE is set, the aspect ratio is
+		retained.
+	/INTERP = set to bi-linear interpolate if image is resampled.
+	title, set the image title
+ OUTPUTS:
+	No explicit outputs.
+ COMMON BLOCKS:
+	none.
+ SIDE EFFECTS:
+	The currently selected display is affected.
+ RESTRICTIONS:
+	None that are obvious.
+ PROCEDURE:
+	If the device has scalable pixels then the image is written over
+	the plot window.
+ MODIFICATION HISTORY:
+	PNM, May, 1993.		Modified further...
+	PNM, Feb, 1990.		Modified image_cont to use second image
+	DMS, May, 1988.
+;-
+;+
+NAME:
+	view_image
+PURPOSE:
+	Rough method to display an image
+SAMPLE CALLING SEQUENCE:
+	.run view_image
+METHOD:
+	The program reads images from the 160k decom file or from fits
+	files or from F0 files.
+HISTORY:
+	Written 11-Mar-94 by M.Morrison (using SHOWDATA as starting point)
+	 9-Jun-94 (MDM) - Modified to handle stanford FITS files.
+	10-Jun-94 (MDM) - Set STEPPER_BREAK
+	28-Jun-94 (MDM) - Modified to work at Stanford for raw telem files
+;-
+;+
+NAME:
+	xcheckip
+PURPOSE:
+	To check the IP processing of data products
+SAMPLE CALLING SEQUENCE:
+	xcheckip
+	xcheckip, '/md60/log/sci160k/950118_232658'
+	xcheckip, '950118_232658,950119_010819,950119_013006,950124_002715', indir='/md60/log/sci160k', /runall
+METHOD:
+	1. Telemeter the raw image down in 160K line, manufacture
+	   the new IP data product, compare it to the data product
+	   made and telemetered down in the 160K line.
+	2. Same as above, but the IP data product is telemetered
+	   down in the 5K line.
+HISTORY:
+	Written 10-Apr-95 by M.Morrison
+	11-Apr-95 (MDM) - Modified how to recognize test classes
+			- Many changes/additions
+	 1-May-95 (MDM) - Modified to use GET_XFONT rather than DEF_FONT
+;-
+;+
+NAME:
+	xhkplot
+PURPOSE:
+	To plot the MDI and S/C HK data using a widget interface to
+	specify which mnemonics and how to plot it
+SAMPLE CALLING SEQUENCE:
+	xhkplot
+	xhkplot, '5-jan-95', '5-jan-95 3:00', mnem
+HISTORY:
+	Created 26-Jan-95 by M.Morrison
+	31-Jan-95 (MDM) - Various modifications
+			- Added SET PRINTER button
+			- Added SAVE INPUTS button and "infil" keyword input
+	12-Jun-95 (MDM) - Added LAST_N_HOURS option
+			- Added 1 sigma plotting option
+;-
+;+
+NAME:
+	xread_hist
+PURPOSE:
+	To accept user specification for the start/end time and
+	options to call the C READ_HIST module and to spawn the
+	call
+SAMPLE CALLING SEQUENCE:
+	xread_hist
+	xread_hist, '5-jan-95', '5-jan-95 3:00', mnem
+HISTORY:
+	Created 3-May-95 by M.Morrison
+	 5-May-95 (MDM) - Patch to work on FAULT (it was hanging
+			  because of a WIDGET_CONTROL call before
+			  the /realize command !?!?!?
+			- Added /EOF switch 
+	25-May-95 (MDM) - Added "-d", "-j", "-i" and "-a" options
+			  through to read_hist
+			- Coded the search option
+;-

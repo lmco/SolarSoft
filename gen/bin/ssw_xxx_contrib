@@ -1,0 +1,340 @@
+#!/bin/csh -f 
+#
+# S.L. Freeland  12-aug-1995 (SLF) Convert Yohkoh ys_contrib to ssw_contrib
+# S.L. Freeland  11-oct-1995 (SLF) add auto-tar, Environmental<ssw_contrib_dir>
+#			           and additional JOB file information
+# S.L  Freeland  19-aug-1996 (SLF) Change default output path
+# S.L  Freeland  15-oct-1996 (SLF) Update e-mail address
+# S.L. Freeland  17-nov-1996 (SLF) Eliminate .../contrib/... level
+#                                  [updates to -> sohoftp:/incoming/ssw/USER]
+# S.L. Freeland  18-apr-1996 (SLF) use csh -f 
+# S.L. Freeland  19-apr-1997 (SLF) use 'which_mail' 
+# S.L. Freeland  29-may-1997 (SLF) use $SSW/gen/bin/date2fid (simple unix command)
+# S.L. Freeland  21-Oct-1998 (SLF) copy *pros -> $SSW/site/ssw_contributed
+# S.L. Freeland  15-Sep-1999 (SLF) ssw_contrib -> ssw_xxx_contrib (ssw instr XXX masters)
+# S.L. Freeland  16-Sep-1999 (SLF) add -xxx and -master (synonyms)
+#				   
+# Name: ssw_xxx_contrib
+# Purpose: auto-ftp contributions to SolarSoft (SSW) Instrument XXX MASTER 
+# 
+# Calling Sequence:
+#   ssw_xxx_contrib <files>  [-path PATHNAME] [/nodelete]
+#   
+# Input Parameters:
+#   files - list of one or more files to transfer      
+#
+# Switches:
+#   /nodelete - dont delete local TAR and JOB files 
+#   /sswmod - notifies SSW-SW managers of update to  existing SW (priority)
+#   /get   - retrieves most recent version of specified routines   
+#	     (NOT YET IMPLEMENTED)
+#
+# ENVIRONMENTALS USED (optional)
+#   Remote NODE and PATH may be specified by setting environmentals...
+#   ssw_contrib_master - NODE for output (default = sohoftp.nascom.nasa.gov)
+#   ssw_contrib_dir    - PATH for output Relative to Anonymous FTP entry path
+#			      (default = ...incoming/ssw/$USER)
+#   sss_xxx - INSTR master prefix = GEN
+#
+# What it Does:
+#   Creates and transfers tar file, Name: ssw_contrib.USER.yymmdd.hhmmss.tar
+#   Creates and transfers job file, Name: ssw_contrib.USER.yymmdd.hhmmss
+#   Files are sent via anonymous FTP to NODE = $ssw_contrib_master under
+#                                       PATH = $ssw_contrib_dir[/USER] 
+################### Initiailize #######################
+set putfiles=()			# null list for starters
+set mail=1			# default, send mail
+set sswmod=0			# not SSW SW update
+set README=0			# no readme file
+set get=0			# default is put
+set ydb=0			# default is sofware/text
+set sswdir=""	                # no default output path target
+set pathon=0                    # true if next ARG is requested path...
+set xxxon=0                     # true if next ARG is xxx/master
+set incftp=0			# default - dont include ftp log
+set online="NO"			# default - not automatic online
+set delete=1			# default - cleanup local TAR and JOB files
+#######################################################
+
+########### Parse Input Parameters ####################
+foreach argx ($argv)
+   switch ($argx)
+        case -xxx
+	case -master
+	   echo "next ARG is Master/xxx"
+           set xxxon=1
+	   breaksw
+        case -path
+           echo "next ARG is path"
+           set pathon=1
+	   breaksw
+        case /nodelete:
+        case /nodel:
+           set delete=0
+           breaksw
+	case /nomail:
+	   set mail=0 
+ 	   breaksw
+	case /sswmod:
+	   set ysmod=1
+	   breaksw
+	case README:
+	   set README=1
+	   breaksw
+        case /get:
+           set get=1
+           breaksw
+	case /ydb:
+	   set ydb=1
+	   set get=1
+	   set mail=0
+           breaksw
+        case /ftplog
+	   set incftp=1
+           breaksw
+        case /online:
+           set online="YES"
+           breaksw
+        default:
+           if ($pathon) then                    # path get is ON
+              echo "setting path"
+              set sswdir=$argx
+              set pathon=0                      # turn path get OFF
+           else 
+	      if ($xxxon) then                  # xxx get is ON
+	         echo "setting master xxx: "$argx
+	         set ssw_xxx="$argx"
+	         set xxxon=0                    # turn xxx get OFF
+              else
+                 set putfiles=($putfiles $argx)
+	      endif
+           endif
+         breaksw
+     endsw
+end	   		
+#######################################################
+
+################### Help if no files ##################
+if ($#putfiles == 0) then
+   echo " <ssw_contrib> - contribute files/routines to the SSW system"
+   echo "                 (files are verified prior to moving online)"
+   echo " "
+   echo "Calling Examples:"
+   echo "      % ssw_contrib file [file2  file3...fileNN]    # << list of files"
+   echo "-OR-" 
+   echo '      % ssw_contrib *.pro         # << all *.pro files in current dir'
+   echo "-OR-"
+   echo "      % ssw_contrib directory     # << entire directory or tree"
+   exit
+endif
+#######################################################
+
+######### Determine login and transfer info ###########
+set user=`whoami`			# user name
+set host=`hostname`			# hostname
+set memail="$user"'@'"$host"		
+set ftpput="~/ssw_contrib.$user"	# ftp transfer file
+
+# use full host description if possible (hostname may just give alias)
+if (-e /etc/hosts) then
+   set thost=`grep "$host\." /etc/hosts`
+   if ($#thost > 2) then
+      set host=$thost[2] 
+   endif
+endif
+
+# Determine master (default is SSW)
+if (!($?ssw_xxx)) set ssw_xxx="gen"
+
+if (-e "$SSW/gen/setup/ssw_xxx_masters.dat") then 
+   echo "checking for master IP info..."
+   set chkxxx=`grep $ssw_xxx $SSW/gen/setup/ssw_xxx_masters.dat`
+   if ("$chkxxx" != "") then 
+      set ssw_contrib_master=`echo $chkxxx | cut -f2 -d":"`
+      if (!($?ssw_contrib_dir)) then
+         set testdir=`echo $chkxxx | cut -f3 -d":"`
+         if ("$testdir" != "") then 
+	    set ssw_contrib_dir="$testdir"
+            set testtop=`echo $chkxxx | cut -f4 -d":"`
+	    if ("$testtop" != "") then
+	       set ssw_xxx_top="$testtop"
+	    endif   
+         endif
+   endif
+   endif
+endif
+
+if (!($?ssw_contrib_master)) then 
+    set ssw_contrib_master="sohoftp.nascom.nasa.gov"   # backward compat
+endif
+if (!($?ssw_contrib_dir)) then 
+   set ssw_contrib_dir="/pub/incoming/ssw"
+endif   
+
+#######################################################
+# clean for people with noclobber and rm aliases...
+/bin/rm -f $ftpput
+/bin/rm -f $ftpput.log
+echo " " > $ftpput.log
+
+echo Generating ftp transfer script
+################## build ftp script ##################
+set autodir=1
+
+if ($?ssw_contrib_dir) then
+   set contdir="$ssw_contrib_dir"
+else
+   set contdir="/incoming/ssw/"		# sohoftp default
+endif
+
+echo open $ssw_contrib_master 		>  $ftpput
+echo user ftp $user"@"$host		>> $ftpput
+echo binary		 		>> $ftpput
+echo cd $contdir			>> $ftpput
+
+set autodir=1                           ############## Always ON, 15-sep-1999
+if ("$autodir" == 1) then 
+   echo mkdir $user		 	>> $ftpput
+   echo cd $user			>> $ftpput
+endif
+
+   ### request (get) logic ###
+set fid=`$SSW/gen/bin/date2fid`
+   ############# software contribution (put) logic ################
+set type="FilesTransfered:"
+set subj="Solar-Soft SW (SSW) Contribution"
+set found=()
+set notfound=()
+set onefound=0
+   foreach putfile ($putfiles)
+      set pfile=$putfile
+#     append  ".pro" if cannot find specified file
+      if (!(-e $pfile)) then
+         set prochk=`echo $pfile | grep .pro`
+         if("$prochk" == "") then
+            set pfile="$pfile"".pro"
+         endif
+      endif
+      if (!(-e $pfile)) then
+         echo Cannot find file: $putfile or $putfile".pro"
+         set notfound=($notfound $putfile)
+      else
+         set onefound=1
+         set found=($found $pfile)
+#         echo put $pfile $pfile:t		>> $ftpput
+      endif
+   end
+   if (!($onefound)) then
+      echo "None of your input files were found, aborting"
+      exit		############# Unstructured Exit
+   endif
+#  make tar file...
+   set tarfile="$ftpput:t"."$fid"".tar" 
+   tar -cf $tarfile $found
+   echo put $tarfile $tarfile			>> $ftpput
+   echo put $ftpput.log	"$ftpput:t"."$fid"	>> $ftpput	# include log
+endif
+echo bye		 			>> $ftpput
+##################################################################
+
+### identify the *.pro subset of $found ###
+set profiles=""
+foreach file ($found)
+   set chkpro=`echo $file | grep ".pro"`
+   set profiles=($profiles $chkpro)
+end
+
+if ($online == "YES") then 
+   if ($#profiles > 0 ) then
+     if (!($?SSW_CONTRIBUTED)) then 
+        setenv SSW_CONTRIBUTED $SSW/site/idl/ssw_contributed
+     endif
+     if (-d $SSW_CONTRIBUTED) then
+       foreach prof ($profiles) 
+          echo "Copying "$prof" online (local SSW_CONTRIBUTED"
+          rm -f $SSW_CONTRIBUTED/$prof
+          cp -p $prof $SSW_CONTRIBUTED/
+       end
+     else
+        echo "Directory $SSW_CONTRIBUTED does not exist"
+        echo "Files contributed to SSW but not online locally"
+     endif
+   endif
+else
+  echo "NO ONLINE REQUEST"
+endif
+
+############### Build output log file #################
+echo "---- "$subj" ""ssw_xxx_contrib ----"  >> $ftpput.log
+echo " " 				    >> $ftpput.log
+echo "From: "$user"@"$host		>> $ftpput.log
+echo " "				>> $ftpput.log
+set sub=""
+if ("$autodir" == 1) then
+   set sub="/"$user
+endif
+echo "MasterIP:   "$ssw_contrib_master         >> $ftpput.log
+echo "Master:     "$ssw_xxx                    >> $ftpput.log
+echo "MasterPath: "$ssw_xxx_top                >> $ftpput.log
+echo "JobPath:    "$contdir""$sub              >> $ftpput.log
+echo "JobName:    ""$ftpput:t"."$fid"          >> $ftpput.log
+echo "TarFile:    "$tarfile		       >> $ftpput.log
+echo "SSWPath:    "$sswdir	               >> $ftpput.log
+echo " " 				>> $ftpput.log
+echo "$type" " " $found 		        >> $ftpput.log
+echo " " 				>> $ftpput.log
+if ($#notfound > 0) then
+  echo "FilesNotFound: "$notfound  >> $ftpput.log
+  echo " " 				>> $ftpput.log
+endif
+echo "-------------------------------------------" >> $ftpput.log
+#######################################################
+
+if ($README == "1") then
+   echo "---------- README File ------------" >> $ftpput.log
+   if (-e README) then
+      cat README >> $ftpput.log   
+   else
+      echo could not find file README   >> $ftpput.log
+      echo could not find file README   
+   endif
+   echo "-----------------------------------" >> $ftpput.log
+endif
+echo " " >> $ftpput.log
+
+#######################################################
+
+############### ftp transfer ########################## 
+
+# start ftp
+if (!($get)) echo Initiating ftp transfer to $ssw_contrib_master 
+if ($incftp) then 
+   echo "---------- ftp output log ------------" >> $ftpput.log
+   ftp -ivn < $ftpput >> $ftpput.log
+else 
+   ftp -ivn < $ftpput > /dev/null 
+endif
+
+#######################################################
+
+###### Send Mail to Software and Contributor ##########
+if ($mail) then 
+   if ($sswmod) set subj="$subj"" \!\!\! SSW MOD \!\!\!"
+   echo sending mail to SSW account and $memail
+   source $SSW/gen/bin/which_mail
+   set wmail=`$SSW/gen/bin/print_env which_mail`
+   $wmail -s "$subj" $memail" freeland@penumbra.nascom.nasa.gov"  < $ftpput.log
+endif
+#######################################################
+
+######## cleanup ############
+if ($?getlist) then
+   if (-e $getlist) /bin/rm -f $getlist
+endif
+
+if ($delete == 1) then
+   /bin/rm -f $ftpput.log
+   /bin/rm -f $tarfile
+endif
+#######################################################
+exit

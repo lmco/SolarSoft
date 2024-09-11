@@ -1,0 +1,49 @@
+#!/bin/csh -f
+#
+#################################################
+#						#
+#      SOHO Gen Environmental Setup      	#
+# 						#
+# Define SOHO  Wide enviromentals		#
+#						#
+#################################################
+
+# Private data
+# Modified, 23-Jan-97, Zarro, added SOHO PRIV/PUB env's
+# Modified, 31-Mar-97, Zarro, added CDS catalog directory to ZDBASE
+# Modified, 15-Feb-98, Zarro, added TRACE_SUMMARY and PRIVATE
+# Modified, 13-Jun-01, Zarro, removed CDS catalog directory from ZDBASE
+# 20-Jul-2016, William Thompson, added
+
+
+setenv SOHO_PRIVATE     $SOHO_DATA/private
+setenv SOHO_ANOMALY     $SOHO_PRIVATE/operations/anomalies 
+setenv SOHO_PRI_DATA    $SOHO_PRIVATE/data
+setenv PRIVATE_DATA     $SOHO_PRI_DATA/planning 
+
+# Public data
+
+setenv SOHO_PUBLIC      $SOHO_DATA/public
+setenv SOHO_PUB_DATA    $SOHO_PUBLIC/data 
+setenv ANCIL_DATA       $SOHO_PUB_DATA/ancillary
+setenv SYNOP_DATA       $SOHO_PUB_DATA/synoptic
+setenv SUMMARY_DATA     $SOHO_PUB_DATA/summary
+setenv SOHOARCHIVE      $SOHO_DATA
+
+# TRACE data
+
+setenv TRACE_SUMMARY    $SUMMARY_DATA/trace
+setenv TRACE_PRIVATE    $PRIVATE_DATA/trace
+
+# Planning data
+
+setenv ZDBASE_SOHO      $SSW/soho/gen/data/plan/database
+setenv ZDBASE           $ZDBASE_SOHO
+setenv SOHO_CAP         $SSW/soho/gen/data/plan/soho_cap 
+setenv SOHO_EAP         $SUMMARY_DATA/asplanned
+setenv SOHO_KAP         $SUMMARY_DATA/asplanned
+
+# SPICE ephemerides
+
+setenv SOHO_SPICE_GEN	$SSW/soho/gen/data/spice
+setenv SOHO_SPICE	$SSWDB/soho/gen/spice

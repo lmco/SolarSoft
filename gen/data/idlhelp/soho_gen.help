@@ -1,0 +1,3378 @@
+%VERSION:2
+41
+462
+0:CNVT_COORD
+4615:CROSS_HAIR
+7314:CURSOR_INFO
+11468:DAYS2LAUNCH
+12263:DIFF_ROT
+13358:DSP_STRARR
+14299:FAKE_POINT_STC
+17947:FIND_LIMB2
+20590:FIT_CIRCLE
+22180:FIX_STRLEN
+23001:FLASH_PLOTS
+24140:FSUMER_DETAIL
+26691:FXKVALUE
+28166:GAUSS_FUNCT2
+29567:GET_CDS_POINT
+35715:GET_OBS_DATE
+37944:GET_SUMER_POINT
+43198:IMAGE_TOOL
+50214:IMAGE_TOOL_COM
+50805:IMAGE_TOOL_HLP
+51543:ITOOL_ZOOM
+55520:LIMB_INFO
+56857:MK_LIMBFIT_BS
+57953:MK_NEW_CSI
+60299:MK_POINT_BASE
+64797:MK_POINT_STC
+68640:OBT2TAI
+70708:ORIENT_MARK
+71389:PLOT_AXES
+72276:POLYGON_CSR
+76698:RASTER_SIZE
+80342:RD_IMAGE_FITS
+82994:RD_IMAGE_GIF
+84111:ROT_SUBIMAGE
+87752:ROTATE_LIMB
+88771:SEP_FILENAME
+90251:SET_CSI
+91730:SET_CURSOR_SIZE
+93074:SOLAR_GRID
+94355:SUMER_POINT_STC
+97904:XGET_SYNOPTIC
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       CNVT_COORD()
+
+ PURPOSE:
+       Conversion between any 2 of 4 coord systems for solar images
+
+ EXPLANATION:
+       For image displaying, especially for the solar images, there
+       can be at least four coordinate systems involved, and they are:
+
+           1. Device coordinate system, in device pixels
+           2. Data (image) coordinate system, in data pixels
+           3. Solar disk coordinate system, in arc seconds
+           4. Heliographic coordinate system, in degrees
+
+       This routine can do the conversion between any two of
+       them. For the solar disk system (with origin at the disk
+       center), the positive directions of the X and Y axes point to
+       the west limb and north limb, respectively.
+
+ CALLING SEQUENCE:
+       Result = CNVT_COORD(bb, csi=csi, from=from, to=to)
+
+ INPUTS:
+       BB  -- 2-element vector or 2xN array containing coordinates of the
+              point to be converted. Depending on the coordinate system,
+              the values can be:
+           
+              [x, y] in device pixels for device system (1)
+              [x, y] in data pixels for data (image) system (2)
+              [x, y] in arc seconds for solar disk system (3)
+              [lat, long] in degrees for heliographic system (4)
+
+       CSI -- Coordinate system information structure that contains some
+              basic information of the coordinate systems involved. It should
+              have the following 14 tags:
+
+              XD0 -- X position of the first pixel of the
+                     image (lower left corner), in device pixels
+              YD0 -- Y position of the first pixel of the
+                     image (lower left corner), in device pixels
+              XU0 -- X position of the first pixel of the image (lower 
+                     left corner), in user (or data) pixels. 
+              YU0 -- Y position of the first pixel of the image (lower 
+                     left corner), in user (or data) pixels
+              MX  -- X size of the image in device pixels
+              MY  -- Y size of the image in device pixels
+              RX  -- ratio of SX/MX, (data unit)/(device pixel), 
+                     where SX is the image size in X direction in data pixels
+              RY  -- ratio of SY/MY, (data unit)/(device pixel), 
+                     where SY is the image size in Y direction in data pixels
+              X0  -- X position of the reference point in data pixels
+              Y0  -- Y position of the reference point in data pixels
+              XV0 -- X value of the reference point in absolute units
+              YV0 -- Y value of the reference point in absolute units
+              SRX -- scaling factor for X direction in arcsec/(data pixel)
+              SRY -- scaling factor for Y direction in arcsec/(data pixel)
+
+              Note: Units used for XV0 and YV0 are arc seconds in
+                    case of solar images. If the reference point is
+                    the solar disk center, XV0 = YV0 = 0.0. The
+                    reference point can also be the first pixel of
+                    the image (i.e., the pixel on the lower-left
+                    corner of the image).
+                    When the whole image is displayed, XU0 and YU0 are all
+                    equal to 0; for subimages, XU0 and YU0 may not be zero.
+
+       FROM -- Code for the original coordinate system (see explanation)
+       TO   -- Code for the new coordinate system to be converted
+               to. Possible values are the same as those of FROM
+       DATE -- date in CCSDS or ECS time format; required for conversion
+                between heliographic coordinate system to or from
+                other system.
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       RESULT -- A 2-element vector, containing new coordinates;
+                 refer to the input description of BB for returned
+                 values for different coordinate systems. A scalar
+                 value of -1 will be returned for a non-valid
+                 conversion or wrong type of data.
+
+ OPTIONAL OUTPUTS:
+       OFF_LIMB -- Flag which is true if the coordinates are beyond
+                   the solar limb. Only used for converting to the
+                   heliographic system
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       ARCMIN2HEL, HEL2ARCMIN
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written November 16, 1994, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+
+ VERSION:
+       Version 1, November 16, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS/SUMER
+
+ NAME:
+       CROSS_HAIR
+
+ PURPOSE:
+       Plot a rectangle or cross hair on the current plotting device.
+
+ EXPLANATION:
+       This routine plots a rectangle or a cross hair on the current plotting
+       device. The size and location of the rectangle or cross hair are saved
+       in the common block CROSS_HAIR so that when it is called the next
+       time, the previous rectangle or cross hair can be erased from the
+       device screen.
+
+ CALLING SEQUENCE:
+       CROSS_HAIR, cx, cy [, width, height [, unit]]
+
+ INPUTS:
+       CX     - X position of the cursor center, in device pixels
+       CY     - Y position of the cursor center, in device pixels
+
+ OPTIONAL INPUTS:
+       WIDTH  - Width of the rectangle, in device pixels
+       HEIGHT - Height of the rectangle, in device pixels
+
+       If WIDTH and HEIGHT are not passed in, a cross hair will be used.
+
+       UNIT   - Integer scalar indicating what units to be for boxed cursor.
+                1: device pixels, 2: image pixcels, and 3: arcseconds
+       CSI    - Coordinate system info structure; required if UNIT is 2 or 3
+       LENGTH - Length of line segment of the cross hair in device
+                pixels. Default: 40
+       COLOR  - Index of color used to draw the cross hair. Default color
+                used: !d.n_colors-1
+       THICK  - Thickness of the cross hair, default: 1
+       LINES  - Line style used for drawing the cross hair. Default: 0
+                (solid line)
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       KEEP -- If set, the cursor will remain on the plotting screen
+               until the whole screen is erased.
+       BOXED_CURSOR - Plot boxed cursor if set and if WIDTH and HEIGHT are
+                      given 
+ CALLS:
+       DELVARX
+
+ COMMON BLOCKS:
+       CROSS_HAIR
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       A cross hair is plotted on the current device. When the routine is
+       called next time, the previous cross hair is erased and a new one is
+       plotted. If the KEEP keyword is set, the cursor will not be erased
+       next time this routine is called. The only way to remove it from the
+       device is to redraw the plotting.
+
+ CATEGORY:
+       Utilities, graphics
+
+ PREVIOUS HISTORY:
+       Written October 4, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 2, Liyun Wang, GSFC/ARC, November 8, 1994
+          Added the KEEP keyword
+       Version 3, Liyun Wang, GSFC/ARC, May 11, 1995
+          Added BOXED_CURSOR keyword to enable plotting boxed cursor
+          Changed cross-hair cursor from "+" shape to "x"
+
+ VERSION:
+       Version 3, May 11, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       CURSOR_INFO
+
+ PURPOSE:
+       Report cursor's position to a text widget.
+
+ EXPLANATION:
+       In image_tool, cursor's position is displayed in variety of
+       ways depending on the display mode being set. When using the
+       zoom feature, such position is also needed. Note: Each time when this
+       routine is called, coordinates of a reference point in all three
+       coordinate systems (device, data, and solar) have to be given. Since
+       this routine has to tell if the cursor is within the plotting area,
+       the reference point should therefore always be the lower left corner
+       of the image.
+
+ CALLING SEQUENCE:
+       CURSOR_INFO, cx, cy, widget_id, csi=csi
+
+ INPUTS:
+       CX  -- X position of the cursor, in device pixcels
+       CY  -- Y position of the cursor, in device pixcels
+       WIDGET_ID -- ID of the text widget in which the cursor pistion
+                    is displayed.
+       CSI -- Coordinate system information structure that contains some
+              basic information of the coordinate systems involved. It should
+              have the following 14 tags:
+
+              XD0 -- X position of the first pixcel of the
+                     image (lower left coner), in device pixels
+              YD0 -- Y position of the first pixcel of the
+                     image (lower left coner), in device pixels
+              XU0 -- X position of the first pixcel of the image (lower 
+                     left coner), in user (or data) pixels. 
+              YU0 -- Y position of the first pixcel of the image (lower 
+                     left coner), in user (or data) pixels
+              MX  -- X size of the image in device pixels
+              MY  -- Y size of the image in device pixels
+              RX  -- ratio of SX/MX, (data unit)/(device pixel), where 
+                     SX is the image size in X direction in data pixels
+              RY  -- ratio of SY/MY, (data unit)/(device pixel), where 
+                     SY is the image size in Y direction in data pixels
+              X0  -- X position of the reference point in data pixels
+              Y0  -- Y position of the reference point in data pixels
+              XV0 -- X value of the reference point in absolute units
+              YV0 -- Y value of the reference point in absolute units
+              SRX -- scaling factor for X direction in arcsec/(data pixel)
+              SRY -- scaling factor for Y direction in arcsec/(data pixel)
+
+              Note: Units used for XV0 ans YV0 are arc senconds in
+                    case of solar images. If the reference point is
+                    the solar disk center, XV0 = YV0 = 0.0. The
+                    reference point can also be the first pixel of
+                    the image (i.e., the pixcel on the lower-left
+                    coner of the image).
+                    When the whole image is displayed, XU0 and YU0 are all
+                    equal to 0; for subimages, XU0 and YU0 may not be zero.
+
+       D_MODE -- Code for the coordinate system in which the cursor position
+                 is shown. Possible code numbers are:
+
+                 1. Device coordinate system, in device pixcels
+                 2. Data (image) coordinate system, in data pixels
+                 3. Solar disk coordinate system, in arc seconds
+                 4. Heliographic coordinate system, in degrees
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       Cursor's position is displayed on the given text widget.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       CNVT_COORD, NUM2STR
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written September 14, 1994, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 2, Liyun Wang, GSFC/ARC, November 18, 1994
+          Calls CNVT_COORD to make conversion between any two of four
+             coordinate systems involved in solar image displaying;
+          Improved the way of displaying heliographic latitude and longitude
+
+ VERSION:
+       Version 2, November 18, 1994
+;-
+;+
+ Project     : SOHO - CDS     
+                   
+ Name        : DAYS2LAUNCH()
+               
+ Purpose     : Calculates days until SOHO launch.
+               
+ Explanation : As above.
+               
+ Use         : IDL> print,days2launch()
+    
+ Inputs      : None
+               
+ Opt. Inputs : None
+               
+ Outputs     : Function returns value required.
+               
+ Opt. Outputs: None
+               
+ Keywords    : None
+
+ Calls       : Util time routines.
+
+ Common      : None
+               
+ Restrictions: None
+               
+ Side effects: None
+               
+ Category    : Help
+               
+ Prev. Hist. : None
+
+ Written     : C D Pike, 13-Feb-95
+               
+ Modified    : Change launch to 30-Oct-95.  CDP, 25-May-95
+
+ Version     : Version 2, 25-May-95
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:	
+       DIFF_ROT()
+
+ PURPOSE:
+     Computes the differential rotation of the sun
+       
+ EXPLANATION:
+       
+ CALLING SEQUENCE: 
+       Result = DIFF_ROT(ddays,latitude)
+
+ INPUTS:
+       DDAYS    --  number of days to rotate
+       LATITUDE --  latitude in DEGREES
+       
+ OPTIONAL INPUTS: 
+       None.
+
+ OUTPUTS:
+       Result -- Change in longitude over ddays days in DEGREES
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS: 
+       ALLEN    -- use values from Allen, Astrophysical Quantities (DEFAULT)
+       HOWARD   -- use values for small magnetic features from Howard et al.
+       SIDEREAL -- use sidereal rotation rate (DEFAULT)
+       SYNODIC  -- use synodic rotation rate
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       
+ PREVIOUS HISTORY:
+       Written T. Metcalf  June 1992
+
+ MODIFICATION HISTORY:
+       Version 1, Liyun Wang, GSFC/ARC, November 17, 1994
+          Incorporated into the CDS library
+
+ VERSION:
+       Version 1, November 17, 1994
+;-
+;+
+ PROJECT:
+      SOHO - CDS
+
+ NAME:
+      DSP_STRARR
+
+ PURPOSE: 
+      To display a string array in a text widget.
+
+ EXPLANATION:
+      
+ CALLING SEQUENCE: 
+      DSP_STRARR, string_array [, font = font, title=title]
+
+ INPUTS:
+      strings -- The string array to be displayed. 
+ OPTIONAL INPUTS: 
+      None.
+
+ OUTPUTS:
+      None.
+
+ OPTIONAL OUTPUTS:
+      None.
+
+ KEYWORD PARAMETERS: 
+      FONT   -- Font to be used for the text widget. Default: fixed
+      TITLE  -- Title of the widget window. Default: 'Info Window'
+      ONE_COPY -- Set this keyword to let xmanager know that only one copy of
+                  this widget is allowed to run at one time.
+ CALLS:
+      None.
+
+ COMMON BLOCKS:
+      None.
+
+ RESTRICTIONS: 
+      None.
+
+ SIDE EFFECTS:
+      None.
+
+ CATEGORY:
+      Utilities, widgets
+
+ PREVIOUS HISTORY:
+      
+ MODIFICATION HISTORY:
+      Written September 2, 1994, by Liyun Wang, GSFC/ARC
+      
+ VERSION:
+      
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       FAKE_POINT_STC()
+
+ PURPOSE:
+       Create a fake pointing structure for IMAGE_TOOL to use
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       Result = fake_point_stc()
+
+ INPUTS:
+       None required.
+
+ OPTIONAL INPUTS:
+       P_MODE - Pointing mode; valid values are -1, 0, and 1. Default: 0
+
+ OUTPUTS:
+       RESULT - Pointing structure suitable for use by IMAGE_TOOL. It has the
+                following tags:
+
+          INSTRUME   - Code specifying the instrument; e.g., 'C' for CDS
+          G_LABEL    - Generic label for the pointing; e.g., 'RASTER'
+          X_LABEL    - Label for X coordinate of pointing; e.g., 'INS_X'
+          Y_LABEL    - Label for Y coordinate of pointing; e.g., 'INS_Y'
+          DATE_OBS   - Date/time of beginning of observation, in TAI format
+          DO_POINTING- An integer of value 0 or 1 indicating whether pointing
+                       should be handled at the planning level (i.e., by
+                       IMAGE_TOOL); default is set to 1.
+          N_POINTINGS- Number of pointings to be performed by IMAGE_TOOL
+          POINTINGS  - A structure array (with N_POINTINGS elements) of type
+                       "DETAIL_POINT" to be handled by IMAGE_TOOL. It has
+                       the following tags:
+
+                       POINT_ID - A string scalar for pointing ID
+                       INS_X    - X coordinate of pointing area center in arcs
+                       INS_Y    - Y coordinate of pointing area center in arcs
+                       WIDTH    - Area width (E/W extent)  in arcsec
+                       HEIGHT   - Area height (N/S extent) in arcsec
+                       OFF_LIMB - An interger with value 1 or 0 indicating
+                                  whether or not the pointing area should
+                                  be off limb
+
+          N_RASTERS  - Number of rasters for each pointing (this is
+                       irrelevant to the SUMER)
+          RASTERS    - A structure array (N_RASTERS-element) of type
+                       "RASTER_POINT" that contains raster size and pointing
+                       information (this is irrelevant to the SUMER). It has
+                       the following tags:
+
+                       POINTING - Pointing handling code; valis
+                                  values are: 1, 0, and -1
+                       INS_X    - Together with INS_Y, the pointing to use
+                                  when user-supplied values are not
+                                  allowed.  Only valid when POINTING=0
+                                  (absolute) or POINTING=-1 (relative to
+                                  1st raster).
+                       INS_Y    - ...
+                       WIDTH    - Width (E/W extent) of the raster, in arcs
+                       HEIGHT   - Height (N/S extent) of the raster, in arcs
+
+      Note: For the case of CDS, pointings.width, pointings.height,
+            pointings.ins_x, and pointings.ins_y should match the first
+            raster's rasters.width, rasters.height, rasters.ins_x, and
+            rasters.ins_y, respectively.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       N_POINTINGS - Number of pointing areas; default: 4
+       N_RASTERS   - Number of rasters in each pointing area; default: 6
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written March 27, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, March 27, 1995
+
+ VERSION:
+       Version 1, March 27, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+	FIND_LIMB2
+
+ PURPOSE:
+       Find the solar coordinates from an aspect camera image.
+
+ EXPLANATION:
+	Uses the IDL function SOBEL to differentiate, then fits to circle.
+	Return sun center coordinates, solar radius, error estimate,
+	and oblateness estimate determined from the Fourier spectrum
+	of the limb location. Outputs are in (real) pixel units.
+
+ CALLING SEQUENCE:
+	find_limb, img, 	$
+	   [x0, y0, r0, r_err, oblateness, ob_angle, bias, $
+	   brightness, sig_bright,/sxt,qtest=qtest]
+
+ INPUTS:
+	img 	= input image 
+
+ OUTPUTS:
+	x0	= pixel location of sun center, x (1st harmonic of radius)
+	y0	= pixel location of sun center, y
+	r0	= radius in pixel units
+	r_err	= uncertainty in r0 determination from scatter
+	oblateness 	= second harmonic of radius
+	ob_angle	= phase of 2nd harmonic
+	bias		= distortion of limb due higher harmonics
+	brightness 	= most probable signal at x0,y0
+	sig_bright	= sigma of brightness
+
+ OPTIONAL INPUT PARAMETERS:
+	qtest	= 1 for messages+pause, = 2 for messages+plots+pause,
+		= 3 for messages+plots (no pause)
+
+ KEYWORD PARAMETERS:
+	SXT -- If set, results will be in units of SXT 1x1 pixels, otherwise
+	       results are in units of pixels of the input image 
+
+ CALLS:
+       FIT_CIRCLE, GAUSS_FUNCT2
+
+ RESTRICTIONS:
+	1. The input image is assumed to have an oblateness that is < 5%.
+	2. Missing data in the middle of the image will cause large values
+	   in the derivative which are not compensated for.
+	3. The data is assumed to be ge 0.  (Values less than zero will not
+	   be handled correctly by the histogram function).
+	4. In determining summation mode for SXT=1, uses n_elements(img(*,0)).
+	5. To compute brightness, uses a box that is 1/3 * r0 centered at x0,y0.
+	   The image must contain this box (i.e., small crescents may be 
+	    be absent, but a large portion missing at the middle of the
+	    image will cause problems).
+		
+ SIDE EFFECTS
+	None
+
+ COMMON BLOCKS
+	None
+
+ MODIFICATION HISTORY
+	HSH written in IDL version 1, Feb. 1991
+	HSH updated with V.2 on real orbital data, Sep. 1991
+	19-Nov-91 MDM - Added a correction factor for changing the
+			resolution back to 1x1 (because of un-summed columns)
+	19-aug-92 JRL+HSH  V3.0 Numerous changes to fix/improve algorithm.
+				Much more robust for SAA data.
+				Brightness is now most probable signal at x0,y0.
+	 1-sep-92 JRL	V3.1	Brightness calculation taken from mean of 
+				histogram
+        Liyun Wang, GSFC/ARC, October 7, 1994
+           Incorporated into the CDS library
+           Made it to return a flag (!err=-1) if it fails to yield good result
+
+ VERSION:
+       Version 1, October 7, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+    FIT_CIRCLE()
+
+ PURPOSE:
+    Fit a circle to vector of points.
+
+ CALLING SEQUENCE:
+    Result_vector=fit_circle(x,y,a,radius_fix=radius_fix,tolerance=tolerance)
+
+ INPUTS:
+    x = Vector of x values
+    y = Vector of y values
+
+ RETURNED:
+    Result_vector = [x1,y1,r1] result of coordinates (x1,y1) and radius (r1).
+
+ OPTIONAL INPUTS:
+    a = Vector of [x0,y0,r0]  = First guesses for the circle (x0,y0,radius)
+        If a is not supplied, x0 and y0 are the averages and and r0 is 
+	 taken to be the average distance of each (x,y) point to (x0,y0).
+
+ OPTIONAL INPUT KEYWORDS:
+    radius_fix = If set, will not vary the radius in the fit.
+    tolerance  = If present and > 0, fit_circle will recursively call itself
+		  until abs(r1-r0)/r0 < tolerance.
+                 For example, setting tolerance = 0.01 will cause the 
+		  calculation to continue until the solution for the radius
+  		  does not vary between iterations by more than 1%.
+		  If radius_fix is set, tolerance will have no effect.
+    limit_iter	= Set the upper limit to the number of times to iterate.
+		  (e.g., limit_iter=10 will limit the number of iterations
+		   to 10 or less.)
+
+ OPTIONAL OUTPUT KEYWORDS:
+    num_iter	= Number of iterations
+
+ CALLS:
+       
+
+ MODIFICATION HISTORY:
+  17 Oct 1991, J. R. Lemen, Written (based on routine in HSH's find_limb)
+  26 Feb 1992, J. R. Lemen, Added tolerance keyword
+  24-jan-94, JRL, Added limit_iter keyword
+  October 7, 1994, Liyun Wang, GSFC/ARC, incoporated into the CDS library
+
+ VERSION:
+       Version 1, October 7, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       FIX_STRLEN()
+
+ PURPOSE:
+       Make a string have a fixed length by appending spaces.
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       Result = fix_strlen(str, length=length)
+
+ INPUTS:
+       STR    - String to be padded
+       LENGTH - Desired length of resulting str
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       PREFIX - Padding spaces in front of the given string if set
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written January 25, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, January 25, 1995
+
+ VERSION:
+       Version 1, January 25, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       FLASH_PLOTS
+
+ PURPOSE: 
+       Make a flashing plot of a polygon
+
+ EXPLANATION:
+       
+ CALLING SEQUENCE: 
+       FLASH_PLOTS, xx, yy [,num=num] [,rate=rate]
+
+ INPUTS:
+       XX -- X coordinates of points to be connected.
+       YY -- Y coordinates of points to be connected.
+
+ OPTIONAL INPUTS: 
+       None.
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS: 
+       NUM    -- Number of flashing times; default is 4 times.
+       RATE   -- Flashing rate in seconds; default: 0.25 sec.
+       COLOR  -- Index of color to be used; default: !d.n_colors-1
+       PSYSTEM -- Coordinate system used for plotting. Valid values are:
+                  0 -- device coodinate system (default)
+                  1 -- data coordinate system
+                  2 -- normal coordinate system
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       
+ PREVIOUS HISTORY:
+       Written November 2, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       
+ VERSION:
+       Version 1, November 2, 1994
+;-
+;+
+ PROJECT:
+       SOHO - SUMER
+
+ NAME:
+       FSUMER_DETAIL()
+
+ PURPOSE:
+       Create a fake sumer detail structure
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       Result = FSUMER_DETAIL(n_pointings)
+
+ INPUTS:
+       None.
+
+ OPTIONAL INPUTS:
+       N_POINTINGS - Number of pointings areas, default to 1
+
+ OUTPUTS:
+       Result -- A fake detail structure for SUMER containing the following
+                 tags: 
+
+          STRUCT_TYPE - The character string 'SUMER-DETAIL'
+          PROG_ID     - Program ID, linking one or more studies together
+          STUDY_ID    - Number defining the study
+          STUDYVAR    - The number 0 (for compatibility with CDS software).
+          SCI_OBJ     - Science objective from the daily science meeting
+          SCI_SPEC    - Specific science objective from meeting
+          CMP_NO      - Campaign number
+          OBJECT      - Code for object planned to be observed
+          OBJ_ID      - Object identification
+          DATE_OBS    - Date/time of beginning of observation, in TAI format
+          DATE_END    - Date/time of end of observation, in TAI format
+          TIME_TAGGED - True (1) if the start of the study is to be a 
+                        time-tagged event.  Otherwise, the study will begin
+                        immediately after the previous study.
+          N_POINTINGS - Number of pointing areas associated with the study.
+          POINTINGS   - A array describing the area for each study to be 
+                        used during the study.  If there are no pointings
+                        associated with the array, then this tag will have a
+                        dummy value instead.
+          
+          The pointing descriptions themselves are structures, of
+          type "sumer_plan_pnt", with the following tags:
+          
+          XCEN    - Center pointing of the study part in the X direction.
+          YCEN    - Same in the Y direction.
+          WIDTH   - Width to use for the study.
+          HEIGHT  - Height to use for the study.
+          ZONE_ID - 1-byte integer, the zone ID for the pointing.
+          ZONE    - String, the zone description, e.g. "Off Limb"
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written February 13, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, Liyun Wang, GSFC/ARC, February 13, 1995
+
+ VERSION:
+       Version 1, February 13, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:	
+       FXKVALUE()
+
+ PURPOSE:
+       Get value from a set of candidate keywords of a FITS header 
+
+ EXPLANATION:
+       This function routine calls FXPAR to determine the value of one of a
+       set of candidate keywords by searching though the given FITS header in
+       the order of given keyword list. The returned value corresponds to
+       that of the keyword that is matched first.
+
+ CALLING SEQUENCE: 
+       Result = fxkvalue(header, string_vec)
+
+ INPUTS:
+       HEADER - The FITS header returned by FXREAD
+       STRVEC - A string vector (or scalar) containing all posible keywords
+                for the concerned parameter
+
+ OPTIONAL INPUTS: 
+       None.
+
+ OUTPUTS:
+       Result - Value extracted from the FITS header who's keyword matches 
+                the one in STRVEC first. If no keyword is matched, the
+                returned result will be a null string, and at the same time
+                the system variable !err is set to -1.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS: 
+       None.
+
+ CALLS:
+       FXPAR, DATATYPE
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       System variable !err is set to -1 if no keyword is matched.
+
+ CATEGORY:
+       
+ PREVIOUS HISTORY:
+       Written February 8, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, February 8, 1995
+
+ VERSION:
+       Version 1, February 8, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+	GAUSS_FUNCT2
+
+ PURPOSE:
+	Evaluate the sum of a gaussian and a 2nd order polynomial.
+
+ EXPLANATION:
+	This routine evaluate the sum of a gaussian and a 2nd order polynomial
+	and optionally return the value of it's partial derivatives.
+	normally, this function is used by CURVEFIT to fit the
+	sum of a line and a varying background to actual data.
+
+ CATEGORY:
+	E2 - CURVE AND SURFACE FITTING.
+
+ CALLING SEQUENCE:
+	GAUSS_FUNCT2,X,A,F,PDER
+
+ INPUTS:
+	X = VALUES OF INDEPENDENT VARIABLE.
+	A = PARAMETERS OF EQUATION DESCRIBED BELOW.
+
+ OUTPUTS:
+	F = VALUE OF FUNCTION AT EACH X(I).
+
+ OPTIONAL OUTPUT PARAMETERS:
+	PDER = (N_ELEMENTS(X),6) ARRAY CONTAINING THE
+		PARTIAL DERIVATIVES.  P(I,J) = DERIVATIVE
+		AT ITH POINT W/RESPECT TO JTH PARAMETER.
+
+ COMMON BLOCKS:
+	NONE.
+
+ SIDE EFFECTS:
+	NONE.
+
+ RESTRICTIONS:
+	NONE.
+
+ PROCEDURE:
+	F = A(0)*EXP(-Z^2/2) + A(3) + A(4)*X + A(5)*X^2
+	Z = (X-A(1))/A(2)
+
+ MODIFICATION HISTORY:
+	WRITTEN, DMS, RSI, SEPT, 1982.
+	Modified, DMS, Oct 1990.  Avoids divide by 0 if A(2) is 0.
+	Modified, JRL, LPARL, Nov, 1988  - If n_elements(A) is 4 or 5,
+					   then a constant or linear
+					   background term is calculated.
+	Modified, JRL, LPARL, Aug, 1990	 - Allow for no background term
+	Modified, SLF, ISAS,  4-Sep-92   - Split gaussfit2/gauss_funct2
+       Liyun Wang, GSFC/ARC, October 7, 1994, incoporated into CDS library
+         
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       GET_CDS_POINT
+
+ PURPOSE: 
+       Create structure from given CDS plan for use in IMAGE_TOOL
+
+ EXPLANATION:
+       In order for IMAGE_TOOL to handle the pointing(s) of a study,
+       the following information must be provided to IMAGE_TOOL:
+       Number of pointings needs to be done; for each pointing, width
+       and height of the pointing area (e.g., a raster). If there are
+       several rasters in the same pointing, the relation of the
+       rest of raster with respect to the first one (in CDS case,
+       determined by the POINTING value in study definition) has to
+       be given (can be, in CDS case, 0: fixed alreay, 1: same as the
+       first raster, or -1: offset from the first one). This routine
+       is to extract such information and put it into a structure to
+       be passed into IMAGE_TOOL.
+
+ CALLING SEQUENCE: 
+       result = get_cds_point(cds_detail)
+
+ INPUTS:
+       CDS_DETAIL - CDS plan structure containing the detailed science plan
+                    record. It contains the following tags:
+
+         STRUCT_TYPE - The character string 'CDS-DETAIL'
+         PROG_ID     - Program ID, linking one or more studies together
+         STUDY_ID    - Number defining the study
+         STUDYVAR    - Number giving the study variation ID
+         SCI_OBJ     - Science objective from the daily science meeting
+         SCI_SPEC    - Specific science objective from meeting
+         CMP_NO      - Campaign number
+         OBJECT      - Code for object planned to be observed
+         OBJ_ID      - Object identification
+         DATE_OBS    - Date/time of beginning of observation, in TAI format
+         DATE_END    - Date/time of end of observation, in TAI format
+         N_RASTERS1  - Variable number of rasters parameter
+         TIME_TAGGED - True (1) if the start of the study is to be a 
+                       time-tagged event.  Otherwise, the study will begin 
+                       immediately after the previous study.
+         TRACKING    - True (1) if feature tracking to be used, or false (0) 
+                       otherwise
+         N_POINTINGS - Number of pointings to apply to the study.
+         N_REPEAT_S  - Number of times to repeat study.
+         POINTINGS   - An array (with N_POINTINGS elements) of pointings
+                       to use with the study. POINTINGS is itself a
+                       structure of type PLAN_PNT_STRUC with the
+                       following tags: 
+
+                       INS_X  - Pointing in X relative to sun center
+                       INS_Y  - Pointing in Y relative to sun center
+
+ OPTIONAL INPUTS: 
+       None.
+
+ OUTPUTS:
+       RESULT - A pointing structure that can be used by IMAGE_TOOL. 
+                It has the following tags:
+
+          INSTRUME   - Code specifying the instrument; e.g., 'C' for CDS
+          G_LABEL    - Generic label for the pointing; e.g., 'RASTER'
+          X_LABEL    - Label for X coordinate of pointing; e.g., 'INS_X'
+          Y_LABEL    - Label for Y coordinate of pointing; e.g., 'INS_Y'
+          DATE_OBS   - Date/time of beginning of observation, in TAI format   
+          DO_POINTING- An integer of value 0 or 1 indicating whether pointing
+                       should be handled at the planning level (i.e., by
+                       IMAGE_TOOL)
+          N_POINTINGS- Number of pointings to be performed by IMAGE_TOOL
+          POINTINGS  - A structure array (with N_POINTINGS elements) of type
+                       "DETAIL_POINT" to be handled by IMAGE_TOOL. It has 
+                       the following tags: 
+
+                       POINT_ID - A string scalar for pointing ID
+                       INS_X    - X coordinate of pointing area center in arcs
+                       INS_Y    - Y coordinate of pointing area center in arcs
+                       WIDTH    - Area width (E/W extent)  in arcsec
+                       HEIGHT   - Area height (N/S extent) in arcsec
+                       ZONE     - Description of the zone for pointing
+                       OFF_LIMB - An interger with value 1 or 0 indicating 
+                                  whether or not the pointing area should
+                                  be off limb 
+
+          N_RASTERS  - Number of rasters for each pointing (this is
+                       irrelevant to the SUMER)
+          RASTERS    - A structure array (N_RASTERS-element) of type
+                       "RASTER_POINT" that contains raster size and pointing
+                       information (this is irrelevant to the SUMER). It has
+                       the following tags: 
+
+                       POINTING - Pointing handling code; valis
+                                  values are: 1, 0, and -1
+                       INS_X    - Together with INS_Y, the pointing to use
+                                  when user-supplied values are not
+                                  allowed.  Only valid when POINTING=0
+                                  (absolute) or POINTING=-1 (relative to
+                                  1st raster).
+                       INS_Y    - ...
+                       WIDTH    - Width (E/W extent) of the raster, in arcs
+                       HEIGHT   - Height (N/S extent) of the raster, in arcs
+
+      Note: For CDS case, pointings.width, pointings.height,
+            pointings.x_coord, and pointings.y_coord should match the first
+            raster's rasters.width, rasters.height, rasters.ins_x, and
+            rasters.ins_y, respectively.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS: 
+       None.
+
+ CALLS:
+       DATATYPE, GET_CDS_STUDY, GET_CDS_RASTER, MK_POINT_STC, RASTER_SIZE
+       ZONE_DEF_LABEL
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       
+ PREVIOUS HISTORY:
+       Written March 24, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, March 24, 1995
+       Version 2, Liyun Wang, GSFC/ARC, April 5, 1995
+          Implemented ZONE ID and ZONE
+
+ VERSION:
+       Version 2, April 5, 1995
+
+ VERSION:
+       Version 1, March 24, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       GET_OBS_DATE()
+
+ PURPOSE:
+       Get date and time of obs. from FTIS header in CCSDS format.
+
+ EXPLANATION:
+       Make effort trying to extract date and time of observation from the
+       header of FITS image file. It searches for the following keywords
+       in the FITS header:
+
+          DATE_OBS -- in CCSDS format (a keywork proposed for the SOHO
+                      project)
+          DATE-OBS -- in DD/MM/YY format. If not present, current date will
+                      be returned, and a warning message is issued.
+          TIME-OBS -- in hh:mm:ss format. If not present, current time will
+                      be returned, and a warning message is issued.
+          UTSTOP  -- in seconds from 01/01/70 00:00
+          UTSTART  -- in seconds from 01/01/70 00:00
+          ENDTIME  -- in seconds from 01/01/70 00:00
+          STARTIME -- in seconds from 01/01/70 00:00
+          YEAR     -- Year number
+          MONTH    -- Month of year
+          DAY      -- Day of month
+          HOUR     -- Hour of day
+          MINUTE   -- Minute of hour
+          SECOND   -- Second of minute
+
+ CALLING SEQUENCE:
+       GET_OBS_DATE, header, utc
+
+ INPUTS:
+       HEADER -- Header of a FITS file
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       UTC -- String of date and time of observation in CCSDS format
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       QUIET -- Suppress any error message if set.
+
+ CALLS:
+       DATATYPE, NUM2STR, DMY2YMD, FXPAR, TAI2UTC, GET_UTC, SEC2TAI, REPCHAR
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Science planning
+
+ PREVIOUS HISTORY:
+       Written September 21, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+      Liyun Wang, GSFC/ARC, September 27, 1994
+         Added keyword QUIET.
+      Liyun Wang, GSFC/ARC, October 7, 1994
+         Added checkings for image files from Mees SO
+      Version 2, Liyun Wang, GSFC/ARC, December 21, 1994
+         Made it work with data from Mt. Wilson
+      Version 3, Liyun Wang, GSFC/ARC, April 19, 1995
+         Made it capable of dealing with time format of HH.MM.SS    
+
+ VERSION:
+       Version 3, April 19, 1995
+;-
+;+
+ PROJECT:
+       SOHO - SUMER
+
+ NAME:
+       GET_SUMER_POINT()
+
+ PURPOSE:
+       Make a pointing structure for use by IMAGE_TOOL from SUMER study
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       Result = get_sumer_point(sumer_study)
+
+ INPUTS:
+       SUMER_DETAIL - SUMER detail structure returned from GET_DETAIL.
+                      It currently (as of January 26, 1995) has the 
+                      following tags: 
+
+          STRUCT_TYPE - The character string 'SUMER-DETAIL'
+          PROG_ID     - Program ID, linking one or more studies together
+          STUDY_ID    - Number defining the study
+          STUDYVAR    - The number 0 (for compatibility with CDS software).
+          SCI_OBJ     - Science objective from the daily science meeting
+          SCI_SPEC    - Specific science objective from meeting
+          CMP_NO      - Campaign number
+          OBJECT      - Code for object planned to be observed
+          OBJ_ID      - Object identification
+          DATE_OBS    - Date/time of beginning of observation, in TAI format
+          DATE_END    - Date/time of end of observation, in TAI format
+          TIME_TAGGED - True (1) if the start of the study is to be a 
+                        time-tagged event.  Otherwise, the study will begin
+                        immediately after the previous study.
+          N_POINTINGS - Number of pointing areas associated with the study.
+          POINTINGS   - A array describing the area for each study to be 
+                        used during the study.  If there are no pointings
+                        associated with the array, then this tag will have a
+                        dummy value instead.
+          
+          The POINTINGS descriptions themselves are structures, of
+          type "sumer_plan_pnt", with the following tags:
+          
+             XCEN    - Center pointing of the study part in the X direction.
+             YCEN    - Same in the Y direction.
+             WIDTH   - Width to use for the study.
+             HEIGHT  - Height to use for the study.
+             ZONE_ID - 1-byte integer, the zone ID for the pointing.
+             ZONE    - String, the zone description, e.g. "Off Limb"
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       RESULT - A pointing structure that can be used by IMAGE_TOOL. 
+                It has the following tags:
+
+          INSTRUME   - Code specifying the instrument; e.g., 'C' for CDS
+          G_LABEL    - Generic label for the pointing; e.g., 'RASTER'
+          X_LABEL    - Label for X coordinate of pointing; e.g., 'INS_X'
+          Y_LABEL    - Label for Y coordinate of pointing; e.g., 'INS_Y'
+          DATE_OBS   - Date/time of beginning of observation, in TAI format   
+          DO_POINTING- An integer of value 0 or 1 indicating whether pointing
+                       should be handled at the planning level (i.e., by
+                       IMAGE_TOOL)
+          N_POINTINGS- Number of pointings to be performed by IMAGE_TOOL
+          POINTINGS  - A structure array (with N_POINTINGS elements) of type
+                       "DETAIL_POINT" to be handled by IMAGE_TOOL. It has 
+                       the following tags: 
+
+                       POINT_ID - A string scalar for pointing ID
+                       INS_X    - X coordinate of pointing area center in arcs
+                       INS_Y    - Y coordinate of pointing area center in arcs
+                       WIDTH    - Area width (E/W extent)  in arcsec
+                       HEIGHT   - Area height (N/S extent) in arcsec
+                       ZONE     - Description of the zone for pointing
+                       OFF_LIMB - An interger with value 1 or 0 indicating 
+                                  whether or not the pointing area should
+                                  be off limb 
+
+          N_RASTERS  - Number of rasters for each pointing (this is
+                       irrelevant to the SUMER)
+          RASTERS    - A structure array (N_RASTERS-element) of type
+                       "RASTER_POINT" that contains raster size and pointing
+                       information (this is irrelevant to the SUMER). It has
+                       the following tags: 
+
+                       POINTING - Pointing handling code; valis
+                                  values are: 1, 0, and -1
+                       INS_X    - Together with INS_Y, the pointing to use
+                                  when user-supplied values are not
+                                  allowed.  Only valid when POINTING=0
+                                  (absolute) or POINTING=-1 (relative to
+                                  1st raster).
+                       INS_Y    - ...
+                       WIDTH    - Width (E/W extent) of the raster, in arcs
+                       HEIGHT   - Height (N/S extent) of the raster, in arcs
+
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       DATATYPE, MK_POINT_STC, NUM2STR
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written January 26, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, January 26, 1995
+
+ VERSION:
+       Version 1, January 26, 1995
+;-
+;+
+ PROJECT:
+       SOHO
+
+ NAME:
+       IMAGE_TOOL
+
+ PURPOSE:
+       User interface of the CDS Pointing Tool
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       IMAGE_TOOL [, FITS_filename] [, point_stc=point_stc]
+                  [, min=min, max=max] [, start=start] [, stop=stop]
+                  [, group=group] [,/modal]
+
+ INPUTS:
+       None required.
+
+ OPTIONAL INPUTS:
+       FITS_FILENAMES -- String array, list of the image files
+                         (has to be FITS files)
+       POINT_STC -- If present, it has to be a pointing structure that has
+                    the following tags:
+
+          INSTRUME   - Code specifying the instrument; e.g., 'C' for CDS
+          G_LABEL    - Generic label for the pointing; e.g., 'RASTER'
+          X_LABEL    - Label for X coordinate of pointing; e.g., 'INS_X'
+          Y_LABEL    - Label for Y coordinate of pointing; e.g., 'INS_Y'
+          DATE_OBS   - Date/time of beginning of observation, in TAI format
+          N_POINTINGS- Number of pointings to be performed by IMAGE_TOOL
+          POINTINGS  - An array (with N_POINTINGS elements) of pointings to
+                       be handled by IMAGE_TOOL. It has the following tags:
+
+                       POINT_ID - A string scalar for pointing ID
+                       INS_X    - X coordinate of pointing area center in arcs
+                       INS_Y    - Y coordinate of pointing area center in arcs
+                       WIDTH    - Area width (E/W extent)  in arcsec
+                       HEIGHT   - Area height (N/S extent) in arcsec
+                       OFF_LIMB - An interger with value 1 or 0 indicating
+                                  whether or not the pointing area should
+                                  be off limb
+
+          N_RASTERS  - Number of rasters for each pointing (this is
+                       irrelevant to the SUMER)
+          RASTERS    - A array (N_RASTERS-element) of structure that
+                       contains raster size and pointing information
+                       (this is irrelevant to the SUMER). It has the
+                       following tags:
+
+                       POINTING - Pointing handling code; valis
+                                  values are: 1, 0, and -1
+                       INS_X    - Together with INS_Y, the pointing to use
+                                  when user-supplied values are not
+                                  allowed.  Only valid when POINTING=0
+                                  (absolute) or POINTING=-1 (relative to
+                                  1st raster).
+                       INS_Y    - ...
+                       WIDTH    - Width (E/W extent) of the raster, in arcs
+                       HEIGHT   - Height (N/S extent) of the raster, in arcs
+
+       MIN   -- Minimum value of the image
+       MAX   -- Maximum value of the image
+       START -- Start time of a study, in TAI format; defaults to
+                current date and time. Note: If POINT_STC is passed
+                in and POINT_STC.DATE_OBS represents a valid TAI,
+                START will be overwritten by POINT_STC.DATE_OBS.
+
+       STOP  -- Stop  time of a study, in TAI format; defualts to 24
+                hours from START.
+       GROUP -- ID of the widget which serves as a group leader
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       MODAL - Set this keyword to make IMAGE_TOOL a blocking widget program
+
+ CALLS:
+      POPUP_MSG, BELL, FXREAD, FXPAR, RD_IMAGE_FILE, EXPTV,
+      GET_SCALE_TV, GET_UTC, TAI2UTC, FLASH_MSG, DELVARX,
+      XGET_SYNOPTIC, STRIP_DIRNAME, XSEL_LIST, GET_DATE_OBS,
+      LIMB_INFO, NUM2STR, GET_CDS_SHAPE, SOLAR_GRID,
+      ROT_SUBIMAGE, CROSS_HAIR, X2GIF
+
+ COMMON BLOCKS:
+       FOR_IMAGE_TOOL, CROSS_HAIR
+
+ RESTRICTIONS:
+       Cannot be run two copies simultaneously (guaranteed by the call to
+       'XREGISTERED')
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Science planning
+
+ PREVIOUS HISTORY:
+       Written August 29, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, Liyun Wang, GSFC/ARC, October 19, 1994
+          Incorporated into the CDS library
+       Version 2, Liyun Wang, GSFC/ARC, November 18, 1994
+          Added features of rotating a point or a region;
+          All conversions of coordinate systems are done via CNVT_COORD
+             routine, common block IMG_SCALE is removed;
+          Added the capability of fitting the limb and finding the center of
+             the solar disc
+       Version 2.1, Liyun Wang, GSFC/ARC, December 23, 1994
+          Made rasters plotted against the displayed image with
+             respect to the time when the image was shut.
+       Version 2.2, Liyun Wang, GSFC/ARC, December 27, 1994
+          Added feature of plotting grids parallels and meridians on
+             the solar disc
+       Version 3, Liyun Wang, GSFC/ARC, January 25, 1995
+          Generized the pointing widget base siutable for any SOHO instrument
+          Separated codes for pointing and limb-fitting from the main
+             program code.
+          Take out the CDS_RASTER keyword parameter, replaced it with a more
+             general keyword parameter POINT_STC.
+       Version 3.1, Liyun Wang, GSFC/ARC, February 28, 1995
+          Made it capable of reading FITS files that have binary tables
+          Pointing can be done in a zoomed-in window now
+          Added elliptical limb fitting option
+       Version 3.2, Liyun Wang, GSFC/ARC, March 15, 1995
+          Image displayed with axes around it if data coordinate system can
+             be established
+          Pointing criteria is imposed if the pointing area has to be off limb
+          User is warned if any of the pointing area is not pointed
+       Version 3.3, Liyun Wang, GSFC/ARC, April 27, 1995
+          Added GIF output option
+       Version 3.4, Liyun Wang, GSFC/ARC, May 9, 1995
+          Added feature of differentially rotating forward (backward)
+             points on the east (west) limb
+          Made start time and image obsvervation time editable
+          Added feature of box-shaped cursor
+          Made it capabile of reading in GIF images (useful when only
+             the GIF format of the latest solar images are available)
+          Started using the new version of XGET_SYNOPTIC (which has no
+             COMMON blocks in its main and event handler routines)
+          Allowed the user to select FITS files from his/her own
+             directory
+          Added option to set relative size of displayed image
+       Version 3.5, Liyun Wang, GSFC/ARC, May 15, 1995
+          Improved the on-line help system
+       Version 3.6, Liyun Wang, GSFC/ARC, May 31, 1995
+          Added feature of locking up image orientation so that
+             coordinates of the image follow any image manipulation
+             operation
+          Added feature of stacking images for easy retreiving
+          Made cursor be markable via the middle or right mouse button
+
+ VERSION:
+       Version 3.6, May 31, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       IMAGE_TOOL_COM
+
+ PURPOSE:
+       Common blocks for IMAGE_TOOL
+
+ INPUTS:
+       None.
+
+ OPTIONAL INPUTS: 
+       None.
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS: 
+       None.
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       I_TOOL
+       FOR_IMAGE_TOOL
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Planning, Image_tool
+
+ PREVIOUS HISTORY:
+       Written January 13, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       
+ VERSION:
+       Version 1, January 13, 1995, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       IMAGE_TOOL_HLP
+
+ PURPOSE:
+       Print selected help message for a given uvalue of a widget
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       image_tool_hlp, uvalue
+
+ INPUTS:
+       UVALUE - User value of a widget created from an widget event
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       @IMAGE_TOOL_COM
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written May 15, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, May 15, 1995
+
+ VERSION:
+       Version 1, May 15, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       ITOOL_ZOOM
+
+ PURPOSE:
+       Zoom in on part of an image in a given draw widget window
+
+ EXPLANATION:
+	Display part of an image (or graphics) from the current window
+	enlarged in another window.
+
+	The cursor is used to mark the center of the zoom.
+
+	Note:  This routine is identical to the version of ZOOM distributed
+	       with IDL starting with version 3.1.
+
+
+ CALLING SEQUENCE:
+       ITOOL_ZOOM, draw_id, [, TEXT_id=text_id, FACT = Fact, $
+                 /INTERP, /CONTINUOUS]
+
+ INPUTS:
+	DRAW_ID  -- ID of the draw widget on which the zoomed image is drawn
+	TEXT_ID  -- ID of a text widget on which the cursor position will be
+                   reported.
+       CSI -- Coordinate system information structure that contains some
+              basic information of the coordinate systems involved. It should
+              have the following 14 tags:
+
+              XD0 -- X position of the first pixcel of the
+                     image (lower left coner), in device pixels
+              YD0 -- Y position of the first pixcel of the
+                     image (lower left coner), in device pixels
+              XU0 -- X position of the first pixcel of the image (lower 
+                     left coner), in user (or data) pixels. 
+              YU0 -- Y position of the first pixcel of the image (lower 
+                     left coner), in user (or data) pixels
+              MX  -- X size of the image in device pixels
+              MY  -- Y size of the image in device pixels
+              RX  -- ratio of (SX-1)/(MX-1), (data unit)/(device pixel), where 
+                     SX is the image size in X direction in data pixels
+              RY  -- ratio of (SY-1)/(MY-1), (data unit)/(device pixel), where 
+                     SY is the image size in Y direction in data pixels
+              X0  -- X position of the reference point in data pixels
+              Y0  -- Y position of the reference point in data pixels
+              XV0 -- X value of the reference point in absolute units
+              YV0 -- Y value of the reference point in absolute units
+              SRX -- scaling factor for X direction in arcsec/(data pixel)
+              SRY -- scaling factor for Y direction in arcsec/(data pixel)
+
+              Note: Units used for XV0 ans YV0 are arc senconds in
+                    case of solar images. If the reference point is
+                    the solar disk center, XV0 = YV0 = 0.0. The
+                    reference point can also be the first pixel of
+                    the image (i.e., the pixcel on the lower-left
+                    coner of the image).
+                    When the whole image is displayed, XU0 and YU0 are all
+                    equal to 0; for subimages, XU0 and YU0 may not be zero.
+
+       D_MODE   -- This is set in accordence with the
+                   IMAGE_TOOL. It is a code of showing the
+                   cursor position in different ways. Default
+                   display mode is 3.
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+	FACT:	Zoom factor.  This parameter must be an integer.  The default
+		zoom factor is 4.
+
+	INTERP:	Set this keyword to use bilinear interpolation, otherwise
+		pixel replication is used.
+
+   CONTINUOUS:	Set this keyword to make the zoom window track the mouse
+		without requiring the user to press the left mouse button.
+		This feature only works well on fast computers.
+
+ CALLS:
+	CURSOR_INFO
+
+ COMMON BLOCKS:
+	None.
+
+ RESTRICTIONS:
+	ZOOM only works with color systems.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+	Utilities, Image_display.
+
+ PREVIOUS HISTORY:
+       Written November 8, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 2, Liyun Wang, GSFC/ARC, November 18, 1994
+          Calls the improved CURSOR_INFO; coordinate system conversions are
+             now handed to CNVT_COORD.
+
+ VERSION:
+       Version 2, November 18, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       LIMB_INFO
+
+ PURPOSE:
+       Get position of solar disk center and radius from an image.
+
+ EXPLANATION:
+       This routine calls FIND_LIMB2 (a modified version of FIND_LIMB
+       from the Yohkoh IDL library) to determine the coordinates of
+       the solar disk center (in data pixels) and the solar radius
+       (also in data pixels). It shares the same restriction imposed
+       by FIND_LIMB.
+
+ CALLING SEQUENCE:
+       LIMB_INFO, image, date_obs, x0, y0, scale
+
+ INPUTS:
+       IMAGE    -- A 2D image array that contains the full disk image of
+                   the sun.
+       DATE_OBS -- String scalar, date/time in any CDS format
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       X0    -- X position of the solar center in data pixels
+       Y0    -- Y position of the solar center in data pixels
+       SCALE -- scale factor of the image in arc seconds per pixel
+       R0    -- Radius of the solar disk in data pixels
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       FIND_LIMB2, PB0R
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       See find_limb.pro
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written October 7, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+
+ VERSION:
+       Version 1, October 7, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS/SUMER
+
+ NAME:
+       UPDATE_FITLIMB
+
+ PURPOSE: 
+       Updates contents of the limb-fitting widget
+
+ EXPLANATION:
+       This routine updates contents of the limb-fitting widget and plot the
+       fitted limb and solar disk center on the displayed image.
+
+ CALLING SEQUENCE: 
+       update_fitlimb
+
+ INPUTS:
+       FIT_LIMB - A structure containing widget IDs and other info set as
+                  UVALUE from MK_LIMBFIT_BS.
+
+ OPTIONAL INPUTS: 
+       None.
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS: 
+       None.
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       A dotted circle and a cross hair is over plotted on displayed image
+
+ CATEGORY:
+       
+ PREVIOUS HISTORY:
+       Written January 25, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, January 25, 1995
+       Version 2, Liyun Wang, GSFC/ARC, February 28, 1995
+          Added elliptical limb fitting option
+
+ VERSION:
+       Version 2, February 28, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS/SUMER
+
+ NAME:	
+       MK_NEW_CSI()
+
+ PURPOSE:
+       Create a new CSI (coordinate system info) structure
+
+ EXPLANATION:
+       
+ CALLING SEQUENCE: 
+       csi = mk_new_csi()
+
+ INPUTS:
+       None.
+
+ OPTIONAL INPUTS: 
+       None.
+
+ OUTPUTS:
+       CSI -- Coordinate system information structure that contains some
+              basic information of the coordinate systems involved. It should
+              have the following 15 tags:
+
+              XD0 -- X position of the first pixel of the
+                     image (lower left corner), in device pixels
+              YD0 -- Y position of the first pixel of the
+                     image (lower left corner), in device pixels
+              XU0 -- X position of the first pixel of the image (lower 
+                     left corner), in user (or data) pixels. 
+              YU0 -- Y position of the first pixel of the image (lower 
+                     left corner), in user (or data) pixels
+              MX  -- X size of the image in device pixels
+              MY  -- Y size of the image in device pixels
+              RX  -- ratio of SX/MX, (data unit)/(device pixel), 
+                     where SX is the image size in X direction in data pixels
+              RY  -- ratio of SY/MY, (data unit)/(device pixel), 
+                     where SY is the image size in Y direction in data pixels
+              X0  -- X position of the reference point in data pixels
+              Y0  -- Y position of the reference point in data pixels
+              XV0 -- X value of the reference point in absolute units
+              YV0 -- Y value of the reference point in absolute units
+              SRX -- scaling factor for X direction in arcsec/(data pixel)
+              SRY -- scaling factor for Y direction in arcsec/(data pixel)
+              FLAG - indicator with value 0 or 1 showing if the solar
+                     coodinate system is established. 1 is yes.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS: 
+       None.
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       
+ PREVIOUS HISTORY:
+       Written June 2, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, June 2, 1995
+
+ VERSION:
+       Version 1, June 2, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS/SUMER
+
+ NAME:
+       MK_POINT_BASE
+
+ PURPOSE:
+       Make a widget base for pointing for an appropriate SOHO instrument
+
+ EXPLANATION:
+       This routine creates a widget interface based on a given "parent"
+       base in IMAGE_TOOL for the pointing purpose. Events genereated from
+       this widget set is handled by routine POINTING_EVENT. It requies a
+       pointing structure be defined (in the common block included in
+       image_tool_com.pro) for a given instrument. This pointing structure
+       should include the following tags:
+
+          INSTRUME   - Code specifying the instrument; e.g., 'C' for CDS
+          G_LABEL    - Generic label for the pointing; e.g., 'RASTER'
+          X_LABEL    - Label for X coordinate of pointing; e.g., 'INS_X'
+          Y_LABEL    - Label for Y coordinate of pointing; e.g., 'INS_Y'
+          DATE_OBS   - Date/time of beginning of observation, in TAI format
+          DO_POINTING- An integer of value 0 or 1 indicating whether pointing
+                       should be handled at the planning level (i.e., by
+                       IMAGE_TOOL)
+          N_POINTINGS- Number of pointings to be performed by IMAGE_TOOL
+          POINTINGS  - A structure array (with N_POINTINGS elements) of type
+                       "DETAIL_POINT" to be handled by IMAGE_TOOL. It has the
+                       following tags:
+
+                       POINT_ID - A string scalar for pointing ID
+                       INS_X    - X coordinate of pointing area center in arcs
+                       INS_Y    - Y coordinate of pointing area center in arcs
+                       WIDTH    - Area width (E/W extent)  in arcsec
+                       HEIGHT   - Area height (N/S extent) in arcsec
+                       OFF_LIMB - An interger with value 1 or 0 indicating
+                                  whether or not the pointing area should
+                                  be off limb
+
+          N_RASTERS  - Number of rasters for each pointing (this is
+                       irrelevant to the SUMER)
+          RASTERS    - A structure array (N_RASTERS-element) of type
+                       "RASTER_POINT" that contains raster size and pointing
+                       information (this is irrelevant to the SUMER). It has
+                       the following tags:
+
+                       POINTING - Pointing handling code; valis
+                                  values are: 1, 0, and -1
+                       INS_X    - Together with INS_Y, the pointing to use
+                                  when user-supplied values are not
+                                  allowed.  Only valid when POINTING=0
+                                  (absolute) or POINTING=-1 (relative to
+                                  1st raster).
+                       INS_Y    - ...
+                       WIDTH    - Width (E/W extent) of the raster, in arcs
+                       HEIGHT   - Height (N/S extent) of the raster, in arcs
+
+      Note: For the case of CDS, pointings.width, pointings.height,
+            pointings.ins_x, and pointings.ins_y should match the first
+            raster's rasters.width, rasters.height, rasters.ins_x, and
+            rasters.ins_y, respectively.
+
+ CALLING SEQUENCE:
+       MK_POINT_BASE, parent, child [,font=font]
+
+ INPUTS:
+       PARENT - ID of parent widget upon which the pointing widget is built
+
+ OPTIONAL INPUTS:
+       FONT   - Font name to be used for labelling
+
+ OUTPUTS:
+       CHILD  - ID of the base widget being built and leter on remapped
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       DATATYPE, NUM2STR, JUSTIFY
+
+ COMMON BLOCKS:
+       FOR_POINTING - Internal common block used by this routine and
+                      MK_POINT_BASE
+       Others       - Included in image_tool_com.pro
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Planning, pointing
+
+ PREVIOUS HISTORY:
+       Written January 23, 1995, Liyun Wang, GSFC/ARC
+          Separated from the origina code of IMAGE_TOOL
+
+ MODIFICATION HISTORY:
+       Version 2, Liyun Wang, GSFC/ARC, March 8, 1995
+          Added indicator showing if a selected pointed area is pointed
+          Added Warnings if there is any pointing area remain unpointed
+       Version 3, Liyun Wang, GSFC/ARC, March 31, 1995
+          Added undo feature
+       Version 4, Liyun Wang, GSFC/ARC, April 27, 1995
+          Added the FONT keyword
+
+ VERSION:
+       Version 4, April 27, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS/SUMER
+
+ NAME:
+       MK_POINT_STC
+
+ PURPOSE: 
+       Make a fresh pointing structure to be used by IMAGE_TOOL
+
+ EXPLANATION:
+       
+ CALLING SEQUENCE: 
+       mk_point_stc, structure 
+
+ INPUTS:
+       None required.
+
+ OPTIONAL INPUTS: 
+       N_POINTINGS - Number of pointings desired. Default is 1.
+       N_RASTERS   - Number of rasters for each pointing. Default is 1.
+
+ OUTPUTS:
+       STRUCTURE - The pointing structure siutable for use in IMAGE_TOOL. It
+                   contains the following tags:
+
+          INSTRUME   - Code specifying the instrument; e.g., 'C' for CDS
+          G_LABEL    - Generic label for the pointing; e.g., 'RASTER'
+          X_LABEL    - Label for X coordinate of pointing; e.g., 'INS_X'
+          Y_LABEL    - Label for Y coordinate of pointing; e.g., 'INS_Y'
+          DATE_OBS   - Date/time of beginning of observation, in TAI format   
+          DO_POINTING- An integer of value 0 or 1 indicating whether pointing
+                       should be handled at the planning level (i.e., by
+                       IMAGE_TOOL); default is set to 1.
+          N_POINTINGS- Number of pointings to be performed by IMAGE_TOOL
+          POINTINGS  - A structure array (with N_POINTINGS elements) of type
+                       "DETAIL_POINT" to be handled by IMAGE_TOOL. It has 
+                       the following tags: 
+
+                       POINT_ID - A string scalar for pointing ID
+                       INS_X    - X coordinate of pointing area center in arcs
+                       INS_Y    - Y coordinate of pointing area center in arcs
+                       WIDTH    - Area width (E/W extent)  in arcsec
+                       HEIGHT   - Area height (N/S extent) in arcsec
+                       ZONE     - Description of the zone for pointing
+                       OFF_LIMB - An interger with value 1 or 0 indicating 
+                                  whether or not the pointing area should
+                                  be off limb 
+
+          N_RASTERS  - Number of rasters for each pointing (this is
+                       irrelevant to the SUMER)
+          RASTERS    - A structure array (N_RASTERS-element) of type
+                       "RASTER_POINT" that contains raster size and pointing
+                       information (this is irrelevant to the SUMER). It has
+                       the following tags: 
+
+                       POINTING - Pointing handling code; valis
+                                  values are: 1, 0, and -1
+                       INS_X    - Together with INS_Y, the pointing to use
+                                  when user-supplied values are not
+                                  allowed.  Only valid when POINTING=0
+                                  (absolute) or POINTING=-1 (relative to
+                                  1st raster).
+                       INS_Y    - ...
+                       WIDTH    - Width (E/W extent) of the raster, in arcs
+                       HEIGHT   - Height (N/S extent) of the raster, in arcs
+
+      Note: For the case of CDS, pointings.width, pointings.height,
+            pointings.ins_x, and pointings.ins_y should match the first
+            raster's rasters.width, rasters.height, rasters.ins_x, and
+            rasters.ins_y, respectively.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS: 
+       None.
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Planning, Image_tool, pointing
+
+ PREVIOUS HISTORY:
+       Written January 26, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, January 26, 1995
+       Version 2, Liyun Wang, GSFC/ARC, April 5, 1995
+          Added the ZONE tagname in POINTINGS
+
+ VERSION:
+       Version 2, April 5, 1995
+;-
+;+
+ Project     :	SOHO - CDS
+
+ Name        :	OBT2TAI()
+
+ Purpose     :	Converts OBT/LOBT to UTC
+
+ Explanation :	This procedure takes the 6 byte (local) on-board time
+		from the spacecraft and converts it into a double precision
+		number containing the Atomic International Time (TAI) in
+		seconds from midnight, 1 January 1958.
+
+ Use         :	Result = OBT2TAI( OBT )
+
+ Inputs      :	OBT	= The on-board time, as downloaded from the spacecraft.
+			  This should be a byte array with the first dimension
+			  having six elements.
+
+ Opt. Inputs :	None.
+
+ Outputs     :	The result of the function will be a double precision number
+		containing the TAI time in seconds.  The result is a simple
+		conversion from the 6 byte satellite format to a double
+		precision time in seconds--no corrections are made to this
+		time.
+
+ Opt. Outputs:	None.
+
+ Keywords    :	ERRMSG	= If defined and passed, then any error messages 
+			  will be returned to the user in this parameter 
+			  rather than being handled by the IDL MESSAGE 
+			  utility.  If no errors are encountered, then a null 
+			  string is returned.  In order to use this feature, 
+			  the string ERRMSG must be defined first, e.g.,
+
+				ERRMSG = ''
+				RESULT = OBT2TAI( OBT, ERRMSG=ERRMSG )
+				IF ERRMSG NE '' THEN ...
+
+ Calls       :	DATATYPE
+
+ Common      :	None.
+
+ Restrictions:	None.
+
+ Side effects:	If an error is encountered and the ERRMSG keyword is set, 
+		OBT2TAI returns a double precision value of -1.D0.
+
+ Category    :	Utilities, Time.
+
+ Prev. Hist. :	None.
+
+ Written     :	William Thompson, GSFC, 12 September 1993.
+
+ Modified    :	Version 1, William Thompson, GSFC, 12 September 1993.
+		Version 2, Donald G. Luttermoser, GSFC/ARC, 28 December 1994
+			Added the keyword ERRMSG.  Note that there are no
+			internally called procedures that use the ERRMSG 
+			keyword.
+		Version 3, Donald G. Luttermoser, GSFC/ARC, 30 January 1995
+			Made the error handling procedure more robust.  Note
+			that this routine can handle both scalars and vectors
+			as input.
+
+ Version     :	Version 3, 30 January 1995.
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       ORIENT_MARK
+
+ PURPOSE:
+       Plot orientation mark over the display
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       orient_mark, csi=csi
+
+ INPUTS:
+       CSI - Coordinate System Info structure
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written May 30, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, May 30, 1995
+
+ VERSION:
+       Version 1, May 30, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       PLOT_AXES
+
+ PURPOSE:
+       Plot axes and labels around the current displayed image
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       plot_axes, csi=csi
+
+ INPUTS:
+       CSI - Coordinate system info structure
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       TVAXIS
+
+ COMMON BLOCKS:
+       FOR_PLOT_AXES (used by SET_POINT_BASE in mk_point_base.pro)
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written March 13, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, March 13, 1995
+       Version 2, Liyun Wang, GSFC/ARC, April 11, 1995
+          Made data coordinate system established after calling this routine
+
+ VERSION:
+       Version 2, April 11, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       POLYGON_CSR
+
+ PURPOSE:
+       Make a size-fixed polygon cursor movable with a mouse
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       POLYGON_CSR, px, py, wlabel=wlabel
+
+ INPUTS:
+       px -- Array that holds initial X position of points that make
+             the polygon, also returns the final position upon exit
+             this program.
+       py -- Array that holds initial Y position of points that make
+             the polygon, also returns the final position upon exit
+             this program.
+       SCALE -- scaling factor, arcsecond/data pixels
+       CSI -- Coordinate system information structure that contains some
+              basic information of the coordinate systems involved. It should
+              have the following 14 tags:
+
+              XD0 -- X position of the first pixcel of the
+                     image (lower left coner), in device pixels
+              YD0 -- Y position of the first pixcel of the
+                     image (lower left coner), in device pixels
+              XU0 -- X position of the first pixcel of the image (lower 
+                     left coner), in user (or data) pixels. 
+              YU0 -- Y position of the first pixcel of the image (lower 
+                     left coner), in user (or data) pixels
+              MX  -- X size of the image in device pixels
+              MY  -- Y size of the image in device pixels
+              RX  -- ratio of SX/MX, (data unit)/(device pixel), where 
+                     SX is the image size in X direction in data pixels
+              RY  -- ratio of SY/MY, (data unit)/(device pixel), where 
+                     SY is the image size in Y direction in data pixels
+              X0  -- X position of the reference point in data pixels
+              Y0  -- Y position of the reference point in data pixels
+              XV0 -- X value of the reference point in absolute units
+              YV0 -- Y value of the reference point in absolute units
+              SRX -- scaling factor for X direction in arcsec/(data pixel)
+              SRY -- scaling factor for Y direction in arcsec/(data pixel)
+
+              Note: Units used for XV0 ans YV0 are arc senconds in
+                    case of solar images. If the reference point is
+                    the solar disk center, XV0 = YV0 = 0.0. The
+                    reference point can also be the first pixel of
+                    the image (i.e., the pixcel on the lower-left
+                    coner of the image).
+                    When the whole image is displayed, XU0 and YU0 are all
+                    equal to 0; for subimages, XU0 and YU0 may not be zero.
+
+       D_MODE -- This is set in accordence with the
+                 IMAGE_TOOL. It is a code of showing the
+                 cursor position in different ways. Default
+                 display mode is 2.
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       px -- Final X position of points of the polygon
+       py -- Final Y position of points of the polygon
+
+ OPTIONAL OUTPUTS:
+       POINTING -- A 2-element vector that contains the coordinates of the
+                   first point of the polygon.
+
+ KEYWORD PARAMETERS:
+       COLOR -- Index of the color to be used to draw the polygon
+       GROUP -- ID of the widget who serves as a group leader
+       KEEP_CSR -- If set, will retian the final cursor on the screen 
+                   upon exit; otherwise the cursor is removed.
+
+ CALLS:
+       CURSOR_INFO
+
+ COMMON BLOCKS:
+       IMG_SCALE -- Common block used in IMAGE_TOOL
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written September 9, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       September 14, 1994, Liyun Wang, GSFC/ARC
+          Added common block and allowed to display cursor posistion
+          in a text widget.  
+       Version 2, Liyun Wang, GSFC/ARC, October 31, 1994
+          Report of the position of the polygon made in terms of that of the
+          polygon center (defined by 0.5*(x_max+x_min) and 0.5*(x_max+x_min)
+          where x_max/x_min and y_max/y_min are max and min values of the
+          polygon in X and Y directions respectively.
+       Version 3, Liyun Wang, GSFC/ARC, November 18, 1994
+          Coordinate system conversion is made by CNVT_COORD; removed the
+             common block IMG_SCALE
+
+ VERSION:
+       Version 3, November 18, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       RASTER_SIZE
+
+ PURPOSE:
+       Get raster size based on RASTER structure from GET_RASTER.
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       RASTER_SIZE, raster, width=width, height=height
+
+ INPUTS:
+       RASTER -- A structure of type "CDS_RASTER" obtained by
+                 GET_RASTER. It should have the following tags:
+
+          RAS_ID     = Raster ID number.  If the requested raster
+                       is not found, then a simpler structure is
+                       returned, with this set to -1.
+          DETECTOR   = Either "G" for GIS or "N" for NIS.
+          RAS_DESC   = A short description of the raster, giving
+                       its purpose.
+          SLIT_NUM   = The ID number for the slit to be used.
+          XSTEP      = The step size in the X direction, in
+                       arcsec.
+          YSTEP      = The step size in the Y direction, in
+                       arcsec.
+          NX         = The number of exposure positions in X.
+          NY         = The number of exposure positions in Y.
+          RAS_VAR    = Raster variation index.
+          RV_DESC    = A short description of the raster
+                       variation beyond what is given in the
+                       associated fundamental raster description.
+          EXPTIME    = Exposure time in seconds, to millisecond
+                       accuracy.
+          LL_ID      = Line list ID.  Alternatively, this can be
+                       zero to signal that the raster is not
+                       connected to a line list.
+          LL_DESC    = A description of the line list, e.g.
+                       "Temperature sensitive line pairs".
+          N_LINES    = The number of lines.
+          COMP_ID    = Compression method ID.
+          COMP_OPT   = Compression option parameter.
+          DW_ID      = Data extraction window list ID.
+          DW_DESC    = A short description of the data window
+                       list beyond what is given in the
+                       associated line list description, e.g.
+                       "Full slit, 10 pixels wide".
+          W_WIDTH    = Width in pixels used to generate the windows
+          W_HEIGHT   = Height in pixels used to generate the
+                       windows. VDS only, for GIS this is set to zero
+          VDS_ORIENT = VDS orientation, either 0 (row) or 1
+                       (column).
+          VDS_MAP    = VDS mapping mode: 2=Normal, 3=Accumulate.
+          VDS_BACK   = Either 0 for off, or 1 for on,
+                       representing whether or not VDS background
+                       windows are being used.  For GIS window
+                       lists this is 0.
+          N_WINDOWS  = The number of windows.
+          TEL_RATE   = Estimated required telemetry rate, as a
+                       character representing Low/Medium/High
+          DURATION   = Estimated duration of the raster, in
+                       seconds.
+          USABLE     = Either "Y" or "N" to signal whether or not
+                                    the raster is usable.  Normally "Y".
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       WIDTH  -- East/West extent of the raster, in arcsecs
+       HEIGHT -- North/South extent of the raster, in arcsecs
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       DATATYPE
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Planning, image_tool
+
+ PREVIOUS HISTORY:
+       Written October 31, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+
+ VERSION:
+       Version 1, October 31, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       RD_IMAGE_FITS
+
+ PURPOSE: 
+       Driver program of FXREAD and CDS_IMAGE to read any FITS file
+
+ EXPLANATION:
+       
+ CALLING SEQUENCE: 
+       rd_image_fits, data_file, image, header, min=min, max=max, $
+                      image_max=image_max, image_min=image_min $
+                      [,errmsg=errmsg]
+
+ INPUTS:
+       DATA_FILE - name of FITS file
+
+ OPTIONAL INPUTS: 
+       COLUMN - Column number of data in FITS binary table. This parameter
+                has no effect on "plain" FITS files, and will cause CDS_IMAGE
+                to be called directly with its value if passed. 
+       GROUP  - Group ID of the group leader.
+
+ OUTPUTS:
+       IMAGE  - A 2-D image array
+       HEADER - Header of the image
+
+ OPTIONAL OUTPUTS:
+       DATA_INFO - A structure that indicates name and column number of all
+                   images contained in one FITS file. This is generally for
+                   FITS files with a binary table. It show have the following
+                   tags: 
+
+                      BINARY  - Integer scalar with value 1/0 indicating if
+                                the data_file contains binary table or not
+                      COL     - Integer vector that indicates all column
+                                numbers for the data
+                      LABEL   - String vector showing the label of data in
+                                each column 
+                      CUR_COL - Current column of data being read
+
+       IMG_UTC - UTC at which the observation was made
+       IMG_CSI - Part of CSI structure, containing the following tags: 
+                 XU0, YU0, X0, Y0, XV0, YV0, SRX, SRY, FLAG
+       ORIGIN - The value of the first point along each of the axes
+                of image array, in absolute coordinates (e.g., arcsec)
+       SPACING - The pixel spacing along each axis, i.e., value (in
+                 absolute system) per image data pixel. It is the
+                 scaling factor we use in CSI (srx and sry, etc).
+
+ KEYWORD PARAMETERS: 
+       None.
+
+ CALLS:
+       XSEL_ITEM, FXREAD, CDS_IMAGE, FXPAR, FXHREAD, BELL
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       
+ PREVIOUS HISTORY:
+       Extracted from IMAGE_TOOL.PRO, February 27, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, February 27, 1995
+       Version 2, Liyun Wang, GSFC/ARC, May 11, 1995
+          Rotated loaded image if keyword CROTA or CROTA1 is found in the
+             header and its value is not zero
+
+ VERSION:
+       Version 2, May 11, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:	
+       RD_IMAGE_GIF()
+
+ PURPOSE:
+       To select/read a GIF file and to get related obs time 
+
+ EXPLANATION:
+       
+ CALLING SEQUENCE: 
+       Result = rd_image_gif(data, obs_time=obs_time)
+
+ INPUTS:
+       None.
+
+ OPTIONAL INPUTS: 
+       None.
+
+ OUTPUTS:
+       RESULT - Status of loading the GIF file. 1 for success and 0 
+                for failure
+       DATA   - 2-Dim Image data being read
+
+ OPTIONAL OUTPUTS:
+       OBS_TIME - Observation time associated with the image
+       MINIMUM  - Minimum value in the image aaary
+       MAXIMUM  - Maximum value in the image aaary
+       COLOR_TABLE - Nx3 array for color table in RGB system
+       FILE     - File name for the GIF image    
+
+ KEYWORD PARAMETERS: 
+       None.
+
+ CALLS:
+       XINPUT, XANSWER, GET_UTC
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       
+ PREVIOUS HISTORY:
+       Written May 8, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, May 8, 1995
+
+ VERSION:
+       Version 1, May 8, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       ROT_SUBIMAGE
+
+ PURPOSE:
+       Modify an image array with a rotated region
+
+ EXPLANATION:
+       Given a region specified by two 2-element array xx, and yy, this
+       routine returns a new image array in which value of all pixels is set
+       to the minimum value of the image array except those in the region
+       which are rotated to a new place based on the solar rotation.
+
+ CALLING SEQUENCE:
+       ROT_SUBIMAGE, image, new_image, time_gap, date, xx, yy, csi=csi
+
+ INPUTS:
+       IMAGE    - 2D image array
+       TIME_GAP - Time interval (in days) over which the image is rotated
+       DATE     - Current time and date in CCSDS or ECS format
+       XX       - [x1, x2], in data pixels, starting and ending pixels of the
+                  subimage in X direction
+       YY       - [y1, y2], in data pixels, starting and ending pixels of the
+                  subimage in Y direction
+       CSI -- Coordinate system information structure that contains some
+              basic information of the coordinate systems involved. It should
+              have the following 14 tags:
+
+              XD0 -- X position of the first pixcel of the
+                     image (lower left coner), in device pixels
+              YD0 -- Y position of the first pixcel of the
+                     image (lower left coner), in device pixels
+              XU0 -- X position of the first pixcel of the image (lower 
+                     left coner), in user (or data) pixels. 
+              YU0 -- Y position of the first pixcel of the image (lower 
+                     left coner), in user (or data) pixels
+              MX  -- X size of the image in device pixels
+              MY  -- Y size of the image in device pixels
+              RX  -- ratio of SX/MX, (data unit)/(device pixel), 
+                     where SX is the image size in X direction in data pixels
+              RY  -- ratio of SY/MY, (data unit)/(device pixel), 
+                     where SY is the image size in Y direction in data pixels
+              X0  -- X position of the reference point in data pixels
+              Y0  -- Y position of the reference point in data pixels
+              XV0 -- X value of the reference point in absolute units
+              YV0 -- Y value of the reference point in absolute units
+              SRX -- scaling factor for X direction in arcsec/(data pixel)
+              SRY -- scaling factor for Y direction in arcsec/(data pixel)
+
+              Note: Units used for XV0 ans YV0 are arc senconds in
+                    case of solar images. If the reference point is
+                    the solar disk center, XV0 = YV0 = 0.0. The
+                    reference point can also be the first pixel of
+                    the image (i.e., the pixcel on the lower-left
+                    coner of the image).
+                    When the whole image is displayed, XU0 and YU0 are all
+                    equal to 0; for subimages, XU0 and YU0 may not be zero.
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       NEW_IMAGE - Modified image array. Only those pixels in the subimage
+                   are rotated, the rest of pixcels are set to the minimum
+                   value of the original image array
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       DIFF_ROT, CNVT_COORD, ANYTIM2UTC
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Planing/Image_tool
+
+ PREVIOUS HISTORY:
+       Written December 13, 1994, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+
+ VERSION:
+       Version 1, December 13, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:	
+       ROTATE_LIMB()
+
+ PURPOSE:
+       Make a 2xN array that results from rotating points on the limb
+
+ EXPLANATION:
+       
+ CALLING SEQUENCE: 
+       Result = rotate_limb(rot_dir, time_gap)
+
+ INPUTS:
+       TIME_GAP   - Time interval (in days) over which the rotation is made;
+                    the sign of TIME_GAP determines whether the rotation is
+                    forward or backward
+
+ OPTIONAL INPUTS: 
+       None.
+
+ OUTPUTS:
+       RESULT - A 2xN array: result(0,*) latitude of points in degrees
+                             result(1,*) longitude of points in degrees
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS: 
+       None.
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS: 
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       
+ PREVIOUS HISTORY:
+       Written May 5, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, May 5, 1995
+
+ VERSION:
+       Version 1, May 5, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       SEP_FILENAME
+
+ PURPOSE:
+       Separates a filename into its component parts.
+
+ EXPLANATION:
+       Given a file name, break the filename into the parts of disk/logical,
+       the directory, the filename, the extension, and the file version
+       (for VMS). The difference of this routine from break_file are:
+       1) It handles only one filename (instead of an array); 2) file
+       extention will not include the "." character, and it may be a
+       string array if the file extension can be further broken into more
+       parts (separated by the "." character).
+
+ CALLING SEQUENCE:
+       SEP_FILENAME, file, disk_log, dir, filnam, ext, fversion, node
+
+ INPUTS:
+       FILE    - The file name
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       DISK_LOG- The disk or logical (looks for a ":")
+                 This is generally only valid on VMS machines
+       DIR     - The directory
+       FILNAM  - The filename (excluding the ".")
+       EXT     - The filename extension (NOT including the ".")
+       FVERSION- The file version (only VMS)
+       NODE    - The Node name (only VMS)
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       None.
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written December 12, 1994, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+
+ VERSION:
+       Version 1, December 12, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       SET_CSI
+
+ PURPOSE:
+       Obtain iamge scale and disk center coord. from the given FITS header
+
+ EXPLANATION:
+       This routine searches some possible keywords through the given
+       FITS header, trying to obtain three important parameters, X0,
+       Y0, and SCALE, which are required when calculating the
+       coordinates of any point on the solar image. Searching is done
+       according to the order of keywords. The most probable keyword
+       are searched first. Currently the following keywords are searched:
+
+          CRRADIUS, R0, SCALE, DXB_IMG, CRPIX1, X0, CRPIX2, Y0
+
+ CALLING SEQUENCE:
+       SET_CSI, header, img_csi=ims_csi, date=date, flag=flag
+
+ INPUTS:
+       HEADER -- String array, header of a FITS file
+
+ OPTIONAL INPUTS:
+       DATE -- String scalar, date/time in any CDS format
+
+ OUTPUTS:
+       IMG_CSI - Part of CSI structure, containing the following tags: 
+                 XU0, YU0, X0, Y0, XV0, YV0, SRX, SRY, FLAG
+
+ OPTIONAL OUTPUTS:
+       ERR - A string containing error message. Null string is returned if
+             there is no error
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       DATATYPE, PB0R, FXKVALUE
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Science planning
+
+ PREVIOUS HISTORY:
+       Written September 27, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+
+ VERSION:
+       Version 1, September 27, 1994
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       SET_CURSOR_SHAPE
+
+ PURPOSE:
+       Widget interface to set cursor size interactively
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       set_cursor_shape, xx, yy [, unit] [, csi=csi] [,status=status]
+
+ INPUTS:
+       None required.
+
+ OPTIONAL INPUTS:
+       XX     - Cursor width in device pixels
+       YY     - Cursor height in device pixels
+       CURSOR_UNIT - Unit to be used for the cursor size: 1 for device pixels,
+                     2 for image pixels, and 3 for arc seconds. If this
+                     parameter is not passed in, device pixels will be assumed
+
+       CSI    - Coordinate system info structure, used to detect if the unit
+                of arc seconds can be used
+
+ OUTPUTS:
+       XX - New cursor width
+       YY - new cursor height
+       CURSOR_UNIT - New unit to be used for the cursor size
+
+ OPTIONAL OUTPUTS:
+       STATUS - Operation indicator: 1 for accept, 0 for cancel
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       GET_DFONT, NUM_CHK
+
+ COMMON BLOCKS:
+       CURSOR_SIZE - Internal common block
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written May 4, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, May 4, 1995
+
+ VERSION:
+       Version 1, May 4, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       SOLAR_GRID
+
+ PURPOSE:
+       To plot gridding lines on the solar image
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       solar_grid, lati, longi, date=date
+
+ INPUTS:
+       LATI  - The spacing in degrees between parallels of latitude;
+               default: 15.0 degrees
+       LONGI - The spacing in degrees between meridians of longitude;
+               default: 15.0 degrees
+       DATE  - Data/time in CDS time format at which the grid is plotted.
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       None.
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       LINESTYLE -- Line style to be used, default: dotted (1)
+       COLOR     -- color of the line to be draw; default: !d.n_colors-1
+
+ CALLS:
+       HEL2ARCMIN
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       Can be called only AFTER the data coordinate system is established,
+       so it would be OK if it is called after PLOT_AXES is called (which
+       also sets the data coordinate system)
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Planning, Image_tool
+
+ PREVIOUS HISTORY:
+       Written April 11, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, April 11, 1995
+
+ VERSION:
+       Version 1, April 11, 1995
+;-
+;+
+ PROJECT:
+       SOHO - SUMER
+
+ NAME:
+       SUMER_POINT_STC()
+
+ PURPOSE:
+       Make pointing structure for IMAGE_TOOL from SUMER study
+
+ EXPLANATION:
+
+ CALLING SEQUENCE:
+       Result = sumer_point_stc(sumer_study)
+
+ INPUTS:
+       SUMER_DETAIL - SUMER detail structure returned from GET_DETAIL.
+                      It currently (as of January 26, 1995) has the 
+                      following tags: 
+
+          STRUCT_TYPE - The character string 'SUMER-DETAIL'
+          PROG_ID     - Program ID, linking one or more studies together
+          STUDY_ID    - Number defining the study
+          STUDYVAR    - The number 0 (for compatibility with CDS software).
+          SCI_OBJ     - Science objective from the daily science meeting
+          SCI_SPEC    - Specific science objective from meeting
+          CMP_NO      - Campaign number
+          OBJECT      - Code for object planned to be observed
+          OBJ_ID      - Object identification
+          DATE_OBS    - Date/time of beginning of observation, in TAI format
+          DATE_END    - Date/time of end of observation, in TAI format
+          TIME_TAGGED - True (1) if the start of the study is to be a 
+                        time-tagged event.  Otherwise, the study will begin
+                        immediately after the previous study.
+          N_POINTINGS - Number of pointing areas associated with the study.
+          POINTINGS   - A array describing the area for each study to be 
+                        used during the study.  If there are no pointings
+                        associated with the array, then this tag will have a
+                        dummy value instead.
+          
+          The pointing descriptions themselves are structures, of
+          type "sumer_plan_pnt", with the following tags:
+          
+          XCEN        - Center pointing of the study part in the X direction.
+          YCEN        - Same in the Y direction.
+          WIDTH       - Width to use for the study.
+          HEIGHT      - Height to use for the study.
+          ZONE_ID - 1-byte integer, the zone ID for the pointing.
+          ZONE    - String, the zone description, e.g. "Off Limb"
+
+ OPTIONAL INPUTS:
+       None.
+
+ OUTPUTS:
+       RESULT - Pointing structure that has the following tags:
+
+          INSTRUME   - Code specifying the instrument; e.g., 'C' for CDS
+          G_LABEL    - Generic label for the pointing; e.g., 'RASTER'
+          X_LABEL    - Label for X coordinate of pointing; e.g., 'INS_X1'
+          Y_LABEL    - Label for Y coordinate of pointing; e.g., 'INS_Y1'
+          POINT_NUM  - Number of pointings to be performed by IMAGE_TOOL
+          POINT_SPEC - Pointing specification (identifier)
+          X_COORD    - X coordinate in arcs
+          Y_COORD    - Y coordinate in arcs
+          WIDTH      - Area width in arcsec
+          HEIGHT     - Area height in arcsec
+          OFF_LIMB   - An interger with value 1 or 0 indicating whether
+                       or not the pointing area should be off limb
+
+
+       Note: POINT_SPEC, X_COORD, Y_COORD, WIDTH, HEIGHT are all POINT_NUM
+             element arrays
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ CALLS:
+       DATATYPE, MK_POINT_STC, NUM2STR
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+
+ PREVIOUS HISTORY:
+       Written January 26, 1995, Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Version 1, created, Liyun Wang, GSFC/ARC, January 26, 1995
+
+ VERSION:
+       Version 1, January 26, 1995
+;-
+;+
+ PROJECT:
+       SOHO - CDS
+
+ NAME:
+       XGET_SYNOPTIC()
+
+ PURPOSE:
+       Return a string array of CDS synoptic image file names
+
+ EXPLANATION:
+       XGET_SYNOPTIC searches for filenames of the CDS synoptic images from
+       variety of sources (e.g., Yohkoh SXT, Kitt Peak, etc.). If the
+       environmental variable SYNOP_DATA is set, it will search through the
+       path determined by SYNOP_DATA; otherwise it searches through the
+       user's home directory. All synoptic data files have to be named in
+       the format of '*yymmdd.*', where the wild card character * can be 1 or
+       more characters.
+
+ CALLING SEQUENCE:
+       Results = XGET_SYNOPTIC([start] [,stop] [source=source] [group=group])
+
+ INPUTS:
+       None required.
+
+ OPTIONAL INPUTS:
+       START --  Date string in YYYY/MM/DD format, beginning date
+                 from which the image data base is searched. Default:
+                 1990/01/01
+       STOP  --  Date string in  YYYY/MM/DDformat, end date for which the
+                 image data base is searched. If absent, current (system)
+                 date is assumed.
+       SOURCE -- Index number of an item in the source structure defined in
+                 the routine. Currently, synoptic data files can be
+                 organized by site or by image type (if keyword TYPE is
+                 set). Following are sites where data files are from:
+
+                 0 -- Yohkoh Soft-X Telescope
+                 1 -- Big Bear Solar Observatory
+                 2 -- Kitt Peak National Observatory
+                 3 -- Learmonth Observatory, Australia
+                 4 -- Mt. Wilson Observatory
+                 5 -- Space Environment Lab
+                 6 -- Holloman AFB
+                 7 -- Mees Solar Observatory
+                 8 -- Sacramento Peak Observatory
+                 9 -- Nobeyama Solar Radio Observatory
+                 10 -- Other Institutes
+
+                 Image files can also be organized based on the following
+                 image types (to be accessible when keyword TYPE is set):
+
+                 0  -- H-Alpha
+                 1  -- He I 10830 A
+                 2  -- Calcium
+                 3  -- Magnetogram
+                 4  -- White Light
+                 5  -- X-ray
+                 6  -- Green Line Image (5303 A)
+                 7  -- Polarized Radio (17 GHz)
+                 8  -- Red Line Image (6374 A)
+                 9  -- Spectrohelioscope
+                 10 -- Total Intensity Radio (17 GHz)
+                 11 -- Yellow Line Image (5694 A)
+
+       GROUP --  ID of the widget that functions as a group leader
+
+ OUTPUTS:
+       Results -- String containing filename selected from the directory
+                  specified by the SYNOP_DATA env. variable (or user's home
+                  directory if SYNOP_DATA is not set), based on the source of
+                  file indicated by the SOURCE keyword. A null string will be
+                  returned if no appropriate file is selected. Please
+                  note that if the keyword ININITIALIZE is set,
+                  RESULTS will be a structure named SYNOP_SRC that
+                  has the following tags:
+    
+          NAME    - Name of image sources (if TYPE is not set) or name
+                    of image types (if TYPE is set).
+          DIRNAME - Directory names under SYNOP_DATA in which image
+                    files reside
+
+ OPTIONAL OUTPUTS:
+       None.
+
+ KEYWORD PARAMETERS:
+       INITIALIZE -- If set, does nothing but initialize the common block
+       TYPE       -- Set this keyword to search for images by type (not
+                     implemented on directory tree yet)
+
+ CALLS:
+       GET_UTC, NUM2STR, DELVARX, STRIP_DIRNAME, CONCAT_DIR, XTEXT
+
+ COMMON BLOCKS:
+       None.
+
+ RESTRICTIONS:
+       None.
+
+ SIDE EFFECTS:
+       None.
+
+ CATEGORY:
+       Science planning
+
+ PREVIOUS HISTORY:
+       Written September 19, 1994, by Liyun Wang, GSFC/ARC
+
+ MODIFICATION HISTORY:
+       Liyun Wang, GSFC/ARC, October 5, 1994
+          Modified so that the file extension name does not have to be
+          ".fits"
+       Version 2, Liyun Wang, GSFC/ARC, October 12, 1994
+          Added keyword TYPE to allow choosing images based on image type
+       Version 3, Liyun Wang, GSFC/ARC, November 21, 1994
+          Made the list selected if it is the only one
+       Version 4, Liyun Wang, GSFC/ARC, December 29, 1994
+          Removed the .tags tag, and renamed the .value tag to .dirname in
+             the SOURCES structure;
+       Version 5, Liyun Wang, GSFC/ARC, February 1, 1995
+          Made it work for files with the SOHO filename convention
+       Version 6, Liyun Wang, GSFC/ARC, February 13, 1995
+          Made it work under VMS (requires the "new" version of
+             CONCAT_DIR that can concatinate two directories under VMS).
+       Version 7, Liyun Wang, GSFC/ARC, March 30, 1995
+          Added the Help button
+       Version 8, Liyun Wang, GSFC/ARC, April 19, 1995
+          Added Mauna Loa Solar Obs of HAO site
+       Version 9, Liyun Wang, GSFC/ARC, May 9, 1995
+          Got rid of common blocks in main routine and event handler
+          Remembers the last image source and selected items 
+          Returns a structure (with tag names NAME and DIRNAME) when
+             the keyword INITIALIZE is set
+       Version 10, Liyun Wang, GSFC/ARC, May 25, 1995
+          Replaced image source names with the cw_bselector widget
+
+ VERSION:
+       Version 10, May 25, 1995
+;-

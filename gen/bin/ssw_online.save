@@ -1,0 +1,437 @@
+#!/bin/csh -f
+# ##########################################################################
+# ssw_online
+# script file to move files online to SSW master tree
+#
+# Backups of current versions are made to an offline area
+# [backup name = existing_name.YYMMDD.HHMMSS; time=time of 'online' run]
+#
+# S.L.Freeland 16-feb-1993      # original yohkoh online.src
+# slf,         20-feb-1996      # SSW modifications
+# slf,         22-feb-1996      # always log / use remote $SSW instead of "/ssw"
+# slf,         14-aug-1996      # assumes running at GSFC - NO .rhosts required
+#				#    on primary host (local copies)
+# slf,         18-aug-1996      # cleanup logging, output
+# slf,         20-aug-1996      # documentation!
+# slf, 	       21-aug-1996      # remove final rsh reference for host[1]
+# ##########################################################################
+# Calling Sequence: (assume alias online executes this script)
+#
+#      online 		 			    # no params => HELP
+#      online file1 [file2 ... filen] [/xxx]   	    ### UPDATES - look up
+# OR   online file1 [file2 ... filen] [/full_path]  ### NEW - supply full path
+#
+#  /xxx    - instrument pattern to match [ex: /eit /sxt /cds /mdi]
+#  /ucon   - if set, use $SSW/ucon/idl/<user> (offline by default)
+#  /soho   - if set, $SSW_SOHO   (sohogen)
+#  /yohkoh - if set, $SSW_YOHKOH (yohkohgen)
+#  /gen    - if set, $SSW/gen...
+#  /check  - if set, only do the conflict check part and exit
+#  /sswgen - (caution!) if set, copy to PREPENDED test area
+#            (every SSW user will see this version first)
+#
+# Calling Examples:
+#      online eit_files eit_colors /eit		# existing files (update)
+#						
+# Method:
+#   *** For existing routines: ***
+#      Look for existing version under $SSW/.../xxx/...
+#
+#   *** For New routines: ***
+#      Verify no unexpected conflicts
+#      Must specify full pathname
+#
+# Restrictions:
+#   If no path is specified, assume routines are online 
+#   Must be online in user specified/implied instrument or gen path
+#   Input routines are assumed to be in current directory (temporary?)
+#
+############################################################################
+# Requirements; User must have:
+#      write access to designated path 
+#      remove/move permission for existing routines
+#      .rhost file on each remote machine (not required on LOCAL machine)
+#      Environnmental SSW must be defined in .cshrc of all remote hosts (path may differ)
+############################################################################
+
+if ($#argv == 0) then 
+      echo "            *** SSW online ***"
+      echo " " 
+      echo "------------ Calling Sequence---------------------------"
+      echo " " 
+      echo "UPDATE/REPLACE an existing SSW routine:"
+      echo ""
+      echo "   % online file1 [file2 ... filen] [/INSTR]       # INSTR=xxx" 
+      echo "   % online file1 [file2 ... filen] /gen /MISSION  # MISSION/GEN"
+      echo " "
+      echo "Move a NEW routine online:"
+      echo "   % online file1 <full_SSW_path>"
+      echo "   % online file1 /sswgen                          #  SSW/GEN"
+      echo "     [use the above with extreme caution - everybody sees this]"
+      echo "     [Moves routine to "'$'"SSW/gen/idl_test/genutil (prepended)]"
+      echo " "
+      echo "Just CHECK for SSW name conflicts:"
+      echo "   % online file1 [file2 ... filen] /check"
+      echo "   (can also use the ssloc command:  % sswloc <pattern>"
+      echo " " 
+      echo "-------------- Calling Examples: -----------------------"
+      echo " "
+      echo "Replace existing routine which is in the EIT branch:"
+      echo "   % online lasteit /eit"		
+      echo " "
+      echo "Move a NEW routine online (usie explicit pathname):"
+      echo "   % online neweit "'$'"SSW_EIT/idl/util "
+      echo " "
+      echo "Conflict check (just checks conflicts and exits):"
+      echo "   % online headfits /check"
+      echo " "
+      echo "-------------------- NOTES ---------------------------"
+      echo " "
+      echo " o For existing routines, will only copy to specified  "
+      echo "      SSW instrument or gen branch (use /INSTR switch)"
+      echo " "
+      echo " o Existing routines are backed up to an offline area, Name="
+      echo "     "'$'"SSW/offline/ssw_backup/xxx.pro.yymmdd.hhmmss"
+      echo " "
+      echo " o The <.pro> extension is optional for file names"
+      echo " "
+      echo " o A log of all "online" activity is found in file:"
+      echo "       "'$'"SSW/site/logs/ssw_online.log"
+      echo "   The alias <whatsnew> will give a tail of this file"
+      echo "   "
+      echo " o Map of all online SSW routines is maintained in file:"
+      echo "       "'$'"SSW/site/setup/ssw_map.dat"
+      echo " "
+      echo "   The file is in 'standard' SSW path order so that the "
+      echo "   first occurrence will be the referenced version (at least"
+      echo "   for the "'$'"SSW/gen routines"
+      echo ""
+      echo " o EMERGENCY? use /sswgen to force a routine to front of path"
+      echo " "
+      echo " o Failure? - need write privilege to target directory"
+      echo "   Make sure you are in required group (ssw_gen, ssw_eit, etc)"
+      echo "------------------------------------------------------"
+      exit
+endif
+###################### setup some defaults ##########################
+set filelist=""
+set outpath=""
+set backup="1"
+set logging="1"
+set type="idl"
+set loud=""
+set check=""
+
+if ($?ssw_online_mission) then 		# check users default
+   set mission=$ssw_online_mission
+else
+   set mission=""
+endif
+
+if ($?ssw_online_instr) then 		# check users default
+   set instr=$ssw_online_instr
+else
+   set instr="xxx"			# force failure
+endif
+######################################################################
+
+###################### loop through arguments #######################
+foreach argx ($argv) 
+   switch ($argx)
+      case /loud
+      case /verbose
+         set loud="1"
+      breaksw
+      case /nobackup:
+      case /noback
+         set backup=""
+         breaksw
+      case /ucon:
+         set outpath=$SSW/ucon/idl/$user
+         breaksw
+      case /sswgen
+         set mission='gen'
+         set outpath="$SSW/gen/idl_test/genutil"
+         breaksw
+      case /gen:
+         set mission=""
+         set instr="/gen/"
+         breaksw
+      case /soho:
+      case /yohkoh:
+      case /trace:
+         set mission="$argx""/"
+         set instr="/gen/"
+         breaksw
+      case /test:					# TEST? (def=idl)
+      case /atest:
+         set type="test"
+         breaksw
+      case /nolog:					# dont log
+         set logging="0"
+         breaksw
+      case /check:
+         set check="1"
+         breaksw
+      case /help:
+         echo "online file1 [file2 file3... filen] [path] [/check]"
+         exit
+         breaksw
+      default:						# all other params.
+            if (-d $argx) then
+               set outpath=$argx			# online target
+            else
+               set chkinstr=`echo "$SSW_INSTR_ALL" | grep $argx` 
+               if ("$chkinstr" != "") then
+                  set instr="$argx""/"		      # member of SSW instr list
+               else
+		 set filelist=($filelist $argx)
+               endif
+            endif
+         breaksw
+   endsw
+end
+
+if (!($check)) then 
+   echo "---------------------"
+   echo "Instrument = "$instr
+   echo "---------------------"
+   echo ""
+endif
+
+######################################################################
+# define some log information and log it
+set host=`hostname`
+set date=`date -u`					# force GMT
+set year=`date +%y`
+set ysdate  = $date[3]-$date[2]-$year" $date[4]  ($date[5])"
+
+######################## remote host setup #################################
+# define output host list: hosts
+# add to this list to export to other trusted hosts
+
+if ($?online_hosts) then
+  set hosts=`echo $online_hosts`
+else
+  set hosts="$host"
+endif
+
+# the first node in hosts is defined as the master for logging purposes
+set master_log=$hosts[1]
+set logfile=$SSW/site/logs/ssw_online.log
+set rlog=$logfile
+
+############################################################################
+
+set swmap="$SSW_SITE_SETUP/ssw_map.dat"
+set nfile=$#filelist
+
+########## check for input file exist - append .pro if not found ##############
+if ($nfile == 0) then 
+   echo "Did not see any files passed in - please check call (exiting...)"
+   exit
+else
+   set templist""
+   foreach temp ($filelist)   
+      set file=$temp
+      if (!(-e $file)) then
+         set chk=`echo $file | grep ".pro"`
+         if ("$chk" == "") then  
+            set file=$file".pro"		# default is IDL routine
+         endif
+      endif
+
+      if ($check) then 
+         set templist=($templist $file)
+      else       
+         if (!(-e $file)) then
+            echo "Warning: cant find file: "$file
+         else
+            set templist=($templist $file)
+         endif         
+      endif
+   end
+endif
+
+set filelist=($templist)
+set nfile=$#filelist
+############################################################################
+if ($nfile == 0) then 
+   echo "No files found to move online (exiting...)"
+   exit
+endif
+############################################################################
+#     Check for existing copies online - use user switches to select       #
+############################################################################
+set exfiles=""
+set expaths=""
+
+foreach file ($filelist) 
+echo " "
+echo ">>> Checking file: "$file" for SSW conflicts..."
+   echo ""
+#  Check for existing postion (and display conflicts)
+   set chkit=`grep -i /$file $swmap`			# conflict checker
+   switch($#chkit)
+      case 0: 
+        echo $file" Not Online"
+        breaksw
+      case 1:
+        echo $file" online in: "$chkit
+        set chkit=`echo "$chkit" | grep -i "$instr" | grep -i "$mission"`
+        breaksw
+      default:
+        echo "Multiple copies of "$file" online:"
+        set chktemp=""
+        foreach copy ($chkit) 
+           echo "   "$copy
+              set chkone=`echo "$copy" | grep -i "$instr" | grep -i "$mission"`
+              if ($chkone != "") then
+                 set chktemp="$copy"
+              endif
+         end
+         set chkit=$chktemp
+      breaksw
+   endsw
+
+
+   if ($chkit == "") then 
+      set exfiles=($exfiles $file)
+      set expaths=($expaths "xxx")		# not found online, flag 
+   else
+      set exfiles=($exfiles $chkit:t)		# found, rembember 
+      set expaths=($expaths $chkit:h)
+   endif      
+
+end
+echo " "
+
+if ($check) then 
+   exit
+endif			               ########### early exit #############
+
+############################################################################
+
+############################################################################
+# create 'final' FILE and PATH vectors - eliminate un resolved elements    #
+# if an explicit path was entered, use that for un resolved references     #
+############################################################################
+set filelist=""
+set outpaths=""
+while ($#exfiles >= 1)
+   if ($expaths[1] == "xxx") then 
+      if ($outpath != "" ) then             
+         set filelist=($filelist $exfiles[1])
+         set outpaths=($outpaths $outpath)
+      endif
+   else
+      set filelist=($filelist $exfiles[1])
+      set outpaths=($outpaths $expaths[1])      
+   endif
+   shift exfiles
+   shift expaths
+end
+
+if ($#filelist == 0) then 
+   echo "could not resolve output directory..."
+   echo "Use apprpriate instrument keyword or pass full path..."
+   exit
+endif
+############################################################################
+
+if ($logging == 1) then 
+#   rsh $master_log "echo  '# $ysdate'  -  $user  -  $host" >> $rlog
+    echo  "'# $ysdate'  -  $user  -  $host" >> $rlog
+endif
+
+set rfiles=($filelist)
+set backup_dir = $SSW/offline/ssw_backup	   # were to 'offline' to
+set fid=`$SSW_BIN/date2fid gmt`
+set lssw=`printenv SSW`				   # local machine SSW def
+
+# finally, do the remote copying
+####### slf 22-aug-1996 - first host in list is local (no .rhosts) #####
+while ($#rfiles >= 1)				   # for each file
+   set rhosts=($hosts)			           # init host list
+   set fname=$rfiles[1]
+
+   while ($#rhosts >= 1)			   # for each host
+#     translate to remote names (path, logfile, backup dir) 
+     if ($#rhosts == 1) then 
+         set rname=`echo "$outpaths[1]" | sed s+'$SSW'+"$lssw"+g`         
+         set rback=$backup_dir
+         set outfile="$rname/$fname"	                  # output name
+         set cmd="cp -p $fname $outfile"
+         set etest=`if (-e $outfile) echo exist`
+         set bcmd="mv -f $rname/$fname $rback/$fname.$fid"
+      else
+         set rssw=`rsh -n $rhosts[1] printenv SSW`	   # remove SSW definition
+         set rname=`echo "$outpaths[1]"  | sed s+'$SSW'+"$rssw"+g`
+         set rback=`echo $backup_dir | sed s+'$SSW'+"$rssw"+g`
+         set fname=`echo "$fname:t"`
+         set outfile=$rhosts[1]":'$rname/$fname'"	           # rcp output name
+         set cmd="rcp -p $fname $outfile"	   # form rcp command
+         set etest=`rsh $rhosts[1] "if (-e $rname/$fname) echo exist"`
+         set bcmd="rsh $rhosts[1] mv -f $rname/$fname $rback/$fname.$fid"
+      endif      
+      ######################################################################
+
+if ($loud) then 		# print some status (debugging only)
+	echo "##########################################"
+        echo "outfile    ="$outfile
+	echo "rname      ="$rname
+	echo "outpaths[1] ="$outpaths[1]
+	echo "rlog       ="$rlog
+	echo "logfile    ="$logfile
+	echo "rback      ="$rback
+	echo "backup_dir ="$backup_dir
+	echo "##########################################"
+endif
+     ######################################################################
+#     handle auto-backups 
+      echo " "
+      echo ">>> Moving file: "$fname" -> To Host: "$rhosts[1]
+      if ($backup == 1) then
+#        Check for file on remote machine
+         if ($etest != "") then
+#           Found, so backup existing version (attach date to file name)
+            echo " "
+            echo ">>> Backing up current version via...:"
+            echo "-----------------------------------------------------------------"
+            echo `echo_env "$bcmd" SSW` 
+            echo "-----------------------------------------------------------------"
+            echo $bcmd >> $rlog
+            $bcmd
+         endif
+      else					# else, no bac
+#         rsh $rhosts[1] rm -f $rname		# remove file first
+      endif
+      ####################################################################
+      echo " "
+      echo ">>> Moving online via...:"
+      echo "-----------------------------------------------------------------"
+      echo `echo_env "$cmd" SSW` 				   
+      echo "-----------------------------------------------------------------"
+      eval "$cmd"
+      echo " "
+      if (($status == 0) & ($logging == 1)) then 
+#        rsh $master_log "echo $cmd >> $rlog"
+         echo $cmd >> $rlog
+      else
+         echo "*** Warning - problem w/RCP; Verify Protection and Permissions"
+      endif
+      shift rhosts      			   # next host
+   end
+   shift rfiles					   # next file
+   shift outpaths
+end
+######################### done with rcps ###################################
+# delimit this run
+if ($logging == 1) then 
+#   rsh $master_log "echo  '# -------------------------------------------------------------------------' >> $rlog
+  echo  '# -------------------------------------------------------------------------' >> $rlog
+#   rsh $master_log "echo  " " >> $rlog
+   echo  " " >> $rlog
+endif
+
+exit

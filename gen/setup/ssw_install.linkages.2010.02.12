@@ -1,0 +1,22 @@
+# $SSW/gen/setup/ssw_install.linkages
+#
+# S.L.Freeland - 30-November-1999
+# This file provides implied/automatic linkages for branches
+# If instrument/branch in the 1st column is referenced, the 
+# instruments/branches in the second...NN columns are included 
+# Generally, the PI team suggest auto-linkages
+#
+# These are in addition to the 'forced' linkages 
+# (such as ssw-gen, mission-gen, and mission-ucon) which are required to 
+#  assure integrated function)
+#  10-oct-2006 - S.L.Freeland - add SBROWSER->SECCHI links
+#  22-jan-2008 - S.L.Freeland - add NRL->SECCHI & LASCO
+# 
+#
+Instrument			Auto-Linkages
+hessi				spex,xray
+hxrs     			spex,xray
+cactus				cmes
+cmes				cactus
+secchi				mjastereo,sbrowser,nrl,s3drs
+lasco				nrl

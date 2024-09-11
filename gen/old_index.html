@@ -1,0 +1,167 @@
+<HTML>
+<HEAD><LINK REV="owns" 
+HREF="mailto:freeland@lmsal.com">
+<title>SolarSoft - Description, Last Revision: 14-October-1999</title>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000ff" VLINK="#8800AB">
+<center><b><font size=8><em>SolarSoft</em></font></b>   http://www.lmsal.com/solarsoft/</center>
+<img SRC="/sdb/http/img/sundiv.gif" HEIGHT=38 WIDTH=600> </p>
+<html>
+<BODY type=fadein bgcolor="#EFEFEF">
+<em>S.L.Freeland, freeland [at] lmsal.com, Last Revision: 14-October-1999</em>
+<p>
+<font size=+2 color=red>Latest version of this document 
+<a href="http://www.lmsal.com/solarsoft/"> is available here</a></font>
+<p><b><em>Related Documents</em></b>
+<ul>
+<li><a href="http://www.lmsal.com/solarsoft/ssw_concepts.html"><b>SolarSoft  Concepts - Coordinated analysis concepts and tutorials</b></a>
+<li><a href="http://www.lmsal.com/solarsoft/ssw_install_howto.html"><b>SolarSoft Installation</b> (UNIX / PC-FreeBSD, PC-Linux)</a>
+<li><a href="http://www.lmsal.com/solarsoft/ssw_windows.html"><b>SolarSoft Under Windows</b> </a>
+<li><a href="http://www.lmsal.com/solarsoft/ssw_upgrades.html"><b>SolarSoft Upgrades</b>
+<li><a href="http://www.lmsal.com/solarsoft/ssw_setup.html"><b>SolarSoft  Setup - Running SSW IDL</b></a>
+<li><a href="http://www.lmsal.com/solarsoft/sswdb_description.html"><b>SolarSoft DataBase description</b></a> 
+</ul>
+<hr>
+<h2>What is SolarSoft?</h2>
+The SolarSoft system is a set of integrated software libraries,  data bases,
+and system utilities which provide a  common programming and data analysis 
+environment for Solar Physics.  The SolarSoftWare (SSW) system is built
+from Yohkoh, SOHO, SDAC and <a href="http://idlastro.gsfc.nasa.gov/homepage.html"><em>Astronomy</em></a> libraries and draws upon contributions 
+from many members of those projects.  It is primarily an 
+ <a href="http://www.rsinc.com/idl/"><em>IDL</em></a> based 
+system, although some instrument teams integrate executables 
+written in other languages.   
+The SSW environment provides a consistent look and 
+feel at widely distributed co-investigator institutions to facilitate data 
+exchange and to stimulate coordinated analysis.  
+Commonalities and overlap in solar data and analysis goals are exploited 
+to permit application of fundamental utilities to the data from many 
+different solar instruments.  The use of common libraries, utilities, 
+techniques and interfaces minimzies the learning curve for investigators 
+who are analyzing new solar data sets, correlating results from multiple 
+experiments or performing research away from their home institution.
+
+<dl><em><b>Some of the primary goals of the SSW are...</b></em><p>
+<dt><b>Provide a large reuse SW library</b>
+<dd>The software library represents an evolutionary system
+    tracing back to SMM, through Yohkoh and SOHO, TRACE, and eventually will
+    incorporate SXI, HESSI, and other solar observatories.
+    Many common "solar physics" , file i/o, system, IDL structure
+    manipulation, data display, etc. tasks have already been addressed
+    by others (many others in some cases!)<br>
+
+   <ul> <em>Very small sample of existing SSW capabilities...</em><br>
+    <li> Time series analysis, time conversions, <b>UTPLOT</b> <em> (millennium safe)</em>
+    <li> Spectral fitting 
+    <li> Image and Image cube (movies) display
+    <li> IDL data manipulation (structure, string, array, mathematics...) 
+    <li> File I/O (generic binary, ascii), FITS
+    <li> Solar (limb fitting, grid overlay, coordinate tranformations...)
+    <li> WWW related (html conversion, file conversions, FORM handling, 
+         <a href="http://www.lmsal.com/solarsoft/ssw_movie_making.html"> movie making</a>,...)
+    <li> WWW Client<-><em><b>SolarSoft IDL server</b></em> interface
+         permits execution of SSW/IDL utilities over the Web <br>
+         Examples include <a href="http://www.lmsal.com/YPOP/sxt_movie.html">
+	 SXT dynamic WWW movie maker</a> and 
+	 <a href="http://www.lmsal.com/SXT/plot_goes.html"> 
+	 WWW GOES X-Ray light curve display</a>
+	 
+    </ul><br>
+<a href="http://soho01.nascom.nasa.gov/~soho/ssw_cat"> 
+WWW index which allows searching for SSW routines by category 
+and/or string pattern</a> is available.
+
+<dt><b>Provide a system which is largely hardware-system and site
+independent</b>
+<dd>Installation and setup utilities simplify tranportation to systems.
+    Fundamental shared software is written in hardware-independent and 
+    site-configuration independent form.  The SSW setup utilities support
+    local configuration files to get sites up and running
+<dt><b>Promote the use of certain standards which facilitate coordinated
+data analysis </b>
+<dd>Through use of suggested standards, many powerful routines are 
+immediately available for the analysis of new data sets.  <br>The
+<a href="http://www.lmsal.com/solarsoft/ssw_standards.html"><em><b>SSW</b>suggested Keywords and Tags</em> </a> 
+descibes pointing and time standards.  <br><font color=red> Application  for 
+overlay, alignment, scaling, rotation, etc of any SSW instruments
+via Dominic Zarro's <a href="http://orpheus.nascom.nasa.gov/~zarro/idl/maps.html"><em>Mapping</em> software</a></font>
+<dt><b>Promote an evolutionary environment</b>
+<dd>Feedback and contributions from the many SSW institutes and users 
+are strongly encouraged. Utilties to simplify remote 
+<a href="http://www.lmsal.com/solarsoft/ssw_upgrades.html">SSW upgrades</a>
+and accept user contribution are designed to make the system 
+evolutionary instead of stagnant and divergent.
+
+<dt><b>Provide access to supporting ancillary data bases</b>
+<dd> Access to supporting data sets from ground-based and satellite-based
+solar observatories are provided in consistent formats to facilitate
+coordinated analysis
+
+<dt><b>Provide a file-format independent analysis environment</b>
+<dd> To accomodate the largest number of solar data sets, 
+file I/O is isolated and analysis applications are designed to operate
+on objects which are independent of file type.  
+
+<dt><b>Provide integrated access to other IDL <em>packages</em></b>
+<dd> When IDL libraries are identified which provide a  useful extension to 
+SSW capabilities, we will attempt to integrate them into the SSW system.  
+For example, the <a href="packages/SSW_Packages_Chianti.html"><em>
+Chianti Package, K. Dere et al.</em></a>
+is now fully integrated into the SSW distribution and analysis environment
+for UV/EUV emission line analysis.
+</dl>
+<p>
+<h3> A "typical" SSW installation is looks something like...</h3>
+<pre>
+			SSW
+			|
+-----------------------------------------------------------------------------------------------
+|	 |	  |			       |		       |                       |
+SITE    GEN	  SOHO			       YOHKOH              (...missions...)    (...packages...)
+	(SSW)	  |			       |                   
+		  -------------------- 	       ------------------
+		  |    |   |     |    |        |    |   |   |   |
+		  GEN  EIT LASCO CDS  [etc]    GEN  SXT BCS HXT WBS
+		 (soho)                      (yohkoh)
+
+</pre>
+
+The "GEN" branches contain general purpose (IDL, setup) which are applicable to 
+branches below - thus the SSW-GEN contains globally useful routines 
+(instrument/mission independent)   and the MISSION-GEN contain routines which 
+are mission dependent but may be used by all instruments within the mission
+(mission pointing, epehermeris, etc).  The SITE directory is available 
+for local SW and definition of SSW environmentals/logicals in terms of 
+local pathnames.
+<p>
+The SSW installation procedure and system design allows local configurations 
+which contain a subset of this tree - thus, an <em>EIT/SXT/Chianti
+<b>only</b></em> installation is ok
+and would look like...
+<pre>
+		SSW
+                |
+-------------------------------------------------
+|       |       |               |                | 
+SITE	GEN 	SOHO		YOHKOH           PACKAGES
+		|               |                | 
+		----		----             Chianti
+		|   |		|   |
+		GEN EIT		GEN SXT
+
+</pre>
+
+SSW setup startup utilities define the IDL environment based upon users
+SSW instrument selection. (not shown are links to Astronomy and other 
+IDL libraries which are added by the SSW startup)
+
+<p>
+<IMG ALT="------------------------------------------------------------------"
+SRC="/sdb/http/img/sundiv.gif" HEIGHT=38 WIDTH=600> 
+<p>
+<A HREF="mailto: freeland@lmsal.com"><em>freeland [at] lmsal.com</em></A>
+<p>
+<IMG ALT="------------------------------------------------------------------"
+SRC="/sdb/http/img/sundiv.gif" HEIGHT=38 WIDTH=600> 
+</BODY>
+</HTML>

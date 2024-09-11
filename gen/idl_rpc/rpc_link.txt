@@ -1,0 +1,29 @@
+This file contains the linking statements used when building an
+IDL client rpc application. 
+
+The IDL rpc client library, libidl_rpc, is required when linking an IDL
+rpc client application and is located in:
+
+	$IDL_DIR/bin/bin.OS_NAME
+
+Solaris:
+	cc -o <application name> -z defs -i -R . -L. <object files> \
+		-lidl_rpc -lnsl
+
+SunOS:
+	acc -o <application name> -L. -Bdynamic <object files> -lidl_rpc
+
+AIX:
+	cc -o <application name> -L. <object files> -lidl_rpc
+
+HP-UX:
+	cc -o <application name> -Wl,+b,. -Wl,+s -L. <object files> -lidl_rpc	
+
+IRIX:
+	cc -o <application name> -L. -rpath . <object files> -lidl_rpc		
+
+Dec Unix:
+	cc -o <application name> -L. -Wl,-rpath,. <object files> -lidl_rpc
+
+Linux:
+	cc -o <application name> -L. -Wl,-rpath,. <object files> -lidl_rpc

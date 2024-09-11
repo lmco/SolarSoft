@@ -1,0 +1,32 @@
+#!/bin/csh -f
+#
+#  Define SSW-wide aliases 
+#  Circa Jan 1, 1996 S.L.Freeland
+#  28-August-1998 S.L.Freeland - add sswloc2
+#  14-March-2000  S.L.Freeland - sswup sswupgrade (synonyms)
+#  26-Sept-2002  S.L.Freeland - add 'sswidlb' (beta ssw_idl)
+#
+# command to update SSW instrument list and re-execute setup
+alias setssw 'setenv SSW_INSTR "\!*" ; source $SSW/gen/setup/setup.ssw /loud' 
+
+# command to "find" a routine (actually a search string) in SSW
+alias sswloc "grep -i \!* $SSW/gen/setup/ssw_map.dat"
+
+# same as above relative to $SSW_XXX (instrument) instead of $SSW 
+alias sswloc2 "grep -i \!* $SSW/gen/setup/ssw_instr_map.dat"
+
+# command to submit an IDL 'batch' job using the SSW enviroment
+alias ssw_batch 'nohup $SSW/gen/bin/ssw_batch \!* &'
+
+# command to move routines to master tree
+alias online "$SSW/gen/bin/ssw_online"
+
+# online for Yohkoh tree (same as 'online' under $ys system)
+alias ysonline "$SSW/yohkoh/gen/script/online.src"
+
+# ssw_upgrade from UNIX command line
+alias sswup "csh -f $SSW/gen/bin/sswup.csh "
+alias sswupgrade "csh -f $SSW/gen/bin/sswup.csh "
+
+alias sswidlb "$SSW/gen/setup/ssw_idl.20020926"
+

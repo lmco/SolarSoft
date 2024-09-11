@@ -1,0 +1,99 @@
+#!/bin/csh -f 
+
+# Load Python-IDL bridge on Mac OS and Linux 
+# Make sure to define $PYTHONHOME and $IDL_DIR beforehand to your local setup.
+
+# Zarro (ADNET) 26-July-18
+
+set SUCCESS_FLAG = 0
+onintr catch
+
+if !($?IDL_DIR) then
+  echo "% Undefined IDL_DIR environment variable."
+  exit 1
+endif
+
+if !($?PYTHONHOME) then
+ echo "% Undefined PYTHONHOME environment variable."
+ echo "% Example: setenv PYTHONHOME /Users/zarro/anaconda2"
+ exit 1
+endif
+
+# set paths for Python and IDL to find each other
+
+set PYTHONLIB = $PYTHONHOME/lib
+set PYTHONEXE = $PYTHONHOME/bin/python
+
+if !(-e $PYTHONEXE) then
+ echo "% Python executable not found."
+ exit 1
+endif
+
+# Locate IDL-PYTHON shareable libraries (SO).
+
+set SO_FILE = `find $IDL_DIR/bin -name "pythonidl*.so" -print`
+if ($#SO_FILE == 0)  then
+ echo "%IDL-PYTHON shareable libraries not found on this system."
+ exit 1
+endif
+
+set SO_DIR = `dirname $SO_FILE[1]`
+setenv PYTHONPATH $IDL_DIR/lib/bridges
+
+# If not Mac/Darwin, define LD_LIBRARY_PATH
+
+ set MAC_CHECK = `uname | grep -i darwin`
+
+if ($#MAC_CHECK == 0) then
+ setenv LD_LIBRARY_PATH ${PYTHONLIB}:${SO_DIR}
+endif
+
+# Add SSW PATH if /SSW set and $SSW is defined
+
+set ssw = 0
+set input = 0
+
+if ($#argv == 1) then
+ if ($argv[1] == "/ssw") then
+ set ssw = 1
+ else 
+  if (-e $argv[1]) set input = 1 
+ endif
+endif
+
+if ($#argv > 1) then
+ if ($argv[2] == "/ssw") then
+  set ssw=1
+ else
+  if (-e $argv[1]) set input = 1
+ endif
+endif
+
+if ($ssw == 1) then
+ if ($?SSW) then
+  setenv PYTHONPATH ${PYTHONPATH}:$SSW/gen/python/bridge
+  setenv PYTHONSTARTUP $SSW/gen/python/bridge/startup.py
+ endif
+endif
+
+# Start Python with optional input script. 
+# -B means don't create .pyc files.
+
+if ($input == 1) then
+  $PYTHONEXE -B $argv[1]
+else
+  $PYTHONEXE -B
+endif
+
+set SUCCESS_FLAG = 1
+
+# Catch any errors.
+
+catch:
+
+if ($SUCCESS_FLAG == 0) then
+ echo "% Sorry, something went wrong."
+ exit 1
+endif
+
+exit 0

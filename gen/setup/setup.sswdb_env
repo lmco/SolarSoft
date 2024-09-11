@@ -1,0 +1,36 @@
+#!/bin/csh -f 
+#################################################
+#                                               
+#      SSW-gen SSWDB Environmental Setup           
+#
+#   2-nov-2005 - S.L.Freeland - define SSWDB-GEN 
+#                1st use - define general interest portions of
+#                the "Yohkoh" ancillary dbases without a yohkoh instrument
+#                in the path/local installation
+#
+#                                               
+#################################################
+#################################################
+
+#########################################################
+setenv DIR_GEN_GEV		$ydb/gev # GOES Event listings
+setenv DIR_GEN_G9D              $ydb/g9d # GOES Light Curves...
+setenv DIR_GEN_G91		$ydb/g91 # G<sat#><cadence>
+setenv DIR_GEN_G95		$ydb/g95 # cadence={d=3sec, 1=1min, 5=5min}
+setenv DIR_GEN_G8D              $ydb/g8d
+setenv DIR_GEN_G81		$ydb/g81
+setenv DIR_GEN_G85		$ydb/g85
+setenv DIR_GEN_G7D              $ydb/g7d
+setenv DIR_GEN_G71		$ydb/g71
+setenv DIR_GEN_G75		$ydb/g75
+setenv DIR_GEN_G6D              $ydb/g6d
+setenv DIR_GEN_G61		$ydb/g61
+setenv DIR_GEN_G65		$ydb/g65
+setenv DIR_GEN_G0D		$ydb/g0d
+setenv DIR_GEN_G01		$ydb/g01
+setenv DIR_GEN_G05		$ydb/g05
+setenv DIR_GEN_G2D      	$ydb/g2d
+setenv DIR_GEN_G21		$ydb/g21
+setenv DIR_GEN_G25		$ydb/g25
+setenv DIR_GEN_NAR		$ydb/nar  # NOAA Active Region 
+#########################################################

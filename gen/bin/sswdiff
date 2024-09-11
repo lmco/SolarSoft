@@ -1,0 +1,45 @@
+#!/bin/csh -f
+
+#######################################################################
+#
+#   Show differences between a local routine and the (first) SSW online 
+#
+#   Calling Sequence:
+#      sswdiff <routine>      
+#
+#   S.L.Freeland - 22-oct-1996
+#   S.L.Freeland -  9-feb-1997 - applied Jeff Newmark suggestion
+#   S.L.Freeland -  9-May-1997 - changed  cut delimiter (.pro->.) for SGI
+#   S.L.Freeland - 18-may-1997 - use gen SW map
+#   M.D.Morrison - 27-May-1997 - Modified the form of the header output
+#			       - Modified to work on a list of input
+#				 (ie: sswdiff mk*.pro)
+#######################################################################
+
+if ($#argv == 0) then
+   echo "Show differences between file in current directory with SSW online"OB
+   echo "% sswdiff FILE"
+   exit
+endif
+
+# allow routine specification with or without ".pro"
+
+foreach file ($argv)
+    set patt=`echo $file | cut -f1 -d "."`".pro"     # IDL routine assumed
+
+    if (!(-e "$patt")) then
+	echo     "**************** $file not found ***********"
+    else
+	set sswpatt="/"`echo $patt:t`
+	set output=`grep -i $sswpatt $SSW/gen/setup/ssw_map.dat`
+
+	if ($#output == 0) then 
+	    echo "**************** $sswpatt not found in /ssw ***********"
+	else
+	    echo "-------- diff $patt $output[1] ------"
+
+	    set file=`eval "echo $output[1]"`
+	    diff $patt $file
+	endif
+    endif
+end

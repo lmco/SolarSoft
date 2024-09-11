@@ -1,0 +1,93 @@
+#!/bin/csh -f
+#########################################################################
+#   Name: setup.ssw_env
+#
+#   Purpose: define SSW top level enivironmentals
+#
+#   History: 21-jun-1995 (S.L.Freeland)
+#            18-Feb-1996 (S.L.Freeland)
+#            23-Feb-1996 (S.L.Freeland
+#            23-oct-1996 (S.L.Freeland) - some SSW_SITE directories
+#            29-oct-1996 (S.L.Freeland) - add (decomment) TRACE
+#            10-nov-1996 (S.L.Freeland) - shared library definition change
+#            24-feb-1997 (S.L.Freeland) - SSW_PACKAGES definition
+#             9-apr-1997 (S.L.Freeland) - enabled SMM
+#            10-apr-1997 (S.L.Freeland) - add XRAY & CDS_CAT package
+#            11-apr-1997 (S.L.Freeland) - directory name 'cds_cat' -> cdscat
+#                                       - enable HESI and CGRO
+#                                       - add packages GOES & SPEX
+#            12-apr-1997 (S.L.Freeland) - ZTOOLS->standard packages
+#            30-apr-1997 (S.L.Freeland) - add LPARL package -> ssw_instr
+#             8-may-1997 (S.L.Freeland) - add ANA package
+#            24-nov-1997 (S.L.Freeland) - setenv LANG -> C (english-centric)
+#            18-nov-1997 (S.L.Freeland) - add HESSI
+#            18-May-1998 (S.L.Freeland) - add RADIO (ETHZ)
+#########################################################################
+
+#################### "fundamental" SSW defintions #######################
+# list of supported SSW missions
+setenv SSW_MISSIONS	"soho yohkoh spartan trace smm packages hessi radio" 	 # serts"
+# list of supported instruments for each mission
+setenv SSW_SOHO_INSTR	"soho/cds soho/eit soho/sumer soho/lasco soho/mdi soho/uvcs"
+setenv SSW_YOHKOH_INSTR "yohkoh/bcs yohkoh/hxt yohkoh/sxt yohkoh/wbs"
+setenv SSW_SMM_INSTR "smm/xrp smm/hxrbs smm/uvsp smm/cp smm/grs smm/cp smm/hxis smm/acrim"
+setenv SSW_CGRO_INSTR "cgro/batse"
+setenv SSW_RADIO_INSTR "radio/ethz"  # radio/ovro radio/nobeyama
+
+setenv SSW_HESI_INSTR     "hesi/hesi"
+setenv SSW_HESSI_INSTR    "hessi/hessi"
+setenv SSW_SPARTAN_INSTR  "spartan/spartan"		
+setenv SSW_TRACE_INSTR    "trace/trace"		  # enabled  29-oct-1996
+setenv SSW_PACKAGES_INSTR "packages/chianti packages/spex packages/xray packages/goes packages/cdscat packages/ztools packages/lparl packages/binaries packages/ana"
+# setenv SSW_SERTS_INSTR  "serts/xxx"
+setenv SSW_INSTR_ALL "gen $SSW_SOHO_INSTR $SSW_YOHKOH_INSTR $SSW_SPARTAN_INSTR $SSW_TRACE_INSTR $SSW_SMM_INSTR $SSW_CGRO_INSTR $SSW_HESI_INSTR $SSW_HESSI_INSTR $SSW_PACKAGES_INSTR $SSW_RADIO_INSTR"
+#########################################################################
+
+#########################################################################
+# SSW Packages                                        # future PSEUDO-MISSION?
+setenv SSW_PACKAGES $SSW/packages
+setenv SSW_CHIANTI  $SSW_PACKAGES/chianti             # supported
+setenv SSW_SPEX     $SSW_PACKAGES/spex                # supported
+setenv SSW_XRAY     $SSW_PACKAGES/xray
+setenv SSW_GOES     $SSW_PACKAGES/goes
+setenv SSW_CDS_CAT  $SSW_PACKAGES/cdscat
+setenv SSW_ZTOOLS   $SSW_PACKAGES/ztools              # 
+setenv SSW_LPARL    $SSW_PACKAGES/lparl
+setenv SSW_BINARIES $SSW_PACKAGES/binaries
+setenv SSW_ANA      $SSW_PACKAGES/ana
+setenv SSW_PACKAGES_ALL "$SSW_CHIANTI $SSW_SPEX $SSW_XRAY $SSW_GOES $SSW_ZTOOLS $SSW_LPARL $SSW_BINARIES $SSW_ANA"
+#########################################################################
+
+#########################################################################
+setenv SSW_SETUP        $SSW/gen/setup
+setenv SSW_GEN_SETUP    $SSW/gen/setup
+setenv SSW_SETUP_DATA   $SSW_SETUP/data
+setenv SSW_BIN		$SSW/gen/bin
+#########################################################################
+
+#########################################################################
+setenv SSW_SITE_LOGS	$SSW/site/logs
+setenv SSW_SITE_SETUP   $SSW/site/setup
+setenv SSW_SITE_MIRROR  $SSW/site/mirror
+#########################################################################
+
+#########################################################################
+# Common SSW environmentals (relative to $SSW)
+setenv TIME_CONV $SSW/gen/data/time
+#########################################################################
+
+#########################################################################
+# Shared libraries
+setenv SSW_LIBRARIES $SSW/gen/idl_libs
+setenv IDL_SSWASTRON $SSW_LIBRARIES/astron
+#########################################################################
+
+#########################################################################
+# set language bias to english 
+# ( certain SSW routines which 'spawn' cmds expect English results )
+setenv LANG C
+#########################################################################
+# Perl Packages
+setenv SSW_PERL $SSW/gen/perl
+setenv SSW_URL_GET $SSW_PERL/url_get
+#########################################################################

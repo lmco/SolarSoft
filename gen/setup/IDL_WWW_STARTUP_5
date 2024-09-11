@@ -1,0 +1,30 @@
+; IDL SSW startup for WWW/IDL SERVER
+
+box_message,['WWW IDL SERVER - SSW Version!!','Version 5 Server'],/nomore
+
+; Try binary start if file w/proper version matches
+if 1 then begin & $
+   files=findfile('$SSW_SITE_SETUP/data/*idlbin.' + !version.release) & $
+   if files(0) ne '' then for i=0,n_elements(files)-1 do begin & $
+      print,"...Restoring idl file: " + files(i) & $
+      restore,files(i) & $
+      endfor & $
+endif
+; --------  set SSW envionment (batch-like) -----------
+set_logenv,'ssw_nomore','1'
+set_logenv,'ssw_nox','1'
+set_logenv,'ssw_batch','1'
+set_logenv,'ssw_fast',''
+set_logenv,'ssw_autobin',''
+; --------------------------------------------------------------
+
+; ---------- if http path defined, move there -------------
+path_http=get_logenv('path_http')
+if path_http ne '' then cd,path_http
+pwd
+; -------------------------------------------------------
+
+set_plot,'z'                        ; Use Z-buffer as default plot dev
+print,'Ready and waiting...'        ; indicate done and ready for rpc 
+; -------------------------------------------------------
+

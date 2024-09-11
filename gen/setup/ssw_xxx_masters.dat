@@ -1,0 +1,10 @@
+INSTR   :  IP                       :   Parent Incoming        : xxx top
+sswgen  :  sohoftp.nascom.nasa.gov  :   /pub/incoming/ssw      : $SSW/gen
+trace   :  diapason.lmsal.com       :   /pub/incoming/ssw      : /tsw
+mdi     :  mdisas.nascom.nasa.gov   :   /pub/incoming/ssw      : /mdisw
+ysgen   :  isass0.solar.isas.ac.jp  :   /pub/incoming/ssw      : $SSW/yohkoh/gen
+sxt     :  isass0.solar.isas.ac.jp  :   /pub/incoming/ssw      : $SSW_SXT
+bcs     :  isass0.solar.isas.ac.jp  :   /pub/incoming/ssw      : $SSW_BCS
+hxt     :  isass0.solar.isas.ac.jp  :   /pub/incoming/ssw      : $SSW_HXT
+wbs     :  isass0.solar.isas.ac.jp  :   /pub/incoming/ssw      : $SSW_WBS
+sxi     :  sxiadm.lmsal.com         :   /pub/incoming/ssw      : /sxisw

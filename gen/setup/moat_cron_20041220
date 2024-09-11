@@ -1,0 +1,6 @@
+10 4,20 * * * /service/soho-archive/home/solarsoft//site/bin/ssw_batch go_lasco_wget_monthly go_lasco_wget_monthly.log
+2,7,12,17,22,27,32,37,42,47,42,57 * * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror /service/soho-archive/home/solarsoft/site/mirror/goes.mirror > /service/soho-archive/home/solarsoft/site/logs/goes_mirror.log
+5,20,45,55 * * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror /service/soho-archive/home/solarsoft/site/mirror/ace.mirror > /service/soho-archive/home/solarsoft/site/logs/ace_mirror.log
+#10,30,50 * * * * /bin/csh /usr/users/freeland/go_ssw_batch go_eit_fulldisk_l1q > /dev/null
+0,15,30,45 * * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror  /service/soho-archive/home/solarsoft/site/mirror/yohkoh_dbase_lparl.mirror > /service/soho-archive/home/solarsoft/site/logs/yohkoh_dbase_lparlx.log
+20,50 * * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror /service/soho-archive/home/solarsoft/site/mirror/trace_mosaic.mirror > /service/soho-archive/home/solarsoft/site/logs/trace_mosaic_mirror.log

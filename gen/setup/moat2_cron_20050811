@@ -1,0 +1,42 @@
+34 16 * * * /bin/csh /HOME/freeland/go_ssw_batch ssw_check_conflicts > /dev/null
+25 4 * * * /bin/csh /HOME/freeland/go_ssw_batch go_lasco_wget_monthly > /dev/null
+#22 0,12 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/ssw_ydb_beta.mirror > /service/soho-archive/home/solarsoft/site/logs/ssw_ydb_beta_mirror.log 
+52 * * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/yohkoh_galileo_sw.mirror > /service/soho-archive/home/solarsoft/site/logs/yohkoh_galileo_sw_mirror.log 
+35 3 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/egso_mssl.mirror > /service/soho-archive/home/solarsoft/site/logs/egso_mssl_mirror.log 
+30 0,12,18,22 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/packages_fpss_lmsal.mirror > /service/soho-archive/home/solarsoft/site/logs/packages_fpss_lmsal.logs 
+15 17 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/sswpdl.mirror > /service/soho-archive/home/solarsoft/site/logs/sswpdl.log
+5,15,25,35,45 * * * * /bin/csh /HOME/freeland/go_ssw_batch go_eit_fulldisk_l1q > /dev/null
+10 23 * * * /bin/csh /HOME/freeland/go_ssw_batch go_sswmktar > /dev/null
+5,35 * * * * /bin/csh /HOME/freeland/go_ssw_batch go_ssw_swmap > /dev/null 
+1,21,31,41,51 * * * * /bin/csh /HOME/freeland/go_ssw_batch go_hessi_tar > /dev/null
+5,25,45 * * * * /bin/csh /HOME/freeland/go_ssw_batch go_sswmap_cron > /dev/null
+7 0,6,10 * * * /bin/csh /HOME/freeland/go_ssw_batch go_eitcatdirs > /dev/null
+40 2 * * * /bin/csh /HOME/freeland/go_ssw_batch go_ssw_swmap_info > /dev/null
+25 0,2,4,6,8,10,12,14,18,20,22 * * * /bin/csh /HOME/freeland/go_ssw_batch go_eit_genxcat > /dev/null
+45 1,4,6,9,12,15,18,21 * * * /bin/csh /HOME/freeland/go_ssw_batch go_eit2showpix > /dev/null
+25 6 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/ngdc_indices.mirror > /service/soho-archive/home/solarsoft/site/logs/ngdc_indices_mirror.log
+25 3 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/ovsa.mirror > /service/soho-archive/home/solarsoft/site/logs/ovsa_mirror.log
+35 4 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/uvcs.mirror > /service/soho-archive/home/solarsoft/site/logs/uvcs_mirror.log
+45 4 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/hessi_sswdb.mirror > /service/soho-archive/home/solarsoft/site/logs/hessi_sswdb_mirror.log
+25 4 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/lasco_nrl.mirror > /service/soho-archive/home/solarsoft/site/logs/lasco_nrl_mirror.log
+#30 5 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/umbra_sdac.mirror > /service/soho-archive/home/solarsoft/site/logs/umbra2ssw_mirror.log
+45 6 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/mjastereo.mirror > /service/soho-archive/home/solarsoft/site/logs/mjastereo_mirror.log
+30 0,2,4,6,8,10,12,14,16,18,20,22 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/hxrbs_hessi.mirror > /service/soho-archive/home/solarsoft/site/logs/hxrbs_hessi.log
+20 6 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/ztools.mirror > /service/soho-archive/home/solarsoft/site/logs/ztools_mirror.log
+10,30,50 * * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/ace.mirror > /service/soho-archive/home/solarsoft/site/logs/ace_mirror.log
+25 22 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/smei_ucsd.mirror > /service/soho-archive/home/solarsoft/site/logs/smei_ucsd_mirror.log
+25 4 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/lparl_packages.mirror > /service/soho-archive/home/solarsoft/site/logs/lparl2ssw_mirror.log
+#20 3 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/yohkoh_isas.mirror > /service/soho-archive/home/solarsoft/site/logs/yohkoh_isas_mirror.log
+20,50 * * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/trace_mosaic.mirror > /service/soho-archive/home/solarsoft/site/logs/trace_mosaic_mirror.log
+50 2 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/ethz.mirror > /service/soho-archive/home/solarsoft/site/logs/ethz_mirror.log
+50 4 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/norh_ssw.mirror > /service/soho-archive/home/solarsoft/site/logs/norh_mirror.log
+10 3 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/nrh.mirror > /service/soho-archive/home/solarsoft/site/logs/nrh_mirror.log
+5  6,12,21 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin -pDIR_GEN_NAR /service/soho-archive/home/solarsoft/site/mirror/yohkoh_dbase.mirror > /service/soho-archive/home/solarsoft/site/logs/yohkoh_dbase_mirror.log
+2,7,12,17,22,27,32,37,42,47,42,57 * * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/goes.mirror > /service/soho-archive/home/solarsoft/site/logs/goes_mirror.log
+5 0,4,8,12,16,20 * * * /bin/csh /HOME/freeland/go_ssw_batch go_eit_fulldiskdb > /dev/null
+5 4 * * * /bin/csh /HOME/freeland/go_ssw_batch go_file_purge > /dev/null
+15,45 * * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin -p_sdb_ydb_g8d -p_sdb_ydb_g0d -p_sdb_ydb_nar -p_sdb_ydb_evn -p_sdb_ydb_gev -p_sdb_ydb_g81 -p_sdb_ydb_g85 -p_sdb_ydb_g0d -p_sdb_ydb_g01 -p_sdb_ydb_g05 -p_sdb_ydb_g2d -p_sdb_ydb_g21 -p_sdb_ydb_g25 /service/soho-archive/home/solarsoft/site/mirror/yohkoh_dbase_lparl.mirror > /service/soho-archive/home/solarsoft/site/logs/yohkoh_dbase_lparlx.log
+15 5 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/yohkoh_dbase_lparl.mirror" > /service/soho-archive/home/solarsoft/site/logs/yohkoh_dbase_lparlz.log
+45 2 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/findstuff.mirror > /service/soho-archive/home/solarsoft/site/logs/findstuff.log
+45 5 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/nrl_chianti.mirror > /service/soho-archive/home/solarsoft/site/logs/nrl_chianti_mirror.log
+45 3 * * * /service/soho-archive/home/solarsoft/gen/mirror/mirror_bin /service/soho-archive/home/solarsoft/site/mirror/nrl_secchi.mirror > /service/soho-archive/home/solarsoft/site/logs/nrl_secchi_mirror.log

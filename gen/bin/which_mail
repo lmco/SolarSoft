@@ -1,0 +1,17 @@
+#!/bin/csh -f
+#
+###############################################
+# S.L.Freeland - work around 'which Mail' problem 
+#
+#   Calling Sequence:
+#      source which_mail      # set environmental which_mail
+#
+###############################################
+set wmail=`which Mail`
+if ($#wmail > 1) set wmail=`which mail`
+setenv which_mail $wmail
+
+if ($#argv > 1) then
+   echo $which_mail
+endif
+exit

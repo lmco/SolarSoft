@@ -1,0 +1,42 @@
+#!/bin/csh -f 
+#
+############################################################
+#
+# sswmore - look up and 'more out' routines matching input pattern
+#
+#   % sswmore PATTERN
+# History:
+#     1-aug-1997 - S.L.Freeland
+#    15-oct-1997 - S.L.Freeland - made it 'fast' csh via -f
+############################################################
+
+if ($#argv == 0) then
+   echo '  Need to supply search pattern'
+   echo '% sswmore PATTERN'
+   exit
+endif
+
+set ssw=`printenv SSW`
+
+set matches=`grep -i $1 $SSW/gen/setup/ssw_map.dat`
+if ($#matches == 0) then 
+   echo "----- No routines matching pattern: "$1" ----"
+   echo ""
+endif
+
+foreach match ($matches)
+   echo "---------------------------------------------"
+   set routine=`echo "$match" | sed  s+'$SSW'+"$ssw"+g` 
+   if (-e $routine) then 
+      echo "**************************************************************"
+      echo "           "$match
+      echo "**************************************************************"
+      more "$routine"
+   else
+      echo "Routine "$routine" not online at your site" 
+   endif
+   echo "**************************************************************"
+   echo ""
+end
+exit
+

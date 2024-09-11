@@ -1,0 +1,153 @@
+url_get: a script to retrieve documents specified by their URL.
+
+Written by Jack Lund <j.lund@cc.utexas.edu>
+
+From hget by: Oscar Nierstrasz <oscar@cui.unige.ch>.
+
+Many many thanks to Stephane Bortzmeyer <bortzmeyer@cnam.cnam.fr>.
+
+Last Updated: 27 Sep 1995
+
+Important note:
+
+url_get has been updated to work with perl version 5. If you're submitting
+a bug report, please include the version of perl you're using (to get
+the perl version, type "perl -v").
+
+Installation:
+
+Put the files url_get.pl URL.pl and ftplib.pl either into the system-wide
+perl library (often /usr/local/lib/perl), or into a local directory,
+and set PERLLIB to point to that directory. For example, I put the files
+in ~/lib/perl/url_get, so I have the following in my .login file:
+
+setenv PERLLIB $HOME/lib/perl/url_get
+
+Next, put url_get in your PATH, and you're ready.
+
+Usage:
+
+url_get [-bdh] URL
+
+where URL is a Uniform Resource Locator like those used by the World Wide
+Web, and specifically by NCSA Mosaic (If you're not familiar with any
+of these terms, you might consider looking at the WWW FAQ in
+comp.infosystems.www).
+
+Url_get will put the retrieved document into the standard output, so if
+you want it saved to a file, you'll need to redirect stdout to a file (see
+the examples below). HTTP and gopher protocols are fully supported; the
+"file" and "news" protocols are supported but not fully tested. If someone
+finds problems with them, please send me mail.
+
+The options are as follows:
+
+	b	when doing FTP retrieves, do so in binary mode
+
+	h	when retrieving via HTTP, include the MIME header
+		which HTTP 1.0 prepends to the document. By default,
+		url_get leaves this off
+
+	d	"debug" mode for HTTP retrieves. Directs the HTTP status
+		messages and MIME header to stderr, while sending the
+		body of the document to stdout
+
+url_get also now sends any errors from the HTTP header to stderr, unless
+the "-d" flag is specified.
+
+Using url_get with proxy servers:
+
+Url_get now supports proxy servers! To use a proxy, you'll need to set
+environmental variables for each access protocol, e.g. http_proxy, ftp_proxy,
+gopher_proxy and wais_proxy. The variables must include the host and port
+number in url format; for instance, if I was using host www.firewall.com
+as my proxy, through port 5000, I'd specify the following:
+
+	http_proxy=http://www.firewall.com:5000/
+	export http_proxy
+
+For more info, see http://www.w3.org/hypertext/WWW/Proxies/ClientSide.html.
+
+Handling of redirected URLs
+
+Url_get handles redirected URLs seamlessly. If it comes across a URL which
+has been changed, it writes a message to stderr telling of the new URL, and
+obtains the item at the new URL, unless the '-d' flag is used, in which case
+it writes both the item at the old and the new URL to stdout.
+
+Some examples:
+
+1) url_get http://www.ncsa.uiuc.edu/SDG/Software/Mosaic/NCSAMosaicHome.html
+
+This will present the NCSA Mosaic home page on standard output (usually the
+terminal).
+
+2) url_get http://www.utexas.edu/uta-banner.gif > uta-banner.gif
+
+This will save the UT seal graphic used in the UT Austin home page into
+a file called uta-banner.gif
+
+3) url_get -h http://www.utexas.edu/uta-banner.gif | metamail
+
+This takes the UT seal graphic from the previous example, prepended with
+the MIME header, and runs it through metamail (Metamail is a freeware
+MIME viewing software package). This will display the graphic using whatever
+viewer I have metamail set up to display with.
+
+4) url_get gopher://mudhoney.micro.umn.edu/00/Gopher.FAQ > gopher_questions.txt
+
+This will get the Gopher FAQ file from the UMN gopher and save it in a
+file called gopher_questions.txt.
+
+Changes:
+
+09/27/95
+
+Fixed problem with ftp error reporting
+
+09/26/95
+
+Made URL parsing work for URLs of the form "protocol://foo.bar.baz".
+
+09/25/95
+
+Added support for server redirects of URLs.
+
+08/22/95
+
+Added support for proxy servers (thanks to Josh Cohen)
+
+05/15/95
+
+Finally added support for Perl version 5, took out reliance on chat2.pl
+and syscall (two *major* headaches - thanks Luke!).
+
+Also added return codes corresponding to http status returns, for those
+of you who want to know when you get an http error. See url_get.pl,
+line 91 (Thanks again to Jos Vos).
+
+Added "Accept: */*" string to GET http request, to make it more bulletproof
+(thanks to Paul Quicker for the suggestion!).
+
+People to thank:
+
+Stephane Bortzmeyer <bortzmeyer@cnam.cnam.fr>
+Josh Cohen <tel2jrc@is.ups.com>
+Luke Lu <ylu@ccwf.cc.utexas.edu>
+Oscar Nierstrasz <oscar@iam.unibe.ch>
+Jef Poskanzer <jef@ee.lbl.gov>
+Paul Quicker <quicker@columbia.wrc.noaa.gov>
+Patrick Shopbell <pls@pegasus.rice.edu>
+Jeppe Sigbrandt <jay@elec.gla.ac.uk>
+Jos Vos <jos@xos.nl>
+
+Finally:
+
+If you have any questions or bug reports, please send them to:
+j.lund@cc.utexas.edu. I'll try to get to them as I have time.
+
+--
+Jack Lund                     "The dead have risen from the grave,
+Graphics Services              and they're voting REPUBLICAN!!!"
+UT Austin Computation Center                         -Bart Simpson
+j.lund@cc.utexas.edu     www: http://uts.cc.utexas.edu/~zippy/

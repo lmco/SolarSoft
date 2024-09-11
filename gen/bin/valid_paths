@@ -1,0 +1,41 @@
+#!/bin/csh -f
+#
+# valid_paths 
+# Circa  1-Jan-1997 - S.L.Freeland for SolarSoft setups (site path assignemnt)
+#       12-Jan-1999 - S.L.Freeland return $HOME if nothing assigned
+#       28-Apr-1999 - Zarro (added check for stale NFS)
+#        4-May-2004 - Zarro (added 'break' in for loop)
+#
+#
+# for input path list, return list which is valid (paths which exist)
+# Calling Sequence:
+# set valid_paths=`valid_paths "path1,path2,path3,...pathn"
+#
+
+if ($#argv != 1) then				# need one parameter
+   echo " " 
+   exit
+endif
+
+set arg="$1"
+# assume comma or blank delimited search string
+
+set outarr =(`echo $arg | sed s+","+" "+g`)	# replace comma with blank
+
+set outlist=""					# initialize output
+
+foreach elem ($outarr)
+   set check = `if (-d $elem) echo up`              # in case $elem is down
+   if $check == "up" then 		            # existing directory?
+     set outlist=($outlist $elem)		    # yes, so add to output list
+     break
+   endif
+end
+
+if ("$outlist[1]" == "") then 
+   set outlist=$HOME
+endif
+
+
+echo "$outlist[1]"				 	# return valid list
+exit

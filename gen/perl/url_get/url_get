@@ -1,0 +1,47 @@
+#!/usr/local/bin/perl
+#
+# url_get: script to obtain documents given their URL (Universal Resource
+#          Locator) and write them to stdout
+#
+# syntax: url_get [-bdh] <url>
+#
+# where -b means binary transfer when doing ftp transactions,
+#       -h means keep the MIME header in HTTP 1.0 transactions (url_get
+#          strips this by default). Header & data go to stdout.
+#       -d means "debug" mode on HTTP transfers (HTTP MIME header goes
+#          to stderr, body of document goes to stdout), or FTP transfers
+#          (FTP replies from remote host go to stderr, data to stdout)
+#
+# return code: url_get returns 0 upon successful completion. If the
+#	       server returns an HTTP error, url_get returns one of
+#	       the following codes:
+#
+#	       HTTP code:     	url_get returns:
+#	       ---------	---------------
+#	        400		 1
+#		401		 2
+#		402		 3
+#		403		 4
+#		404		 5
+#		500		 6
+#		501		 7
+#		502		 8
+#		503		 9
+#
+#              For a full explanation of the HTTP codes, see url:
+#	       http://info.cern.ch/hypertext/WWW/Protocols/HTTP/HTRESP.html
+#	       If url_get aborts for any other reason, it returns 255
+#	       (from the PERL "die" command).
+########################################################################
+
+require "url_get.pl";
+require "getopts.pl";
+&Getopts(':bdh');
+
+die "Usage: url_get [-bdh] <url>\n" unless $#ARGV >= 0;
+
+$url = shift;
+$status = &url_get($url, "&STDOUT");
+exit $status;
+
+__END__

@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+cd /extra/mirror
+./mirror -d packages/ftp.cl.cam.ac.uk > mirror.cam.out 2>&1

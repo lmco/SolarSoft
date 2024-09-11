@@ -1,0 +1,52 @@
+;+
+; Name: IDL_STARTUP (main)
+;
+; Purpose: idl starup file for SSW
+; 	   (complete definition of idl environment and system variables)
+;
+; History: 
+;	   S.L.Freeland  1-Jul 1992 (circa)
+;          S.L.Freeland, 20-feb-1996 - Adapted from Yohkoh for SSW 
+;          S.L.Freeland, 27-Feb-1996 - quiet down
+;          S.L.Freeland, 29-Feb-1996 - increase !edit 
+;          S.L.Freeland,  5-mar-1996 - increase .size
+;          S.L.Freeland, 27-mar-1996 - yohkoh system variables
+;          S.L.Freeland, 30-Mar-1998 - prepend $SSW_CONTRIBUTED if exists
+;
+;-
+;define idl .size parameter		; 21-apr-93, slf, Version 3.0 defaults
+.size 64000 64000			; increase 5-mar-1996
+
+!edit_input=128         		;  command line editor buffer size
+;
+!quiet=1				; suppress compilation/messages
+;
+; ------------------- fast path setup -------------------------------------
+if getenv('ssw_fast') ne '' then !path=set_fastpath()
+; -------------------------------------------------------------------------
+;
+; ----------- Special !path setup for Old Versions of IDL -----------------
+; slf, 23-feb-1993 
+set_oldpath				; always run this, slf 15-feb-1994
+;
+; ----------------------- initilize X stuff  -------------------------------
+if getenv('ssw_nox') eq '' then set_xcolors
+; -------------------------------------------------------------------------
+;
+; -------------------------------------------------------------------------
+; 22-Feb-1996 S.L.Freeland / William Thompson - SSW system variable definitions
+imagelib				; Image Tool definitions
+devicelib
+uitdblib				; UIT data base definitions
+;
+; 27-mar-1996 S.L.Freeland
+def_yssysv				; System Varibles
+; -------------------------------------------------------------------------
+
+; 30-March-1998 - S.L.Freeland - prepend SSW_CONTRIBTED if defined/exists
+chkcon=get_logenv('SSW_CONTRIBUTED')
+if 1-file_exist(chkcon(0) ) then chkcon=concat_dir(concat_dir('SSW','bypass'),'idl')
+if file_exist(chkcon(0)) then ssw_path,chkcon(0),/prepend,/quiet
+
+!quiet=0				; re-enable compilation/messages
+;

@@ -1,0 +1,33 @@
+#!/bin/csh -f
+#************************************************************************
+# return ssw group name of input path (assumed)
+#
+# S.L.Freeland - 11-Jan-1997
+# W.T.Thompson - 01-Jul-2005 - changed to return numeric group
+# 
+# Calling Sequence:
+#   sswgroup=`ssw_group PATH`
+#
+# Calling Example:
+#   echo `ssw_group $SSW_EIT/idl/`               # <<< input
+#   29120                                        # <<< output
+#************************************************************************
+if ($#argv != 1) then 
+   echo ""
+endif
+
+if (-d $argv[1]) then
+   set path="$argv[1]"
+else
+   set path="$argv[1]:h"
+endif
+
+set info=`/bin/ls -lnd $argv[1]`
+
+if ($#info < 8) then 
+   echo ""
+else
+   echo $info[4]
+endif
+
+exit   

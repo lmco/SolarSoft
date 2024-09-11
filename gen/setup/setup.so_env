@@ -1,0 +1,14 @@
+#!/bin/csh -f
+#
+#################################################
+#						#
+#   Solar Orbiter Gen Environmental Setup      	#
+# 						#
+# Define Solar Orbiter wide enviromentals	#
+#						#
+#################################################
+
+# SPICE ephemerides
+
+setenv SOLO_SUNSPICE	$SSW/so/gen/data/sunspice
+setenv SOLO_SUNSPICE_ATT_FLOWN $SSWDB/so/gen/sunspice/att_flown

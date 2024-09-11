@@ -1,0 +1,11 @@
+/*
+ * These map IDL types into C types.  For DOUBLE, it is only necessary that the
+ * number of bytes match.
+ *
+ * This should work on most versions of Unix on 32 bit machines.
+ */
+
+typedef char   BYTE;
+typedef short  SHORT;
+typedef long   LONG;
+typedef double DOUBLE;

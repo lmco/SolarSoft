@@ -1,0 +1,11 @@
+/*
+ * These map IDL types into C types.  For DOUBLE, it is only necessary that the
+ * number of bytes match.
+ *
+ * This version should work on Alpha workstations under OSF.
+ */
+
+typedef char  BYTE;
+typedef short SHORT;
+typedef int   LONG;
+typedef long  DOUBLE;

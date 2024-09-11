@@ -1,0 +1,38 @@
+# Compile and link the sharable object, external.so
+# This Makefile is for Linux.  Use "make -f Makefile.linux".
+
+CC=cc -c
+CC_R= $(CC) -DINCLUDE=\"rearrange.h_generic\"
+C_OBJS= rearrange_c.o rearrange.o fmedian_c.o fmedian.o qsrt_k.o
+
+# Declare a target to create the sharable object library
+
+external.so: $(C_OBJS)
+	ld -o external.so -shared $(C_OBJS)
+
+# Declare targets to create the object files.
+
+rearrange_c.o: rearrange_c.c
+	$(CC_R) rearrange_c.c
+
+rearrange.o: rearrange.c
+	$(CC_R) rearrange.c
+
+fmedian_c.o: fmedian_c.c
+	$(CC_R) fmedian_c.c
+
+fmedian.o: fmedian.c fmedian_c.inc
+	$(CC_R) fmedian.c
+
+qsrt_k.o: qsrt_k.c qsrt_k_c.inc
+	$(CC_R) qsrt_k.c
+
+# Declare a target to delete all libraries and object files created.
+
+clean: tidy
+	rm -f external.so
+
+# Declare a target to delete all the object files created.
+
+tidy:
+	rm -f $(C_OBJS)

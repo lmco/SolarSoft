@@ -1,0 +1,29 @@
+#!/bin/csh -f
+#
+#################################################
+#						#
+#      SOHO Gen Environmental Setup      	#
+# 						#
+# Define SOHO  Wide enviromentals		#
+#						#
+#################################################
+
+# Private data
+
+setenv SOHO_ANOMALY     $SOHO_DATA/private/operations/anomalies 
+
+# Public data
+
+setenv SOHO_PUB_DATA    $SOHO_DATA/public/data 
+setenv ANCIL_DATA       $SOHO_PUB_DATA/ancillary
+setenv SYNOP_DATA       $SOHO_PUB_DATA/synoptic
+setenv SUMMARY_DATA     $SOHO_PUB_DATA/summary
+
+# Planning data
+
+setenv ZDBASE_SOHO      $SSW/soho/gen/data/plan/database
+setenv ZDBASE           $ZDBASE_SOHO
+setenv SOHO_CAP         $SSW/soho/gen/data/plan/soho_cap 
+setenv SOHO_EAP         $SOHO_PUB_DATA/summary/asplanned
+setenv SOHO_KAP         $SOHO_PUB_DATA/summary/asplanned
+

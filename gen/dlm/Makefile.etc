@@ -1,0 +1,5 @@
+clean : 
+	rm -f *.o *.$(SO_EXT) so_locations
+
+neat : clean
+	rm -f *~ \#*

@@ -1,0 +1,119 @@
+#!/bin/csh 
+#
+#				S.L.Freeland
+#				6-Sep-1994
+# Name: is_alive 
+#
+# Purpose: check remote host for health (via ping); handle OS differences
+#	   in PING locattion, format, and output.
+#
+# Return: 1 if alive, 0 if not
+#
+# Calling Sequence & Example:
+#    set alive=`is_alive <remote_node>`
+#    if ($alive) then 
+#       ...
+#    else
+#      ...
+#    endif
+# 
+# Phase I - Determine Operating System for system dependent ping output
+# (Logic for determination based on existing directories/files borrowed
+# from RSI supplied /bin/sh script [$IDL_DIR/bin/idl]
+#
+if ($#argv < 1) then
+   echo "is_alive: NO REMOTE HOST SPECIFIED" 
+   echo "Calling Sequence: alive=`is_alive REMOTE_HOST`
+   exit
+else
+   set test="$1"
+endif
+
+unset OS				
+if ( -e /bin/arch ) then		#SunOS
+	set OS="sunos"
+	set pingtype=0
+else if (-e /osf_boot) then             # Osf
+        set OS="osf"
+        set pingtype=1
+else if (-e /bin/machine ) then		#DEC Ultrix (sometimes)
+	set OS="ultrix"
+	set pingtype=0
+else if ( -e /hp-ux ) then		#HP-UX
+	set OS="hp"
+else if (-e /bin/4d ) then		#SGI Irix
+	set OS="sgi"
+	set pingtype=1
+else if (-e /dev/root ) then		#Mips
+	set OS="mips"
+	set pingtype=2
+else if (-e /vmunix ) then		# DEC Ultrix
+	OS="ultrix"
+	set pingtype=0
+else if (-e /bin/smit ) then			# IBM
+	set OS="ibm"
+else if (-e /dev/root ) then			# Mips
+	OS="mips"
+	set pingtype=2
+else if (-e /proc) then			# solaris
+        set OS="sunos"
+        set pingtype=0
+endif
+
+############################################################################
+#
+# Phase II - check hosts for health vi ping
+#
+#########################################################################
+#
+# find ping on local machine - try to choose the 'right' ping
+# (so expected output may be predicted)
+#
+if (-e /etc/ping) then 
+   set ping=/etc/ping
+else if (-e /usr/etc/ping) then
+      set ping=/usr/etc/ping
+else if (-e /sbin/ping) then
+      set ping=/sbin/ping
+else if (-e /usr/sbin/ping) then
+      set ping=/usr/sbin/ping
+else					# let the computer find it
+   pingchk=`whereis ping`
+   if ($#pingchk < 2) then
+      echo "Cannot find ping on your machine"
+      exit
+   else
+      set ping=$pingchk[2]
+   endif
+endif
+#
+#   
+#  setup host dependent ping input/output parameters
+   switch ($pingtype)				# repeat case (!!)
+      case 0:					# Ultrix and SUNOS
+         set ping_match="alive"			# (its only a machine)
+         set match_pos=3
+         set ping_cmd="$ping $test[1]"
+      breaksw
+      case 1:      				# SGI
+         set ping_match=1			# (number packets received)
+         set match_pos=13
+         set ping_cmd="$ping -q -c 1 $test[1]"
+      breaksw
+      case 2:					# Mips
+         set ping_match=1			# (number packets received)
+         set match_pos=18
+         set ping_cmd="$ping $test[1] -c 1"	
+      breaksw
+   endsw
+#
+set host_chk=`$ping_cmd`				# execute the ping
+#
+   if ($ping_match == $host_chk[$match_pos])  then	# live host
+       echo 1 						# assign output
+   else
+       echo 0
+   endif
+   
+##############################################################################  
+exit

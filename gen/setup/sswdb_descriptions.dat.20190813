@@ -1,0 +1,178 @@
+# Description of SSWDB (SolarSoft DBASE files)
+# Data bases included here are available for remote upgrades via
+# <sswdb_upgrade.pro>.  Sizes for each inculded DBASE are generated
+# via <sswdb_sizes.pro> and distributed in $SSW/gen/setup/sswdb_sizes.dat
+#
+# History:
+#   22-Jan-1999 - S.L.Freeland - from $ys/gen/setup/pubudb.config
+#    6-Feb-2001 - S.L.Freeland - add 'hessi/test_data'
+#    8-Apr-2003 - S.L.Freeland - add GOES 12 (g2d,g21,g25)
+#   19-May-2004 - S.L.Freeland - add 'goes/fits' (aka $GOES_FITS)
+#   27-Oct-2004 - S.L.Freeland - add NGDC xray_events 
+#    5-mar-2004 - S.L.Freeland - add 'gevloc' (ssw flare locator dbase)
+#   20-jun-2006 - S.L.Freeland - add $SSWDB/stereo/gen & .../spice
+#   12-Nov-2006 - S.L.Freeland - add pfss/l1q_synop & pfss/latest_events
+#    4-may-2007 - S.L.Freeland - GOES 11 XRS support
+#    1-may-2007 - S.L.Freeland - Hinode SOT&XRT 
+#   17-Jul-2007 - S.L.Freeland - add XRT granularity (qkl/final/L1Q) 
+#   10-aug-2007 - S.L.Freeland - stereo/secchi & hinode/gen
+#   30-jan-2008 - S.L.Freeland - secchi backgrounds
+#   16-feb-2009 - S.L.Freeland - sxig13 & SoHO Ancillary (orbit etc)
+#   21-dec-2009 - S.L.Freeland - goes 14/15
+#   12-jul-2016 - S.L.Freeland - goesn (sxi) & goesr (suvi)
+#
+# You may add comments via '#' delimiter
+# 
+#
+# Environamental; PRE ; Path Relative to $SSWDB; Def?; DBASE Description
+# --------------;-----;------------------------;-----;------------------------
+# --------------;-----;------------------------;-----;------------------------
+tdb             ; tdb ; tdb                    ; no  ; Complete TRACE DBASE, including...
+tdb/tdc_darks   ; tdc ; tdb/tdc_darks          ; yes ; TRACE dark frames
+tdb/tff_flats   ;     ; tdb/tff_flats          ; yes ; TRACE Flat Field
+tdb/mosaics     ; stra; tdb/mosaics            ; yes ; TRACE synoptic mosaics (1024) fits and gif
+tdb/fdss        ;     ; tdb/fdss               ; no  ; TRACE orbit dbase
+tdb/tcl         ; tcl ; tdb/tcl                ; yes ; TRACE Catalog (long) 
+tdb/tcs         ; tcs ; tdb/tcs                ; yes ; TRACE Catalog (short) 
+tdb/tce         ; tce ; tdb/tce                ; yes ; TRACE Catalog (engineering) 
+
+hessi/test_data ;     ; hessi/test_data        ; yes ; RHESSI test data
+hessi/imaging   ;     ; hessi/imaging          ;     ; RHESSI img support (pixons..)
+hessi/spectra/bck_model   ;     ; hessi/spectra/bck_model   ;     ; RHESSI background model
+BATSE_DATA      ;     ; cgro/batse             ;     ; BATSE DBASE, flare catalog and burst trigger
+
+soho/eit/calibrate ;  ; soho/eit/calibrate     ;     ; EIT Flat Field Calibration File
+soho/eit/lz_catalog ; ; soho/eit/lz_catalog    ;     ; EIT Mission Level-Zero Catalog
+soho/eit/eit_fulldisk_l1q ; ; soho/eit/eit_fulldisk_l1q ; ; EIT Recent Full Disk Level1 Queue
+soho/eit/eit_fulldisk_qkl ; ; soho/eit/eit_fulldisk_qkl ; ; EIT Special Quicklook Sequences
+soho/eit/lz_genxcat ; ; soho/eit/lz_genxcat    ;     ; EIT LZ GENX Catalogs
+
+soho/cds        ;     ; soho/cds               ;     ; CDS DBASE, Catalogs
+
+soho/lasco/monthly;   ; soho/lasco/monthly     ;     ; LASCO Calibration
+
+soho/sumer      ;     ; soho/sumer             ;     ; SUMER DBASE, Calibration, xdl
+
+soho/gen  ;     ; soho/gen	       ;     ; all $SSWDB/soho/gen/... 
+soho/gen/spice  ;     ; soho/gen/spice	       ;     ; all SOHO-SPICE sswdb 
+soho/gen/ancillary  ;     ; soho/gen/ancillary	       ;     ; all SOHO Ancillary
+soho/gen/ancillary/orbit/predictive  ;     ; soho/gen/ancillary/orbit/predictive	       ;     ; SOHO ancillary orbit/ephem 
+
+psp/gen         ;     ; psp/gen                ;     ; all Parker Solar Probe/gen sswd
+psp/gen/spice   ;     ; psp/gen/spice	       ;     ; all PSP-SPICE sswdb
+PSP_SPICE_ATTITUDE ;  ; psp/gen/spice/attitude_history ; ; PSP SPICE Attitude files
+
+stereo/gen      ;     ; stereo/gen             ;     ; all STEREO/gen sswdb 
+stereo/gen/spice ;    ; stereo/gen/spice       ;     ; all STEREO-SPICE sswdb 
+STEREO_SPICE_ATTITUDE ; ; stereo/gen/spice/ah  ;     ; STEREO SPICE Attitude files
+ 
+stereo/secchi         ; ; stereo/secchi        ;     ; STEREO/SECCHI calibration data 
+
+stereo/secchi/backgrounds/a/daily_med    ; ; stereo/secchi/backgrounds/a/daily_med    ;  ; SECCHI Background cal (Big! experts)
+stereo/secchi/backgrounds/b/daily_med    ; ; stereo/secchi/backgrounds/b/daily_med    ;  ; SECCHI Background cal (Big! experts) 
+stereo/secchi/backgrounds/a/monthly_min  ; ; stereo/secchi/backgrounds/a/monthly_min  ;  ; SECCHI Background cal (Standard)
+stereo/secchi/backgrounds/b/monthly_min  ; ; stereo/secchi/backgrounds/b/monthly_min  ;  ; SECCHI Background cal (Standard)
+stereo/secchi/backgrounds/a/monthly_roll ; ; stereo/secchi/backgrounds/a/monthly_roll ;  ; SECCHI Background cal (with roll)
+stereo/secchi/backgrounds/b/monthly_roll ; ; stereo/secchi/backgrounds/b/monthly_roll ;  ; SECCHI Background cal (with roll)
+stereo/secchi/backgrounds/a/roll_min     ; ; stereo/secchi/backgrounds/a/roll_min     ;  ; SECCHI Background cal (roll maneuvers)
+stereo/secchi/backgrounds/b/roll_min     ; ; stereo/secchi/backgrounds/b/roll_min     ;  ; SECCHI Background cal (roll maneuvers)
+
+hinode/xrt	     ; ; hinode/xrt		;    ; Hinode/XRT (all) 
+hinode/sot           ; ; hinode/sot           ;     ; Hinode/SOT  (all)
+hinode/xrt/xrt_genxcat ; ; hinode/xrt/xrt_genxcat ; ; XRT QKL catalog
+hinode/xrt/xrt_genxcat_sirius ; ; hinode/xrt/xrt_genxcat_sirius ; ; XRT  Final catalog
+hinode/xrt/l1q_synop ; ; hinode/xrt/l1q_synop ; ; XRT Level1 Full Disk Synop Q
+
+hinode/gen ; ; hinode/gen  ; ; Hinode attitude, ephemeris TBD   
+
+ngdc/indices/genx;    ; ngdc/indices/genx      ;     ; Solar Indices F10.7,KP,Sunspots etc from NGDC
+ngdc/xray_events;     ; ngdc/xray_events       ;     ; NGDC 'xrayyyy' and 'xryyyy' archives
+ngdc/xray_events_genx; ; ngdc/xray_events_genx ;     ; genx catalogs of above ascii
+
+goes/particle   ;     ; goes/particle          ;     ; GOES Proton/Electron (rd_goesp_ascii.pro)
+goes/xray       ;     ; goes/xray              ;     ; GOES 1 & 5 min average XRay (SEC ascii)
+goes/fits       ;     ; goes/fits              ;     ; GOES 3 second FITS per GSFC
+goes/sxig13       ;     ; goes/sxig13              ;     ; all GOES 13/sxi (catalogs & tdb) 
+goes/sxig13/genxcat       ;     ; goes/sxig13/genxcat              ;     ; GOES-13 sxi mission catalog
+goes/sxig13/l1q       ;     ; goes/sxig13/l1q              ;     ; GOES-13/i sxi  Level 1 Q(space weather)
+
+goesn		;	; goesn			;	; all GOESN db
+goesn/sxig13 	;	; goesn/sxig13		;	; sxi GOES13 catalog +
+goesn/sxig14 	;	; goesn/sxig14		;	; sxi GOES14 catalog +
+goesn/sxig15	;	; goesn/sxig15  	;	; sxi GOES15 catalog +
+
+goesr		;	; goesr			;	; all GOESR db
+
+gevloc/eit_genxcat;    ; gevloc/eit_genxcat    ;     ; SSW gevloc dbase (locations)
+
+SSW_ACE_DATA    ;     ; ace                    ;     ; ACE Solar Wind & Particle, including...
+ace/daily       ;     ; ace/daily              ;     ; ACE near term Wind &  Particle
+ace/monthly     ;     ; ace/monthly            ;     ; ACE long term Wind & Particle    
+
+SSW_DSCOVR_DATA ;     ; dscovr		       ;     ; DSCOVR Solar Wind & Particle
+
+ASTRON_DATA     ;     ; astron/data            ;     ; ASTRON lib data, including jpl ephemeris
+
+packages/pfss   ;     ; packages/pfss          ;     ; time->file&url mapping catalog for potential field "pfss" suite 
+packages/pfss/latest_events ; ; packages/pfss/latest_events ; ; PFSS as seen in latest_events
+packages/pfss/l1q_synop ; ; packages/pfss/l1q_synop ; ; PFSS matching eit synoptic cadence
+packages/cmes   ;     ; packages/cmes          ;     ; CDAW@gsfc and CACTUS@sidccatalog translations
+ydb             ;     ; ydb                    ; no  ; Complete Yohkoh DBASE, including...
+
+DIR_GEN_ATT     ; att ;  ydb/att               ; no  ; Processed Yohkoh S/C Attitude Database
+DIR_GEN_FEM     ; fem ;  ydb/fem               ; yes ; Yohkoh Orbital Ephemeris
+DIR_GEN_ORB     ; orb ;  ydb/orb               ; no  ; Yohkoh Position Summary (Lat/Long/Alt
+DIR_GEN_EVN     ; evn ;  ydb/evn               ; yes ; Yohkoh Event Log
+DIR_GEN_OBD     ; obd ;  ydb/obd               ; no  ; Yohkoh/BCS Observing Log
+DIR_GEN_OSF     ; osf ;  ydb/osf               ; no  ; Yohkoh/SXT Full Frame Observing Log
+DIR_GEN_OSP     ; osp ;  ydb/osp               ; no  ; Yohkoh/SXT Partial Frame Observing Log
+DIR_GEN_OWH     ; owh ;  ydb/owh               ; no  ; Yohkoh/WBS & HXT Observing Log
+
+DIR_SXT_SXL     ; sxl ;  ydb/sxl               ; no  ; SXT X-Ray Histogram Log
+DIR_SXT_SDC     ; sdc ;  ydb/sdc               ; no  ; SXT Dark Current Images
+DIR_SXT_SDW     ; sdw ;  ydb/sdw               ; no  ; SXT Dark Current Images (Warm CCD)
+DIR_SXT_SFC     ; sfc ;  ydb/sfc               ; no  ; SXT FFI Calibration (Leak) Image
+DIR_SXT_SYNSFC  ; synsfc ; ydb/synsfc          ; no  ; SXT Synthetic Terminator Coefficients
+DIR_SXT_UVFLOOD ;     ; ydb/uv_flood           ; no  ; SXT UV Flood as run info
+DIR_SXT_SFM     ; sfm ;  ydb/sfm               ; no  ; SXT One-a-day Composites (monthly files)
+
+DIR_GEN_NAR     ; nar ;  ydb/nar     	       ; yes ; NOAA Active Regions 
+DIR_GEN_GEV     ; gev ;  ydb/gev               ; yes ; GOES Event Log 
+
+DIR_GEN_G61     ; g61 ;  ydb/g61               ; yes  ; GOES 6 X-Ray: One Minute Averages
+DIR_GEN_G71     ; g71 ;  ydb/g71               ; yes  ; GOES 7 X-Ray: One Minute Averages
+DIR_GEN_G81     ; g81 ;  ydb/g81               ; yes  ; GOES 8 X-Ray: One Minute Averages
+DIR_GEN_G91     ; g91 ;  ydb/g91               ; yes  ; GOES 9 X-Ray: One Minute Averages
+DIR_GEN_G01     ; g01 ;  ydb/g01               ; yes  ; GOES 10 X-Ray: One Minute Averages
+DIR_GEN_G11     ; g11 ;  ydb/g11               ; yes  ; GOES 11 X-Ray: One Minute Averages
+DIR_GEN_G21     ; g21 ;  ydb/g21               ; yes  ; GOES 12 X-Ray: One Minute Averages
+DIR_GEN_G41     ; g41 ;  ydb/g41               ; yes  ; GOES 14 X-Ray: One Minute Averages
+DIR_GEN_G51     ; g51 ;  ydb/g51               ; yes  ; GOES 15 X-Ray: One Minute Averages
+
+DIR_GEN_G65     ; g65 ;  ydb/g65               ; yes ; GOES 6 X-Ray: Five Minute Averages
+DIR_GEN_G75     ; g75 ;  ydb/g75               ; yes ; GOES 7 X-Ray: Five Minute Averages
+DIR_GEN_G85     ; g85 ;  ydb/g85               ; yes ; GOES 8 X-Ray: Five Minute Averages
+DIR_GEN_G95     ; g95 ;  ydb/g95               ; yes ; GOES 9 X-Ray: Five Minute Averages
+DIR_GEN_G05     ; g05 ;  ydb/g05               ; yes ; GOES 10 X-Ray: Five Minute Averages
+DIR_GEN_G15     ; g15 ;  ydb/g15               ; yes ; GOES 11 X-Ray: Five Minute Averages
+DIR_GEN_G25     ; g25 ;  ydb/g25               ; yes ; GOES 12 X-Ray: Five Minute Averages
+DIR_GEN_G45     ; g45 ;  ydb/g45               ; yes ; GOES 14 X-Ray: Five Minute Averages
+DIR_GEN_G55     ; g55 ;  ydb/g55               ; yes ; GOES 15 X-Ray: Five Minute Averages
+
+DIR_GEN_G6D     ; g6d ;  ydb/g6d               ; no  ; GOES 6 X-Ray: 3 Second
+DIR_GEN_G7D     ; g7d ;  ydb/g7d               ; no  ; GOES 7 X-Ray: 3 Second
+DIR_GEN_G8D     ; g8d ;  ydb/g8d               ; no  ; GOES 8 X-Ray: 3 Second
+DIR_GEN_G9D     ; g9d ;  ydb/g9d               ; no  ; GOES 9 X-Ray: 3 Second
+DIR_GEN_G0D     ; g0d ;  ydb/g0d               ; no  ; GOES 10 X-Ray: 3 Second
+DIR_GEN_G1D     ; g1d ;  ydb/g1d               ; no  ; GOES 11 X-Ray: 3 Second
+DIR_GEN_G2D     ; g2d ;  ydb/g2d               ; no  ; GOES 12 X-Ray: 3 Second
+DIR_GEN_G4D     ; g4d ;  ydb/g4d               ; no  ; GOES 14 X-Ray: 3 Second
+DIR_GEN_G5D     ; g5d ;  ydb/g5d               ; no  ; GOES 15 X-Ray: 3 Second
+
+DIR_GEN_GBL     ; gbl ;  ydb/batse             ; yes ; GRO BATSE Light Curves
+DIR_GEN_SHOWPIX ; sho ;  ydb/showpix           ; no  ; SHOWPIX ( shared/processed/PR images)
+DIR_GEN_XAD     ; xad ;  ydb/xad               ; yes ; Exabyte ASCII Directory for Archive Tape
+DIR_GEN_XBD     ; xbd ;  ydb/xbd               ; yes ; Exabyte Binary Directory for Archive Tape
+ydb_beta        ;     ;  ydb_beta              ; no  ; Beta-Test (Galileo Project)
+PERM_DATA       ;     ; smm                    ;     ; SMM DBASE
+

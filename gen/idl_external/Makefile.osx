@@ -1,0 +1,18 @@
+# Compile and link the sharable object, external.so
+# This Makefile is for the GNU C compiler on Mac OSX.  Use "make -f Makefile.osx".
+
+CFLAGS = -I/Applications/rsi/idl/external -fno-common -fPIC -no-cpp-precomp -dynamic -DINCLUDE=\"rearrange.h_generic\"
+OFILES = rearrange_c.o rearrange.o fmedian_c.o fmedian.o qsrt_k.o
+
+external.so: $(OFILES)
+	gcc -bundle -flat_namespace -undefined suppress -o external.so $(OFILES) -fno-common
+
+# Declare a target to delete all libraries and object files created.
+
+clean: tidy
+	rm -f external.so
+
+# Declare a target to delete all the object files created.
+
+tidy:
+	rm -f $(OFILES)

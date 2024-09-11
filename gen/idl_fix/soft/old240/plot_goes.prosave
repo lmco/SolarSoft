@@ -1,0 +1,143 @@
+pro plot_goes, input1, input2,  color=color , $
+	fem=fem, fillnight=fillnight, saa=saa, fillsaa=fillsaa, $
+	gdata=gxr_rec, low=low, high=high, title=title, gcolor=gcolor, $
+	nodeftitle=nodeftitle
+;+
+;   Name: goes_plot
+;
+;   Purpose: plot goes x-ray data (Yohkoh structure)
+;
+;   Input Parameters:
+;      input1 - user start time or goes xray data record structure array
+;      input2 - user stop time
+;
+;   Optional Keyword Paramters:
+;      fem - if set, overplot Yohko ephemeris grid (call fem_grid)
+;      fillnight - (pass to fem_grid) - polyfill Yohkoh nights
+;      fillsaa   - (pass to fem_grid) - polyfill Yohkoh saas
+;      saa       - (pass to fem_grid) - show saa events overlay grid
+;      low 	 - if set, only plot low energy
+;      high      - if set, only plot high energy
+;      title     - user title (appended to default title predicate)
+;      nodeftitle- if set, dont append default title predicate
+;
+;   Calling Sequence:
+;      plot_goes,'5-sep-92'		; start time + 24 hours
+;      plot_goes,'5-sep-92',6		; start time +  6 hours
+;      plot_goes,'5-sep-92','7-sep-92'  ; start time / stop time
+;      plot_goes,gxtstr			; input goes records from rd_gxt
+;      plot_goes,'5-sep',/fem		; overplot Yohkoh ephemeris grid
+;      plot_goes,'5-sep',/fillnight	; ditto, but fill in Yohkoh nights 
+;      plot_goes,'1-jun','30-jul',/low  ; only plot low energy
+;
+;   History: slf 22-sep-1992
+;	     slf 11-oct-1992 - added low and high keywords, add documentation
+;	     slf 26-oct-1992 - added nodeftitle keyword
+;            slf 15-mar-1993 - return on no data
+;	     mdm 24-Mar-1993 - corrected error due to integer overflow
+;	     slf 19-Jul-1993 - implemented LO and HI keyword function
+;
+;   Restrictions - assumes gxr data structure (derived from Tektronics files)
+;  		   should be modified to handle gxd when digial data is 
+;		   available
+;-
+
+sinput1=size(input1)
+sinput2=size(input2)
+if sinput1(1) eq 0 then $
+   input1=gt_day(addtime(syst2ex(),delta=-24*60),/str)
+
+if sinput1(2) ne 8 then begin	
+   if sinput2(1) eq 2 then begin		; duration in hours
+      start=anytim2ex(input1)
+      input2=fmt_tim(addtime(start,delta=input2*60.))		;MDM patch 24-Mar-93 (changed 60 to 60.)
+   endif
+   rd_gxt,input1, input2, gxr_rec 
+endif else gxr_rec=input1   
+
+if n_elements(gxr_rec) lt 2 then begin	; return on no data
+   message,/info,'No GOES data available for specified time'
+   return
+endif
+
+gapsize=10						;dont plot gaps
+labels=['G7 Low','G6 Low','G7 High','G6 High']
+delim=['',': ']
+mtitle='GOES X-Rays' 
+if keyword_set(nodeftitle) then mtitle=''
+if not keyword_set(title) then title=''
+mtitle=mtitle + delim(keyword_set(mtitle)) + title
+linestyle=[0,1,0,1]
+psym=[-3,3,-3,3]
+symsize=[.7,1,.7,1]
+usersym,[-1,1],[0,0]
+
+if keyword_set(color) then begin			; just playing for now
+   loadct,2
+   color=[90,230,90,230]
+endif else color=intarr(4) + 255
+
+if !d.name eq 'PS' then color = 255 - color
+
+offset=2					 	; first data field
+yticks=6
+ytickname=['1E-9','A  ','B  ','C  ','M  ','X  ','1E-3']
+yminor=0
+ymax=679
+
+; set up the axis labels and plot scaling
+utplot,gxr_rec,indgen(n_elements(gxr_rec)) < ymax ,/nodata, xstyle=1, $
+    ystyle=1, yminor=yminor, yticks=yticks, ytickname=ytickname, $
+    title=mtitle,  yrange=[101,679]
+
+; determine which channels to plot
+tags=tag_names(gxr_rec)
+lochan=where(strpos(tags,'LO') ne -1)
+hichan=where(strpos(tags,'HI') ne -1)
+g6chan=where(strpos(tags,'G6') ne -1)
+g7chan=where(strpos(tags,'G7') ne -1)
+
+case 1 of
+   keyword_set(low) and 1-keyword_set(high):  wchan=lochan
+   keyword_set(high) and 1-keyword_set(low):  wchan=hichan
+   else: wchan=[lochan, hichan]
+endcase
+
+; now plot the valid points
+for i=0, n_elements(wchan)-1 do begin		; for each desired channel
+   valid=where(gxr_rec.(wchan(i))+1)		; initial val=-1
+;
+; ------------------- uplot_gap.pro subroutine?? -------------------------
+   dvalid=deriv_arr(valid)			; identify gaps
+   rgst=0 & rgsp=n_elements(valid)-1		; at least one interval!
+   gapsp = where(dvalid gt gapsize, count)	; discontinuity > gapsize
+   if count gt 0 then begin			; at least one gap
+      gapst=gapsp+1
+      rgst=[rgst,gapst] & rgsp = [gapsp,rgsp]	; define subranges
+   endif
+
+   for j=0,n_elements(rgst)-1 do begin		; plot each interval
+      if rgst(j) ne rgsp(j) then $		; kludge for now
+         outplot,gxr_rec( valid (rgst(j):rgsp(j))), $
+            gxr_rec(valid(rgst(j):rgsp(j))).(wchan(i)), color=color(i), $
+            psym=psym(i), symsize=symsize(i)
+   endfor
+;------------------------------------------------------------------------
+endfor
+;
+; 
+; draw grid indicating goes level
+if not keyword_set(gcolor) then gcolor=bytarr(6)+255
+if !d.name eq 'PS' then gcolor=255-gcolor
+goes_grid, color=gcolor ; , color=bindgen(6)*50+50
+;
+;------------------------------------------------------
+; overplot Yohkoh ephemeris grid on request
+fem = keyword_set(fem) or keyword_set(fillnight) or $
+   keyword_set(fillsaa) or keyword_set(saa)
+if fem then $
+   fem_grid,fillnight=fillnight, fillsaa=fillsaa, saa=saa
+;------------------------------------------------------
+;
+return
+end

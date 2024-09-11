@@ -1,0 +1,201 @@
+;+
+;  -------------------------------------------
+; | User Name: freeland                       |
+; | Host Name: gs671-penumbra.nascom.nasa.gov |
+; | Directory: /home/freeland                 |
+; |                                           |
+; | Local Time:  3-AUG-24  21:01:45           |
+; | UT Time   :  4-AUG-24  01:01:45           |
+; |                                           |
+; | IDL Version: 8.8.3                        |
+; | Host OS    : linux                        |
+; | Host ARCH  : x86_64                       |
+;  -------------------------------------------
+;-
+; Includes input files: 
+;   /service/soho-archive/solarsoft//site/setup/bestof.freeland
+;   /service/soho-archive/solarsoft//site/setup/bestof.zarro
+; Number of uniq routines: 145
+$SSW/gen/idl/struct/add_tag.pro::GEN::add a tag to a structure::struct,Structure handling
+$SSW/gen/idl/utplot/anytim.pro::GEN::This function converts an array of seconds with ref to 1-jan-1958 including leap seconds to an array referenced to 1-jan-1979::utplot,Time, Utplot, time conversions
+$SSW/gen/idl/genutil/anytim2weekinfo.pro::GEN::return week-requested information for input time vector::genutil
+$SSW/gen/idl/solar/arcmin2hel.pro::GEN::Convert arcmin from sun centre to heliographic coords, using the correct (perspective) transformation. Derived from arcmin2hel (which uses an orthographic::solar
+$SSW/gen/idl/string/arr2str.pro::GEN::Convert an array to a delimited string.::string,Util, string
+$SSW_MOSIC/other_libs/fits_lib/arr2str.pro::MOSIC::Convert an array to a delimited string.::fits_lib,Util, string
+$SSW/gen/idl/util/boost_array.pro::GEN::Append one array onto a destination array::util,Utility
+$SSW/gen/idl_libs/astron/misc/boost_array.pro::GEN::Append one array onto a destination array::misc,Utility
+$SSW/gen/idl/display/box_cursor2.pro::GEN::Emulate the operation of a variable-sized box cursor::display,Interactive graphics.
+$SSW/gen/idl/util/box_message.pro::GEN::message to user, highlight with box around text::util
+$SSW/yohkoh/gen/idl/atest/box_message.pro::YOHKOH::message to user, highlight with box around text::atest
+$SSW/gen/idl/system/break_file.pro::GEN::Break a filename into its component parts.::system,Utilities, Operating_system.
+$SSW/yohkoh/gen/galileo/idl/lmsal/chianti_spec.pro::YOHKOH::Compute a Chianti isothermal spectrum (line + continuum) in the specified wavelength bins. Calculation is made for EM=1.e44 cm^-3.::lmsal
+$SSW/gen/idl/system/chklog.pro::GEN::Determine actual name of logical or environment variable.::system,Utilities, Operating_system.
+$SSW/gen/idl/system/concat_dir.pro::GEN::To concatenate directory and file names for current os.::system,Utilities, Strings
+$SSW/gen/idl_libs/astron/misc/concat_dir.pro::GEN::To concatenate directory and file names for current OS.::misc
+$SSW/gen/idl/struct/concat_struct.pro::GEN::concatanate two structures::struct,Structure handling
+$SSW/gen/idl/solar/darklimb_correct.pro::GEN::Calculate limb darkening function for specified wavelength or wavelength range and use to remove limb darkening effects from input image.::solar
+
+$SSW/gen/idl/util/data_chk.pro::GEN::checks input data for type, ndimension, etc (uses IDL size function results)::util
+$SSW/gen/idl/system/delvarx.pro::GEN::Destroy variables and free all memory associated with them::system
+$SSW/gen/idl_libs/astron/misc/delvarx.pro::GEN::Undefine up to 10 variables for memory management (can call from routines)::misc
+$SSW_NLFFF/idl/delvarx.pro::NLFFF::Delete variables for memory management (can call from routines)::idl
+$SSW/gen/idl/util/deriv_arr.pro::GEN::Procedure to return the rate of change of the::util
+$SSW_MOSIC/other_libs/other_lib/deriv_arr.pro::MOSIC::Procedure to return the rate of change of the::other_lib
+$SSW/gen/idl/solar/diff_rot.pro::GEN::Computes the differential rotation of the sun::solar
+$SSW_SUMER/idl/contrib/bocchialini/fullsun/diff_rot.pro::SUMER::Computes the differential rotation of the sun::fullsun,PREVIOUS HISTORY:
+$SSW/gen/idl/maps/drot_map.pro::GEN::Differentially rotate image contained within structure created by MAKE_MAP Can also project image to different orbital angles::maps,imaging
+$SSW_EIT/idl/util/eit_files.pro::EIT::return online eit file names::util
+$SSW_EIT/idl/anal/eit_prep.pro::EIT::Process an EIT image.::anal,FITS processing
+$SSW/gen/idl/system/espawn.pro::GEN::spawn a shell command and return STDIO and STDERR::system,System
+$SSW/gen/idl/utplot/evt_grid.pro::GEN::To annotate previously drawn utplot output with event times::utplot
+$SSW/gen/idl/genutil/file2time.pro::GEN::convert filenames (...[YY]YYMMDD?HHMM[SS]...) -> time::genutil
+$SSW/gen/idl/system/file_append.pro::GEN::append text to text file - optionally, only append uniq text::system
+$SSW_HELIO.20170417/idl/fixes/file_append.pro::HELIO.20170417::append text to text file - optionally, only append uniq text::fixes
+$SSW_HELIO/idl/fixes/file_append.pro::HELIO::append text to text file - optionally, only append uniq text::fixes
+$SSW/gen/idl/system/file_delete.pro::GEN::system/shell independent file delete::system
+$SSW/gen/idl/system/file_diff.pro::GEN::check for ascii file difference (boolean)::system
+$SSW/gen/idl/system/file_exist.pro::GEN::returns true(1) if any files match pattern=file false(0) if no files found::system
+$SSW/gen/idl/system/file_list.pro::GEN::Given a set of directories (and optionally a partial filename with a wildcard), generage a list of file::system
+$SSW/gen/idl/util/find_ix.pro::GEN::This function finds the nearest neighbor index in the primary array for the values in the secondary array::util,UTIL
+$SSW/gen/idl/fits/fitshead2struct.pro::GEN::convert FITS header->struct, optionally add useful standard TAGS::fits
+$SSW/gen/idl/genutil/fmt_timer.pro::GEN::print formatted times of an index file::genutil
+$SSW/gen/idl/system/ftp_copy.pro::GEN::To build an FTP command and execute it from IDL (Default=PUT)::system
+$SSW/gen/idl/system/get_host.pro::GEN::Find out the name of the ultrix system as defined in the system variable "hostname"::system
+$SSW/gen/idl/genutil/get_infox.pro::GEN::convert IDL structure Vector info to string summary (1 line/structure)::genutil
+$SSW/gen/idl/system/get_logenv.pro::GEN::provide system independent front end to get_env and trn_log::system
+$SSW/gen/idl/solar/get_sun.pro::GEN::Provides geocentric physical ephemeris of the sun. Front end to routine SUN to provide 'Yohkoh-style' time interface::solar
+$SSW/gen/idl/system/get_user.pro::GEN::Find out the name of the user as defined by the environment variable USER::system
+$SSW/gen/idl/ssw_system/go_update_ssw.pro::GEN::single point routine to maintain SSW system at remote sites  Motivation:::ssw_system
+$SSW/gen/idl/string/grep.pro::GEN::Search for string through a string array (cf grep in Perl)::string,String utility
+$SSW/gen/idl/genutil/grid_data.pro::GEN::return gridded subset of input (~fixed cadence if no gaps)::genutil
+$SSW/yohkoh/gen/idl/ys_util/grid_data.pro::YOHKOH::return gridded subset of input (~fixed cadence if no gaps)::ys_util
+$SSW/gen/idl/maps/grid_map.pro::GEN::Regrid an image map::maps,imaging
+$SSW/gen/idl/struct/gt_tagval.pro::GEN::return value stored in specified tag - (nested N-deep struct OK)::struct
+$SSW/gen/idl/help/have_proc.pro::GEN::Check if a program exists in !path::help,utility
+$SSW/gen/idl/solar/hel2arcmin.pro::GEN::Compute position relative to sun centre from heliographic.::solar,Utilities, coordinates.
+$SSW/gen/idl/http/html_doc.pro::GEN::handle standard header and trailer html documents (templates)::http
+$SSW/gen/idl/http/html_highlight.pro::GEN::highlight some user specified html (usually tables)::http
+$SSW/gen/idl/http/html_linklist.pro::GEN::make a series of htmlfiles a 'linked list'::http
+$SSW/gen/idl/http/image2movie.pro::GEN::convert an image file sequence (3d, gif, jpeg) to desired fmt (mpeg,gif-anim,java,still,  URL Reference: http://www.lmsal.com/solarsoft/ssw_movie_making.html::http
+$SSW/gen/idl/maps/index2map.pro::GEN::Make an image map from index/data pair::maps,imaging
+$SSW/gen/idl/system/is_lendian.pro::GEN::Many routines (WRITEFITS, ANAFRD, etc) depend on the endianness of the hardware platform.  This routine centralizes this in one place so new platforms may be added at will.::system
+$SSW/gen/idl/util/is_member.pro::GEN::check set membership (element(s) IN set?), return boolean::util
+$SSW/gen/idl/struct/join_struct.pro::GEN::join two structures together  Syntax      : new_struct=join_struct(struct1,struct2)::struct,Structure handling
+$SSW/gen/idl/util/last_nelem.pro::GEN::return last NN elements of vector or last NN images of data cube::util
+$SSW/gen/idl/display/lcur_image.pro::GEN::To display a normalized light curve plot for image data.  The user can select the portion of the image to be averaged.::display
+$SSW/gen/idl/display/linecolors.pro::GEN::N.A.::display
+$SSW/gen/idl/system/loc_file.pro::GEN::Get files from a set of directories.::system,Utilities, Operating_system.
+$SSW/gen/idl/util/main_execute.pro::GEN::execute idl 'command' file (in IDL_STARTUP format)::util
+$SSW/gen/idl/struct/make_str.pro::GEN::Control dynamic structure building - avoids collision of::struct
+$SSW_SOT/multithread/make_str.pro::SOT::Control dynamic structure building - avoids collision of::multithread
+$SSW/gen/idl/struct/merge_struct.pro::GEN::merge/concatanate two structures::struct,Structure handling
+$SSW/gen/idl/spectra/mewe_spec.pro::GEN::Compute a Mewe thermal spectrum (line + continuum) for EM=1.e44 cm^-3::spectra
+$SSW/yohkoh/gen/idl/spectra/mewe_spec.pro::YOHKOH::Compute a Mewe thermal spectrum (line + continuum) for EM=1.e44 cm^-3::spectra
+$SSW/gen/idl/http/mkthumb.pro::GEN::make a thumbnail of an image or movie sequence::http
+$SSW/gen/idl/maps/movie_map.pro::GEN::make movie of series of map images::maps,imaging
+$SSW/gen/idl/fits/mreadfits.pro::GEN::read multiple FITs into data cube, header-> IDL structure array::fits
+$SSW/gen/idl/string/num2str.pro::GEN::Convert number to unpadded string::string,Util, Numerical, String
+$SSW_POA/idl/util/num2str.pro::POA::N.A.::util
+$SSW/gen/idl/utplot/outplot.pro::GEN::Plot vector data over a previously drawn plot (using UTPLOT) with universal time labelled X axis.  If start and end times have been set, only data between those times is displayed.::utplot
+$SSW/gen/idl/display/plot_arc.pro::GEN::To allow a user to mark an arc on an image and the intensity along that arc will be plotted::display
+$SSW/gen/idl/synoptic/goes/plot_goes.pro::GEN::plot goes x-ray data (Yohkoh structure)::goes
+$SSW_ONTOLOGY/idl/gen_temp/plot_goes.pro::ONTOLOGY::plot goes x-ray data (Yohkoh structure)::gen_temp
+$SSW/yohkoh/gen/idl/atest/plot_goes.pro::YOHKOH::plot goes x-ray data (Yohkoh structure)::atest
+$SSW/yohkoh/gen/idl/ys_util/plot_goes.pro::YOHKOH::plot goes x-ray data (Yohkoh structure)::ys_util
+$SSW/gen/idl/maps/plot_map.pro::GEN::Plot an image map::maps,imaging
+$SSW_TPLOT/general/science/plot_map.pro::TPLOT::N.A.::science
+$SSW/gen/idl/genutil/pr_env.pro::GEN::simple synonym for pr_logenv  SEE DOC HEADER FOR PR_LOGENV::genutil
+$SSW/yohkoh/gen/idl/gbo/pr_gev.pro::YOHKOH::To list the GOES events::gbo
+$SSW/yohkoh/gen/idl/gbo/pr_nar.pro::YOHKOH::To list the NOAA Active Region list::gbo
+$SSW/gen/idl/genutil/pr_status.pro::GEN::print and/or return some status info (userid, hostid, idl version, local and uttime)::genutil
+$SSW/gen/idl/string/prstr.pro::GEN::print input string array as using format='(a)' to force one entry per line (other types use idl standard print defaults)::string
+$SSW/gen/idl/system/pwd.pro::GEN::emulate unix 'pwd' command  -::system
+$SSW/gen/idl/fund_lib/yohkoh/rd_gxd.pro::GEN::Read the GXD type files (GOES 3 sec light curve data files for S/C 6,7,8,9, or derived 1 minute average data files).  Default is to read 3 sec data for spacecraft 7.::yohkoh
+$SSW/yohkoh/gen/idl/atest/rd_gxd.pro::YOHKOH::Read the GXD type files (GOES 3 sec light curve data files for S/C 6,7,8,9, or derived 1 minute average data files).  Default is to read 3 sec data for spacecraft 7.::atest
+$SSW/yohkoh/gen/idl/gbo/rd_gxd.pro::YOHKOH::Read the GXD type files (GOES 3 sec light curve data files for S/C 6,7,8,9, or derived 1 minute average data files).  Default is to read 3 sec data for spacecraft 7.::gbo
+$SSW/gen/idl/io/rd_tfile.pro::GEN::read/return contents of text file - optionally interpret and convert text table data::io,gen, setup, swmaint, file i/o, util
+$SSW_MOSIC/other_libs/other_lib/rd_tfile.pro::MOSIC::read/return contents of text file - optionally interpret and convert text table data::other_lib,gen, setup, swmaint, file i/o, util
+$SSW_EIT/idl/util/read_eit.pro::EIT::read eit image(s) into 2D or 3D array & map header->structure::util
+$SSW_TRACE/idl/info/read_trace.pro::TRACE::Read TRACE data image files, headers or headers & data::info
+$SSW/gen/idl/genutil/reltime.pro::GEN::return relative UT time or time range (default is offset from NOW)::genutil
+$SSW/gen/idl/struct/rem_tag.pro::GEN::remove tags from a structure  Syntax      : NEW_STRUCT=REM_TAG(STRUCT,TAG)::struct,Structure handling
+$SSW/gen/idl/struct/rep_tag_name.pro::GEN::replace tag name in a structure::struct,Structure handling
+$SSW/gen/idl/struct/rep_tag_value.pro::GEN::replace tag value in a structure::struct,Structure handling
+$SSW/gen/idl/struct/required_tags.pro::GEN::check input structure of fits header for 'required' tags::struct
+$SSW/gen/idl/io/restgen.pro::GEN::read & restore parameters (idl variables) from a generic file [front end to rd_genx - reads files written by savegen.pro]::io
+$SSW/gen/idl/io/restsys.pro::GEN::restore idl system variables using values saved via savesys.pro (values from Yohkoh system variables:ys_idlsys_temp,ys_idlsys_init)::io
+
+$SSW/gen/idl/io/savegen.pro::GEN::save user specified parameters (idl variables) in a generic file [front end to wrt_genx - files are restored via savegen.pro]::io
+$SSW/gen/idl/io/savesys.pro::GEN::save idl system variables for later restoration via restsys (variables saved in yohkoh system variable: !ys_idlsys_temp)::io
+$SSW/gen/idl/system/set_logenv.pro::GEN::set environmental variable (unix) and logicals (vms) (allow dynamic updates of Yohkoh environment)::system
+$SSW/gen/idl/time/sort_index.pro::GEN::return time sorted array of merged structures::time
+$SSW/gen/idl/http/special_movie.pro::GEN::make sxt movies for WWW (just set up and call image2movie)  EXAMPLE: REPRESENTATIVE OUTPUT FROM SPECIAL_MOVIE IS AVAILABLE AT:::http
+$SSW/gen/idl/ssw_system/ssw_path.pro::GEN::add or remove SSW elements from IDL path::ssw_system,environment, system
+$SSW/gen/idl/ssw_system/ssw_strfind.pro::GEN::find a string pattern in SSW online files (or input file list)::ssw_system
+$SSW/gen/idl/ssw_util/ssw_track_fov.pro::GEN::Extract a sub-field from the SSW-compliant (2D) image data based on the reference time and reference coordinates.::ssw_util
+$SSW/gen/idl/ssw_system/ssw_upgrade.pro::GEN::generate SSW set list, generate packages and spawn mirror job::ssw_system
+$SSW_ONTOLOGY/idl_mods/ssw_upgrade.pro::ONTOLOGY::generate SSW set list, generate packages and spawn mirror job::idl_mods
+$SSW/gen/idl/ssw_system/sswdb_upgrade.pro::GEN::generate SSWDB set list, generate packages and optionally spawn mirror/WGET  job::ssw_system
+$SSW_ONTOLOGY/idl_mods/sswdb_upgrade.pro::ONTOLOGY::generate SSWDB set list, generate packages and optionally spawn mirror/wget/lftp job; opti::idl_mods
+$SSW/gen/idl/ssw_system/sswloc.pro::GEN::use SSW mapfile to see online SSW routines::ssw_system
+$SSW/gen/idl/string/str2arr.pro::GEN::Convert delimited string into string array::string
+$SSW_MOSIC/other_libs/fits_lib/str2arr.pro::MOSIC::Convert delimited string into string array::fits_lib
+$SSW/gen/idl/string/str2cols.pro::GEN::break strarry into columns at specified delimiter::string
+$SSW/gen/idl/http/str2html.pro::GEN::format a block of free-form ascii text into a standard 'html'::http
+$SSW/gen/idl/string/str_lastpos.pro::GEN::Find last occurence of a substring in the source string::string,String
+$SSW/gen/idl/genutil/str_perm.pro::GEN::return string array which contains all permutations of the concatenation of arr1 and arr2::genutil
+$SSW/gen/idl/string/str_replace.pro::GEN::replace all occurences of a substring with a replacement if no replacement string is specified, a NULL is inserted::string
+$SSW_MOSIC/other_libs/fits_lib/str_replace.pro::MOSIC::replace all occurences of a substring with a replacement if no replacement string is specified, a NULL is inserted::fits_lib
+$SSW_MOSIC/other_libs/other_lib/str_replace.pro::MOSIC::replace all occurences of a substring with a replacement if no replacement string is specified, a NULL is inserted::other_lib
+$SSW/gen/idl/struct/str_subset.pro::GEN::generate a (smaller) structure with a subset of selected tags::struct
+$SSW/gen/idl/string/strarrcompress.pro::GEN::remove null elements from string arrays (1D 2D)::string
+$SSW/gen/idl/string/strarrinsert.pro::GEN::insert/replace one text array into/by another at specifed delimiter::string
+$SSW/gen/idl/string/strextract.pro::GEN::extract substring between patt1 and patt2::string
+$SSW/gen/idl/string/strjustify.pro::GEN::left/right justify or center string array::string
+$SSW/gen/idl/genutil/strlastchar.pro::GEN::return last non-blank character(s) in a string or string array::genutil
+$SSW/gen/idl/string/strmids.pro::GEN::strmid with vectorized parameters::string
+$SSW/yohkoh/gen/idl/atest/strmids.pro::YOHKOH::strmid with vectorized parameters::atest
+$SSW/gen/idl/genutil/strspecial.pro::GEN::return true if input is a 'special' character (or as defined by keyword)::genutil
+$SSW_MOSIC/other_libs/idl_lib/strsplit.pro::MOSIC::Wrapper on the build in system routine STRTOK that implements exactly the same interface as STRTOK, but with the STRSPLIT name.::idl_lib
+$IDL_DIR/lib/strsplit.pro::DIR::Wrapper on the build in system routine STRTOK that implements exactly the same interface as STRTOK, but with the STRSPLIT name.::lib
+$SSW/gen/idl/http/strtab2html.pro::GEN::generate html Table (V3 table format) from table (string array)::http
+$SSW/gen/idl/fits/struct2fitshead.pro::GEN::Map FITS Header-Structure structure back-> fits header (strarr)::fits
+$SSW_SUVI/idl/cal/struct2fitshead.pro::SUVI::Map FITS Header-Structure structure back-> fits header (strarr)::cal
+$SSW/gen/idl/struct/struct_where.pro::GEN::filter a structure array; return SubScripts which satisfy::struct
+$SSW/yohkoh/gen/galileo/idl/lmsal/sxt_prep.pro::YOHKOH::routine to prepare the SXT data for analysis.  The steps performed are: 1. Flag the saturated pixels::lmsal
+$SSW_SXT/idl/atest/sxt_prep.pro::SXT::routine to prepare the SXT data for analysis.  The steps performed are: 1. Flag the saturated pixels::atest
+$SSW_SXT/idl/util/sxt_prep.pro::SXT::routine to prepare the SXT data for analysis.  The steps performed are: 1. Flag the saturated pixels::util
+$SSW/gen/idl/struct/tag_index.pro::GEN::return tag position (index) of 'tag' within 'str'::struct
+$SSW_SPVM/idl/tag_index.pro::SPVM::return tag position (index) of 'tag' within 'str'::idl
+$SSW/gen/idl/http/thumbnail_table_html.pro::GEN::Make an html thumbnail table - optionally make the thumbnails::http
+$SSW/gen/idl/genutil/time2file.pro::GEN::convert input times (any SSW format) -> [YY]YYMMDD?HHMM[SS]::genutil
+$SSW/gen/idl/time/timegrid.pro::GEN::create a (approximately) uniform grid of times::time
+$SSW_TRACE/idl/util/trace_colors.pro::TRACE::return TRACE wave dependent RGB; optionally loadit::util
+$SSW_TRACE/idl/info/trace_files.pro::TRACE::return trace reformatted file names between t0 and t1::info
+$SSW_TRACE/idl/util/trace_prep.pro::TRACE::Process  TRACE image(s).::util,FITS processing
+$SSW_TRACE/idl/util/trace_scale.pro::TRACE::scale TRACE images (SSW wrapper for Karel Schryver routines)::util
+$SSW/gen/idl/string/trim.pro::GEN::Converts numbers to strings, without trailing zeros.::string,Utilities, Strings.
+$SSW/gen/idl/http/url_decode.pro::GEN::replace encoded HEX with byte equivilent::http
+$SSW_ONTOLOGY/idl/gen_temp/url_decode.pro::ONTOLOGY::replace encoded HEX with byte equivilent::gen_temp
+$SSW/gen/idl/http/url_get.pro::GEN::get a file from a URL location::http,WWW
+$SSW/gen/idl/utplot/utplot.pro::GEN::Plot X vs Y with Universal time labels on bottom X axis.::utplot
+$SSW_ETHZ/idl/ragview/display/utplot.pro::ETHZ::Plot X vs Y with Universal time labels on bottom X axis.  X axis range can be as small as 5 msec or as large as 20 years.::display
+$SSW_FHNW/idl/obsolete/ragview/display/utplot.pro::FHNW::Plot X vs Y with Universal time labels on bottom X axis.  X axis range can be as small as 5 msec or as large as 20 years.::display
+$SSW/gen/idl/string/wc_where.pro::GEN::return subscripts of input array where a pattern match is found - allows use of multiple wild card characters (*)::string
+$SSW/gen/idl/display/wdef.pro::GEN::Makes a window quick and easy. Allocate free window# if not specified to avoid window collisions::display
+$SSW/yohkoh/gen/galileo/idl/lmsal/wdef.pro::YOHKOH::Makes a window quick and easy. Allocate free window# if not specified to avoid window collisions::lmsal
+$SSW/gen/idl/display/wdeletes.pro::GEN::delete multiple (or all) windows::display
+$SSW/gen/idl/util/where_arr.pro::GEN::Return the subscripts where a given set of values equal the values in the input array.  It is basically an expansion of IDL where in which the condition to match can be an array.::util
+$SSW/gen/idl/help/which.pro::GEN::Search for and print file or routine in IDL !path::help,General utility
+$SSW_POA/idl/obsolete/which.pro::POA::FILEPATH is completely uselss for this purpose.::obsolete
+$SSW/gen/idl/graphics/x2gif.pro::GEN::read and write X window to GIF file::graphics,Graphics
+$SSW/gen/idl/graphics/x2ps.pro::GEN::convert X window plot to postscript file::graphics,plotting
+$SSW/gen/idl/widgets/xack.pro::GEN::Make user acknowledge an action::widgets
+$SSW/gen/idl/help/xdoc.pro::GEN::Front end to online documentation software.::help,Documentation, Online_help.
+$SSW/gen/idl/widgets/xkill.pro::GEN::To kill a widget::widgets,Widgets
+$SSW/gen/idl/widgets/xprint.pro::GEN::print an array or file::widgets,OS, Widgets
+$SSW_OVSA/idl/mapping/xprint.pro::OVSA::Print text on graphics device.  After initializing use just like print.::mapping
+$SSW/gen/idl/genutil/xstepper.pro::GEN::Widget interface/ X-Windows data cube reviewer::genutil,3D, DISPLAY, Image Cube, Widget , Movie, X Windows
+$SSW/gen/idl/widgets/xstruct.pro::GEN::widget display of fields within an arbitrary structure::widgets,Widgets
+$SSW/gen/idl/widgets/xtext.pro::GEN::Text display widget with searching capability::widgets,Utility, Widgets
+$SSW/gen/idl/graphics/zbuff2file.pro::GEN::write the image current Z-buffer image to an image file (gif,tiff,jpeg and png supported formats)::graphics

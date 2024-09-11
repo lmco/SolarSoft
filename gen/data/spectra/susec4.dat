@@ -1,0 +1,178 @@
+; File susec4.dat: Atomic data for S XV lines and S XIV satellites 
+;                 for Yohkoh BCS Channel 4
+; History: 
+;  11-FEB-91  Original version of file with Safronova (1981) values for S XV wvs.
+;	S XIV n=2 sats wvls from Vainshtein and Safronova (1978) (VS78), n>2 sats wvls from
+;	Cornille and Dubau (CD, p.c.1990). 
+;	T-averaged Omega (Gamma) values from extrapolations by KJHP of Z-scaled values for
+;	Ca and Fe, using Bely-Dubau et al. (Papers VI and VII). 
+;	F2(s) values from CD
+;	Unknown radiative recombination excitation rates are set to zero.
+;  28-JUL-92 Modified, KJHP
+;	Contains Vainshtein and Safronova (1985) (VS85) wvls for S XV lines
+;	VS78 wvls are increased by 0.001 A and CD wvls decreased by 0.001 A to get agreement
+;	with VS85 values of S XV w line wvl. 
+;   7-OCT-92 Modified, KJHP
+;	Documentation added according to recommendns. of mtg of Oct. 1, 1992
+;  14-OCT-92 Modified, JRL   Added 3 Numbers: Number of collisional lines
+;					      Number of rad. recombination lines
+;					      Number of branching ratios
+;   6-oct-93 Modified, JRL   Added Version Title
+; References: 
+;	Bely-Dubau et al. (Paper VI) 1982, MNRAS, 198,239
+;	Bely-Dubau et al. (Paper VII) 1982, MNRAS, 201, 1155
+;	Cornille and Dubau 1990 (CD), private comm. to G. Doschek
+;	Vainshtein and Safronova 1978 (VS78), ADNDT, 21, 49
+;	Vainshtein and Safronova 1985 (VS85), Phys Scr, 31, 519
+;
+Cornille & Dubau/Wave = V&S			; Version
+ 16, 2 ; nuclear charge and number of electrons (2=He-like)
+ 10, 4, 6		; # Coll. excited lines, # of rad. recomb. lines, # of branch ratios
+; WAVELENGTHS W,X,Y,Z,Q,R,S,T,U,V   (q-v = VS78 + 0.001 A)
+ 5.03890,5.06329,5.06666,5.10168,5.0855,5.0875,5.0658,5.0666,5.1323,5.1334
+ 0.998,.84,.09,.20,.87,.964 			;BRANCHING RATIOS
+ 12,              ; NUMBER OF TEMPERATURES
+ .63,1.9,3.16,6.32,9.48,12.64,15.8,18.95,25.27,31.6,37.9,63.2 ;TEMPERATURES
+ 1.11,1.18,1.45,1.85,2.12,2.40,2.65,3.0,3.3,3.80,4.15,5.0             ; T-avg. OMEGA (w-z,q-v)
+ .195,.195,.195,.22,.21,.19,.18,.17,.155,.15,.15,.195				;x
+ .24,.24,.28,.30,.30,.28,.27,.26,.25,.24,.24,.27				;y
+ .40,.42,.43,.44,.46,.44,.42,.4,.38,.36,.34,.35					;z
+ .87,.87,9.41E-1,1.14,1.31,1.45,1.59,1.72,1.94,2.15,2.34,2.96			;q
+ .36,.36,.42,.53,.63,.72,.78,.84,.96,1.05,1.05,1.05 				;r
+ .25,.25,.26,.25,.25,.24,.23,.23,.23,.225,.22,.25				;s
+ .13,.15,.16,.17,.18,.185,.19,.20,.21,.19,.19,.19				;t
+ .19,.19,.2,.18,.17,.15,.14,.13,.11,.1,.1,.1					;u
+ .1,.1,.1,.092,.085,.08,.075,.07,.063,.058,.054,.045				;v
+ .0,.0,.0,.0,.0,.0,.0,.0,.0,.0,.0,.0    ;w   radiative recombination
+ .0,.0,.0,.0,.0,.0,.0,.0,.0,.0,.0,.0    ;x   radiative recombination
+ .0,.0,.0,.0,.0,.0,.0,.0,.0,.0,.0,.0    ;y   radiative recombination
+ .0,.0,.0,.0,.0,.0,.0,.0,.0,.0,.0,.0    ;z   radiative recombination
+ 1748.,        N=2 SATELLITE ENERGIES IN E.V                                                        
+offset=+0.0010
+       2   5.0865        3.87e13	    7 r
+       2   5.0845        4.85e13            6 q
+       2   5.0656        1.66e13            5 t
+       2   5.0648        1.28e13            5 s
+offset=-0.0010
+       3   5.0663        1.52e12            1  All values '1' are 
+       3   5.0892        1.11e12            1  dummy, inserted
+       3   5.0589        1.70e13            1  only to comply
+       3   5.0552        1.99e13            1  with the RDFAC. 
+       3   5.0780        5.50e11            1  It does not make
+       3   5.0443        1.45e13            1  any difference as
+       3   5.0670        7.69e11            1  long as all WVSHIFT in 
+       3   5.0437        1.18e13            1  DRCB.FOR are 0.
+       3   5.0660        5.36e11            1
+       3   5.0650        3.01e12            1
+       3   5.0654        5.81e11            1
+       3   5.0618        4.44e12            1
+       3   5.0416        6.39e11            1
+       3   5.0420        3.10e12            1
+       3   5.0394        1.305e14           1
+       3   5.0380        7.85e13            1
+       3   5.0385        1.69e13            1
+       3   5.0324        7.33e11            1
+       4   5.0748        8.48e11            1
+       4   5.0637        6.43e11            1
+       4   5.0731        5.772e11           1
+       4   5.0615        5.79e12            1
+       4   5.0707        3.26e12            1
+       4   5.0593        2.76e12            1
+       4   5.0687        3.76e12            1
+       4   5.0682        6.21e11            1
+       4   5.0597        1.93e12            1
+       4   5.0394        6.449e11           1
+       4   5.0385        2.21e12            1
+       4   5.0387        5.15e12            1
+       4   5.0385        8.79e13            1
+       4   5.0378        4.32e13            1
+       4   5.0381        1.88e13            1
+       4   5.0356        7.81e11            1
+       4   5.0354        1.58e12            1
+       5   5.0701        1.05e12            1
+       5   5.0634        1.85e12            1
+       5   5.0685        2.24e12            1
+       5   5.0625        4.71e12            1
+       5   5.0675        4.15e12            1
+       5   5.0668        7.56e11            1
+       5   5.0664        8.56e11            1
+       5   5.0604        5.42e11            1
+       5   5.0656        9.28e11            1
+       5   5.0603        8.18e11            1
+       5   5.0652        6.81e11            1
+       5   5.0654        1.05e12            1
+       5   5.0599        1.166e12           1
+       5   5.0377        1.65e12            1
+       5   5.0379        3.96e12            1
+       5   5.0378        7.32e13            1
+       5   5.0373        3.69e13            1
+       5   5.0374        1.56e13            1
+       5   5.0359        8.72e11            1
+       5   5.0357        1.74e12            1
+offset=+0.0010
+       2   5.1283        1.13e12           10 e
+       2   5.0974        1.12e14            8 k
+       2   5.1014        8.62e11            9 l
+       2   5.1016        1.60e14            9 j
+       2   5.0871        2.58e12            6 b
+       2   5.0910        2.60e13            7 a
+       2   5.0573        7.00e12            2 n
+       2   5.0612        2.50e13            3 m
+offset=-0.0010
+       3   5.0978        8.74e12            1
+       3   5.0818        6.53e11            1
+       3   5.0723        7.44e11            1
+       3   5.0660        1.29e13            1
+       3   5.0675        5.29e12            1
+       3   5.0660        3.424e12           1
+       3   5.0644        5.857e12           1
+       3   5.0636        8.91e12            1
+       3   5.0556        2.80e12            1
+       3   5.0454        9.53e13            1
+       3   5.0466        1.45e14            1
+       3   5.0451        2.58e13            1
+       3   5.0348        5.96e12            1
+       3   5.0363        2.02e13            1
+       4   5.0755        3.41e12            1
+       4   5.0762        6.30e12            1
+       4   5.0711        1.34e12            1
+       4   5.0670        6.17e11            1
+       4   5.0647        2.29e12            1
+       4   5.0628        8.68e11            1
+       4   5.0632        1.09e12            1
+       4   5.0647        5.85e11            1
+       4   5.0640        9.16e11            1
+       4   5.0617        1.36e12            1
+       4   5.0633        1.17e12            1
+       4   5.0586        1.32e12            1
+       4   5.0408        5.03e13            1
+       4   5.0415        1.84e12            1
+       4   5.0412        6.97e13            1
+       4   5.0406        5.42e12            1
+       4   5.0370        3.30e12            1
+       4   5.0377        1.04e13            1
+       4   5.0354        8.04e12            1
+       4   5.0355        1.04e13            1
+       5   5.0697        2.83e12            1
+       5   5.0702        5.10e12            1
+       5   5.0688        1.59e12            1
+       5   5.0657        6.91e11            1
+       5   5.0638        8.77e11            1
+       5   5.0638        5.88e11            1
+       5   5.0639        7.24e11            1
+       5   5.0638        6.66e11            1
+       5   5.0627        2.58e12            1
+       5   5.0633        1.79e12            1
+       5   5.0633        7.02e11            1
+       5   5.0619        5.87e11            1
+       5   5.0592        7.66e11            1
+       5   5.0394        3.56e13            1
+       5   5.0399        1.76e12            1
+       5   5.0397        4.86e13            1
+       5   5.0392        2.96e12            1
+       5   5.0368        2.48e12            1
+       5   5.0374        8.00e12            1
+       5   5.0356        1.20e13            1
+       5   5.0355        9.26e12            1
+       5   5.0348        7.05e11            1
+       5   5.0348        9.49e11            1

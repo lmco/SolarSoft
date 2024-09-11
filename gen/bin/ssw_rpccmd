@@ -1,0 +1,29 @@
+#!/bin/csh -f
+############################################################
+#
+#  execute SSW system dependent rpccmd under $SSW
+#
+#  Calling Sequence:
+#      $SSW_BIN/ssw_rpccmd hostip command
+############################################################
+if (!($?OS_ARCH)) then 
+   source $SSW_BIN/setos
+endif
+
+if (!($?OS_ARCH)) then 
+   echo ""
+   exit
+endif
+
+set cmd=`find $SSW_BINARIES/exe/$OS_ARCH/idlRpcClient`
+
+if ($cmd == "") then 
+  echo ""
+else
+   if ($#argv > 0) then 
+      eval "$cmd "0x2010CAFE "$argv"
+   else
+      echo "$cmd "
+   endif
+endif
+exit

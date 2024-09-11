@@ -1,0 +1,55 @@
+#!/bin/csh -f
+#
+##############################################################################
+#   setenv_pathlist
+#
+#   S.L.Freeland
+#   6-March-1996.
+#
+#   set path environmentals - permit list of possible paths for each env.
+#   (file permits machines to use various pathnames/symbolic links)
+#
+#   Calling Sequence:
+#      source setenv_pathlist <path_file>
+#
+#   Where <path_file> is a two or three column file of the form:
+#      -------------------------------------------
+#      setenv XXX path1,path2,path3,path4,...pathN
+#      setenv YYY path
+#      setenv ZZZ path1,path2
+#      (etc)--------------------------------------
+#   OR
+#      XXX path1,path2,path3,path4,...pathN
+#      YYY path
+#      ZZZ path1,path2
+#      (etc)--------------------------------------
+#
+#   After excution, the environmentals
+#      XXX, YYY, ZZZ are set to elements of the corresponding pathlist
+#      which actually exist on the executing machine
+#
+#
+##############################################################################
+if ($#argv != 1) then
+   echo "Need a file name..."
+   exit
+endif
+
+set pathfile=$argv[1]
+
+if (!(-e $pathfile)) then
+   echo "Could not find file: " $pathfile
+   exit
+endif
+
+# decomment the pathfile and 'nullify the setenv parts'
+set segments=`$SSW/gen/bin/de_comment $pathfile |grep setenv | sed s+setenv++`
+
+while ($#segments >= 2)
+   set string="setenv $segments[1] `$SSW/gen/bin/valid_paths $segments[2]`"
+   eval $string
+   shift segments
+   shift segments
+end
+
+exit

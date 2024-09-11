@@ -1,0 +1,18 @@
+#!/bin/csh -f
+#
+# General STEREO environment variable setup script
+#
+# William Thompson, GSFC, 17-Jun-2005
+# Split attitude history between $SSW and $SSWDB, 06-Jul-2006
+
+# SPICE evars
+
+setenv STEREO_SPICE		$SSW/stereo/gen/data/spice
+setenv STEREO_SPICE_GEN		$SSW/stereo/gen/data/spice/gen
+setenv STEREO_SPICE_SCLK	$SSW/stereo/gen/data/spice/sclk
+setenv STEREO_SPICE_ATTIT_SM	$SSW/stereo/gen/data/spice/ah
+setenv STEREO_SPICE_EPHEM	$SSW/stereo/gen/data/spice/epm
+setenv STEREO_SPICE_DEF_EPHEM	$SSW/stereo/gen/data/spice/depm
+setenv STEREO_SPICE_OTHER	$SSW/stereo/gen/data/spice/other
+
+setenv STEREO_SPICE_ATTITUDE	$SSWDB/stereo/gen/spice/ah

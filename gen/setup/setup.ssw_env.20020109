@@ -1,0 +1,132 @@
+#!/bin/csh -f
+#########################################################################
+#   Name: setup.ssw_env
+#
+#   Purpose: define SSW top level enivironmentals
+#
+#   History: 21-jun-1995 (S.L.Freeland)
+#            18-Feb-1996 (S.L.Freeland)
+#            23-Feb-1996 (S.L.Freeland
+#            23-oct-1996 (S.L.Freeland) - some SSW_SITE directories
+#            29-oct-1996 (S.L.Freeland) - add (decomment) TRACE
+#            10-nov-1996 (S.L.Freeland) - shared library definition change
+#            24-feb-1997 (S.L.Freeland) - SSW_PACKAGES definition
+#             9-apr-1997 (S.L.Freeland) - enabled SMM
+#            10-apr-1997 (S.L.Freeland) - add XRAY & CDS_CAT package
+#            11-apr-1997 (S.L.Freeland) - directory name 'cds_cat' -> cdscat
+#                                       - enable HESI and CGRO
+#                                       - add packages GOES & SPEX
+#            12-apr-1997 (S.L.Freeland) - ZTOOLS->standard packages
+#            30-apr-1997 (S.L.Freeland) - add LPARL package -> ssw_instr
+#             8-may-1997 (S.L.Freeland) - add ANA package
+#            24-nov-1997 (S.L.Freeland) - setenv LANG -> C (english-centric)
+#            18-nov-1997 (S.L.Freeland) - add HESSI
+#            18-May-1998 (S.L.Freeland) - add RADIO (ETHZ)
+#            20-Oct-1998 (S.L.Freeland) - add radio/NRH (Nancey)
+#            23-Oct-1998 (S.L.Freeland) - add STEREO package 
+#            11-Nov-1998 (S.L.Freeland) - put binaries package 1st (ssw_bin)
+#            17-Nov-1998 (S.L.Freeland) - add LIMBSTUFF package
+#            16-Dec-1998 (S.L.Freeland) - ssw_contrib_master->sxt.lmsal.com
+#            29-Jan-1999 (S.L.Freeland) - restored ssw_contrib_master->sohoftp
+#            25-feb-1999 (S.L.Freeland) - add OPTICAL (soon & lapalma)
+#             4-Mar-1999 (S.L.Freeland) - add OPTICAL/nso
+#             3-Jun-1999 (S.L.Freeland) - add radio/norh (nobeyama)
+#            27-Jul-1999 (S.L.Freeland) - add VDEM package
+#            19-Nov-1999 (S.L.Freeland) - enable ovro
+#            22-Mar-2000 (S.L.Freeland) - add ovsa (need to merge w/ovro??)
+#            31-Mar-2000 (S.L.Freeland) - added CGRO to SSW_MISSIONS
+#            10-Apr-2000 (S.L.Freeland) - add NGDC "mission"
+#             5-Jun-2000 (S.L.Freeland) - add HXRS
+#            29-Nov-2000 (S.L.Freeland) - add optical/mees
+#             1-Dec-2000 (S.L.Freeland) - add hxrs to SSW_MISSIONS
+#            13-Dec-2000 (S.L.Freeland) - add ANDRIL ti $SSW_PACKAGES
+#            19-Dec-2000 (S.L.Freeland) - add NORP to $SSW_RADIO
+#            22-Jan-2001 (S.L.Freeland) - remove obsolete HESI reference
+#            19-Sep-2001 (S.L.Freeland) - add SSW_FINDSTUFF to $SSW_PACKAGES
+#########################################################################
+
+#################### "fundamental" SSW defintions #######################
+# list of supported SSW missions
+setenv SSW_MISSIONS	"soho yohkoh spartan trace cgro smm packages hessi radio optical ngdc hxrs" 	 # serts"
+# list of supported instruments for each mission
+setenv SSW_SOHO_INSTR	"soho/cds soho/eit soho/sumer soho/lasco soho/mdi soho/uvcs"
+setenv SSW_YOHKOH_INSTR "yohkoh/bcs yohkoh/hxt yohkoh/sxt yohkoh/wbs"
+setenv SSW_SMM_INSTR "smm/xrp smm/hxrbs smm/uvsp smm/cp smm/grs smm/cp smm/hxis smm/acrim"
+setenv SSW_CGRO_INSTR "cgro/batse"
+setenv SSW_RADIO_INSTR "radio/ethz radio/nrh radio/norh radio/ovsa radio/ovro radio/norp"
+setenv SSW_OPTICAL_INSTR "optical/soon optical/lapalma optical/nso optical/mees"  # optical/nso optical/mees
+
+#setenv SSW_HESI_INSTR     "hesi/hesi"
+setenv SSW_HESSI_INSTR    "hessi/hessi"
+setenv SSW_SPARTAN_INSTR  "spartan/spartan"		
+setenv SSW_TRACE_INSTR    "trace/trace"		  # enabled  29-oct-1996
+setenv SSW_NGDC_INSTR     "ngdc/ngdc"
+setenv SSW_HXRS_INSTR     "hxrs/hxrs"
+setenv SSW_PACKAGES_INSTR "packages/binaries packages/chianti packages/spex packages/xray packages/goes packages/cdscat packages/ztools packages/lparl packages/ana packages/stereo packages/findstuff packages/limbstuff packages/vdem packages/andril"
+# setenv SSW_SERTS_INSTR  "serts/xxx"
+setenv SSW_INSTR_ALL "gen $SSW_SOHO_INSTR $SSW_YOHKOH_INSTR $SSW_SPARTAN_INSTR $SSW_TRACE_INSTR $SSW_SMM_INSTR $SSW_CGRO_INSTR $SSW_HESSI_INSTR $SSW_PACKAGES_INSTR $SSW_RADIO_INSTR $SSW_OPTICAL_INSTR $SSW_NGDC_INSTR $SSW_HXRS_INSTR"
+#########################################################################
+
+#########################################################################
+# SSW Packages                                        # future PSEUDO-MISSION?
+setenv SSW_PACKAGES $SSW/packages
+setenv SSW_CHIANTI  $SSW_PACKAGES/chianti             # supported
+setenv SSW_SPEX     $SSW_PACKAGES/spex                # supported
+setenv SSW_XRAY     $SSW_PACKAGES/xray
+setenv SSW_GOES     $SSW_PACKAGES/goes
+setenv SSW_CDS_CAT  $SSW_PACKAGES/cdscat
+setenv SSW_ZTOOLS   $SSW_PACKAGES/ztools              # 
+setenv SSW_LPARL    $SSW_PACKAGES/lparl
+setenv SSW_BINARIES $SSW_PACKAGES/binaries
+setenv SSW_ANA      $SSW_PACKAGES/ana
+setenv SSW_STEREO   $SSW_PACKAGES/stereo
+setenv SSW_LIMBSTUFF $SSW_PACKAGES/limbstuff
+setenv SSW_FINDSTUFF $SSW_PACKAGES/findstuff
+setenv SSW_VDEM      $SSW_PACKAGES/vdem
+setenv SSW_ANDRIL    $SSW_PACKAGES/andril
+setenv SSW_PACKAGES_ALL "$SSW_BINARIES $SSW_CHIANTI $SSW_SPEX $SSW_XRAY $SSW_GOES $SSW_ZTOOLS $SSW_LPARL $SSW_ANA $SSW_STEREO $SSW_FINDSTUFF $SSW_LIMBSTUFF $SSW_ANDRIL"
+#########################################################################
+
+#########################################################################
+setenv SSW_SETUP        $SSW/gen/setup
+setenv SSW_GEN_SETUP    $SSW/gen/setup
+setenv SSW_SETUP_DATA   $SSW_SETUP/data
+setenv SSW_BIN		$SSW/gen/bin
+setenv SSW_GEN_DATA     $SSW/gen/data
+setenv DIR_GEN_SPECTRA  $SSW_GEN_DATA/spectra
+#########################################################################
+
+#########################################################################
+setenv SSW_SITE_LOGS	$SSW/site/logs
+setenv SSW_SITE_SETUP   $SSW/site/setup
+setenv SSW_SITE_MIRROR  $SSW/site/mirror
+#########################################################################
+
+#########################################################################
+# Common SSW environmentals (relative to $SSW)
+setenv TIME_CONV $SSW/gen/data/time
+#########################################################################
+
+#########################################################################
+# Shared libraries
+setenv SSW_LIBRARIES $SSW/gen/idl_libs
+setenv IDL_SSWASTRON $SSW_LIBRARIES/astron
+#########################################################################
+
+#########################################################################
+# set language bias to english 
+# ( certain SSW routines which 'spawn' cmds expect English results )
+setenv LANG C
+#########################################################################
+# Perl Packages
+setenv SSW_PERL $SSW/gen/perl
+setenv SSW_URL_GET $SSW_PERL/url_get
+#########################################################################
+
+####################################################
+# ssw_contrib host
+#setenv ssw_contrib_master sxt.lmsal.com        # sohoftp down
+setenv ssw_contrib_master sohoftp.nascom.nasa.gov # back up, Jan 29.
+###################################################
+
+

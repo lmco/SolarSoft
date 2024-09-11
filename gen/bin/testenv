@@ -1,0 +1,10 @@
+# test input file for setenv_list
+# comment lines ok
+setenv ssw_aaa this,is,$SSW/yohkoh/ysw,test
+setenv ssw_bbb $SSW
+setenv ssw_ccc /nosuchpath      #partial comment check
+ssw_ddd $SSW/soho/eit			# mixed 2 and 3 column test
+	ssw_eee	   $SSW/soho/cds # white space test	
+# closing comments
+
+

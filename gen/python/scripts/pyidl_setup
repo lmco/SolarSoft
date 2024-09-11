@@ -1,0 +1,27 @@
+#!/bin/csh -f 
+
+# Run IDL-Python bridge setup
+# Make sure to define or hardwire $SSW, $PYTHONHOME, and $IDL_DIR beforehand to your local setup.
+# Run as "sudo csh pyidl_setup"
+
+# Zarro (ADNET) 26-July-18 
+
+set CWD = `pwd` 
+onintr catch
+
+setenv SSW /solarsoft
+setenv PYTHONHOME /Users/zarro/anaconda3
+setenv IDL_DIR /Applications/harris/idl
+setenv PYTHONPATH $IDL_DIR/lib/bridges
+ 
+if !(-e $IDL_DIR/lib/bridges/setup_fix.py) then
+ cp $SSW/gen/python/bridge/setup.py $IDL_DIR/lib/bridges/setup_fix.py
+endif
+
+cd $IDL_DIR/lib/bridges
+$PYTHONHOME/bin/python setup_fix.py install   
+
+catch:
+if ($?CWD) then  
+ cd $CWD 
+endif

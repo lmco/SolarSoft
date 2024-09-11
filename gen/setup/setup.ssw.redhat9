@@ -1,0 +1,292 @@
+#!/bin/csh -f
+##############################################################################
+# csh script <setup.ssw> - SSW initialization script - Top level driver
+##############################################################################
+#  5-Jun-1995 (Samuel Freeland)
+# 21-Jun-1995 (SLF)
+# 10-aug-1995 (SLF) - Map instrument to SSW/MISSION subdirectory...
+# 22-Feb-1996 (SLF) - clean up, document etc.
+#  4-Mar-1996 (SLF) - use $SSW/site/setup/setup.ssw_paths for local paths
+#  8-Mar-1996 (SLF) - allow $SSW/site/setup/setup.xxx_paths (instr local)
+#                     add SSW bin and perl to users $path
+# 14-Mar-1996 (SLF) - permit gen/site/personal level setup.MISSION_env
+# 24-Jun-1996 (SLF) - call to 'setenv_list' uses variable instead of command
+#		      line argument (some systemV dont fill 'argv' via "source")
+# 19-aug-1996 (SLF) - verify that 'printenv' path is availble
+# 16-oct-1996 (SLF) - permit personal ~/setup.xxx_env per documentation
+# 30-Oct-1996 (MDM) - Made /quiet really be quiet
+# 31-Oct-1996 (SLF) - more /quiet, /loud work
+#  7-nov-1996 (SLF) - use envs. ssw_quiet/ssw_loud (systemV parameter prob)
+# 28-may-1997 (SLF) - simplify/clarify setup.XXX  and setup.XXX_env 
+# 19-sep-1997 (SLF) - fix typo in documentation header
+# 16-Jun-1998 (SLF) - add $SSW/site/bin to $addpaths list (&therefore to $path)
+# 16-feb-2010 (SLF) - special IRIX word-to-long protection 
+# 22-jun-2023 (SVHH) - added " to mission and inpath to work on redhat9
+##############################################################################
+#
+# Purpose: drive environmental setup for SSW access
+#
+# Assumptions:
+#   Top level SolarSoft environmental <SSW> points to local path
+#
+# Calling Sequence: 
+#   source $SSW/setup/setup.ssw 
+# 
+#   Optionally, set enviromnental SSW_INSTR to specify which SSW instruments
+#   to include (system environment and IDL !path)
+#
+#   Example:
+#      setenv SSW_INSTR "eit sxt lasco"		# blank delimited list
+#      source $SSW/gen/setup/setup.ssw 
+#
+# Keyword Parameter:
+#   /loud  - if set, verbose - give trace of which files are executed
+#   /quiet - if set, verbose - give trace of which files are executed
+#
+# Purpose: control setup flow for SSW
+#     Set General  Level SSW envionment			[REQUIRED]
+#     Set SITE Level SSW environment			[OPTIONAL]
+#
+#     For each instrument (in SSW_INSTR environmental)
+#        Set General  Level (and assign defaults)			
+#        Set SITE     Level (supercede gen level)	[OPTIONAL]
+#        Set Personal Level (supercede site level)	[OPTIONAL]
+#
+#     Setup devices  [tape drives, printers, etc]
+#        Gen / Site / Personal 
+#
+#     Setup aliases
+#        Gen / Site / Personal 
+#
+# Restrictions:
+#   assume <SSW> environmental is defined 
+#   Instrument setup files named $SSW_INSTR/setup/setup.instr
+#   				 where INSTR={eit, cds, mdi, sxt, etc}
+#
+#   Gen level in $SSW_$INSTR/setup
+#   Proto version (may elminate echos for speed)
+#
+#   Side effects:
+#      if /loud set,  environmental ssw_loud is set after exit
+#      if /quiet set, environmental ssw_quiet is set after exit
+##############################################################################
+# verify that SSW is defined
+if (!($?SSW)) then
+   echo "Please define environmental SSW and retry..."
+   exit
+endif
+unset SSW_INSTR			 # Script Variable (not environmental)
+
+############## printenv verification #########################################
+set temp_path=($path)
+if (-e /usr/ucb/printenv) then 
+   set path=($path /usr/ucb)
+endif
+
+###################### loop through parameters ###############################
+set instrlist=""			      # setup some defaults
+set loud=`printenv ssw_loud`                 # set prior to entry?
+set quiet=`printenv ssw_quiet`                # set prior to entry?
+
+foreach argx ($argv)
+   switch ($argx)
+      case quiet
+      case /quiet
+         setenv ssw_quiet 1
+         unsetenv ssw_loud
+         set quiet="1"
+         set loud=""
+         breaksw
+      case loud:
+      case /loud:
+         setenv ssw_loud 1
+         unsetenv ssw_quiet
+         set loud="1"
+         set quiet=""
+         breaksw
+      default: 
+         set instrlist=($instrlist $argx)            # everything else
+      breaksw
+   endsw
+end
+
+set qdisp = "1"			## MDM 30-Oct-96
+if ($quiet) set qdisp = ""
+
+######################################################################
+# Look for SITE file to resolve local pathnames
+#
+set site_path="$SSW/site/setup/setup.ssw_paths"
+if (-e $site_path) then
+   if ($loud) echo "Executing: "`$SSW/gen/bin/echo_env $site_path`
+      setenv env_list $site_path; source $SSW/gen/bin/setenv_list2 
+endif
+######################################################################
+
+######################################################################
+# TODO - Assign fundamental SSW dbase if not assigned above)
+######################################################################
+
+######################################################################
+# Define standard sswpath execution  order ( GEN -> SITE -> HOME)
+# 
+#              ----- SSW GEN---- ----- SITE ------  --Personal (home)---
+set ssw_porder=("$SSW/gen/setup/" "$SSW/site/setup/"    "~/"  )
+######################################################################
+
+############### execute GEN environmental setup ######################
+set genenv=$ssw_porder[1]"setup.ssw_env"
+if (-e $genenv) then
+   set un=`uname -a | grep IRIX`
+   if ("$un" != "") then
+      set genenv=$genenv"_IRIX"
+   endif 
+   source $genenv
+else
+   echo "File: "'$SSW'"/gen/setup/setup.ssw_env required but not found..."
+   echo "Aborting SSW setup"
+   exit
+endif
+#############################################################################
+
+#############################################################################
+#
+#   Mission-wide environmentals
+#   Pre-requisite - must have "fundamentals" defined (per ssw_paths or defaults)
+#   TODO - only execute for missions implied by SSW_INSTR list
+set missions=`printenv SSW_MISSIONS`
+foreach missx ($missions) 
+   foreach paths ($ssw_porder)
+   set misenvfile="$paths"'setup.'$missx"_env"
+   if (-e $misenvfile) then 
+      if ($loud) then 
+         echo "Executing: "`$SSW/gen/bin/echo_env $misenvfile SSW`     
+      endif
+      source $misenvfile
+   endif
+   end
+end
+#############################################################################
+
+########### Check for user defaults (via SSW_INSTR) #########################
+set SSW_INTR=`printenv SSW_INSTR`
+if ("$SSW_INTR" == "") setenv SSW_INSTR  "gen"	# Default SSW GEN only 
+# --- prepend GEN if not explicitly defined ---
+set inst=`echo $SSW_INSTR`
+set chk=`echo $inst | grep -i gen`
+if ("$chk" == "") then 
+   set SSW_INSTR =(gen $SSW_INSTR)
+endif
+if ($qdisp) echo "SSW  setup will include: <"$SSW_INSTR">"
+###########################################################################
+
+##############################################################################
+# Convert instrument list cases (envs=upper, filenames=lower)
+set upinstr =(`echo $SSW_INSTR | tr "[a-z]" "[A-Z]"`)
+set lowinstr=(`echo $SSW_INSTR | tr "[A-Z]" "[a-z]"`)
+set upallinstr=(`echo $SSW_INSTR_ALL | tr "[a-z]" "[A-Z]"`)
+##############################################################################
+
+######### set default top level for ALL SSW (top=SSW_XXX) ####################
+set upall=($upallinstr)
+set lowall=($SSW_INSTR_ALL)
+while ($#upall >= 1) 
+   set inname=$upall[1]:t
+   set inpath="/"$lowall[1]:t
+   set mission="/"$lowall[1]:h
+   if ("$mission" == "$inpath") then 
+      set mission=""
+   endif
+   eval setenv "SSW_$inname" "$SSW$mission$inpath"
+   shift lowall
+   shift upall
+end
+############################################################################
+
+################# execute SSW Site setup if it exists ######################
+# [Sites may re-define top level SSW_xxx (ex: split across disks)
+if (-e $ssw_porder[2]"setup.ssw") then 
+   source $ssw_porder[2]"setup.ssw"
+endif
+#############################################################################
+
+######### now loop through specified instrument specific setups #############
+foreach instr ($upinstr)
+
+#  --- check for site PATH file (resolve local pathnames
+   set ispath="$SSW/site/setup/setup."$lowinstr[1]"_paths"
+   if (-e $ispath) then
+      if ($loud) echo "Executing: "`$SSW/gen/bin/echo_env $ispath`
+      setenv env_list $ispath; source $SSW/gen/bin/setenv_list2      
+   endif
+
+#  --- check for top level instrument setup file ---    # TOP LEVEL instrum.
+
+#  ############################################################################
+   set loc=`printenv SSW_$upinstr[1]`                ## allow split trees
+   set ilist=( $loc/setup $SSW/site/setup $HOME )    ## Where to look
+   foreach ipath ($ilist) 
+      set isetup=$ipath/setup.$lowinstr[1]           ## setup.XXX
+      set esetup=$isetup"_env"                       ## setup.XXX_env
+#     Logic: if $ipath/setup.XXX exists, source it
+#            ELSE if $ipath/setup.XXX_env  exists, source it (EXCLUSIVE)
+
+      if (-e $isetup) then					  
+        if ($loud) echo "Executing: "`$SSW/gen/bin/echo_env $isetup SSW`
+        source  $isetup
+      else
+         if (-e $esetup) then				# envionment file
+            if ($loud) echo "Executing: "`$SSW/gen/bin/echo_env $esetup SSW`
+            source  $esetup
+         endif     
+      endif
+   end
+   shift upinstr				# do next instrument
+   shift lowinstr
+end
+
+##############################################################################
+
+############################ SSW Device Files ################################
+# SSW device configuration (printers, tapedrives, etc)
+foreach sswpath ($ssw_porder)
+   set devfile="$sswpath"setup.ssw_device		       # File Name
+   if (-e $devfile) then 
+      if ($loud) echo "Executing: "`$SSW/gen/bin/echo_env $devfile SSW`
+      source $devfile
+   endif
+end
+##############################################################################
+
+################## run alias files ###############################
+foreach sswpath ($ssw_porder)
+   set aliasfile="$sswpath"setup.ssw_alias                      # File Name
+   if (-e $aliasfile) then
+      if ($loud) echo "Executing: "`$SSW/gen/bin/echo_env $aliasfile SSW`
+      source $aliasfile
+   endif
+end
+##################################################################
+
+################ Add to users $path for executables/scripts #################
+set path=($temp_path)		
+
+set addpaths=($SSW/site/bin $SSW/gen/bin $SSW/gen/perl)	   # paths to add
+foreach pathx ($addpaths)
+   set chk=`echo " "$path" " | grep " "$pathx" "`  # blank pad to avoid sub-paths
+   if ("$chk" == "") then			   # only add if not there
+      set path=($path $pathx)	
+   endif
+end
+##############################################################################
+
+
+###################### Define idl command for SSW ###########################
+alias sswidl $SSW/gen/setup/ssw_idl
+alias sswidlde $SSW/gen/setup/ssw_idlde
+if ($qdisp) echo ""
+if ($qdisp) echo "Type <sswidl> to start SSW IDL"
+##############################################################################
+
+
+exit

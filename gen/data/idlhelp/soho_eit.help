@@ -1,0 +1,319 @@
+%VERSION:2
+10
+138
+0:EIT_EFF_AREA
+2282:EIT_WITNESS
+2744:GT_EITFILTER
+4238:GT_EITSECTOR
+5943:PLOT_EIT_AREA
+7387:PLOT_EIT_ENTRANCE
+7695:PLOT_EIT_FILTERS
+8536:PLOT_EIT_FLUX
+9368:PLOT_EIT_MIRROR
+10593:PLOT_EIT_RESPONSE
+;+
+NAME:
+  eit_eff_area
+PURPOSE:
+  Return the EIT effective area as a function of wavelength
+CALLING SEQUENCE:
+  Area = eit_eff_area(index,waveout=waveout)	
+  Area = eit_eff_area(roadmap,wave)		;User supplies wavelengths
+  Area = eit_eff_area(index,wave)
+  Area = eit_eff_area(Sector,wave)		;Sector is an integer array
+  Area = eit_eff_area(Sector,wave,filter=filt)	;Filt is an integer array
+
+  Area_structure = eit_eff_area()
+  Area_structure = eit_eff_area(filein=filein)
+INPUTS:
+  Item		- EIT index structure or roadmap.  May be a scalar
+		  or an array.  Sector and Filters are extracted.
+
+	or	- an integer scalar or array with the EIT sector number.
+
+OPTIONAL INPUTS:
+  wave		- Wavelengths at which the values of the area are 
+                 desired.  If not specified, the wavelengths are
+		  generated internally and returned in waveout.
+OPTIONAL INPUT  KEYWORDS:
+  filters	- To override the values of filters in Item
+  verbose	- Set to provide additional information
+  filein	- To read a specific EIT effective area file.  By
+		  default reads the following file:
+		    concat_dir('SSW_EIT_RESPONSE','era*.genx')
+                 Use filein='your_file_name' to override the default.
+  text_area	- If file is read, return the text information (string) array
+OUTPUTS:
+  Returns the EIT effective area.  
+  Output size will be (N_elements(wave), N_elements(item))
+
+OPTIONAL OUTPUT KEYWORDS:
+  waveout	- If wave is not provided, then wavelengths are
+		  defined by eit_eff_area and returned in waveout.
+OPTIONAL INPUT/OUTPUT KEYWORD:
+  area_str	- The contents of the EIT effective area file is
+		  returned in this structure variable.  If this
+		  variable is defined, the routine will not bother
+		  to re-read the file on subsequent calls.
+RESTRICTIONS:
+  If filters is defined, it must be of length 1 or length n_elements(Item)
+
+   NOTE:  It is assumed that area.filter(0) = Entrance filter
+			      area.filter(1) = CCD fixed filter
+			      area.filter(2) = Filter wheel C+Al filter
+			      area.filter(3) = Filter wheel thin Al filter
+	   This is order is established in the routine mk_eit_area.pro 
+METHOD:
+  The EIT effective area file is read.  If wave is specified, the 
+  values are interpolated in Log(area).
+HISTORY:
+   9-Jun-95, J. R. Lemen (LPARL), Written
+;-
+;+
+ NAME:
+  eit_witness
+ PURPOSE:
+  Return the product of the reflectivities of the 
+  primary & secondary witness mirrors
+ CALLING SEQUENCE:
+  eit_witness, 171, wave, reflect
+  eit_witness, 195, wave, reflect
+  eit_witness, 284, wave, reflect
+  eit_witness, 304, wave, reflect
+ INPUTS:
+  Sector	= 171, 195, 284 or 304
+ OUTPUTS:
+  wave		= Vector of wavelengths
+  reflect	= Vector of reflectivities
+ HISTORY:
+   5-Jun-95, J. R. Lemen and R. C. Catura, Written
+;-
+;+
+NAME:
+  gt_EITfilter
+PURPOSE:
+  To extract the EIT filter number optionally return a string mnemonic.
+CALLING SEQUENCE:
+  print, gt_EITfilter()			;to list the mnemonics
+  filters = gt_EITfilter(index)
+  filters = gt_EITfilter(roadmap)
+  filters = gt_EITfilter(index.eit, /string)
+  filters = gt_EITfilter(index, /short)
+  filters = gt_EITfilter(indgen(4))		;used with menu selection
+  filters = gt_EITfilter(index.eit, /space)	;put single space before string
+  filters = gt_EITfilter(index.eit, space=3)	;put 3 spaces
+METHOD:
+  The input can be a vector or a scalar.
+  The input can be a integer or a structure.
+  The structure can be the index, or roadmap, or observing log.  
+  The integer value corresponding to the EIT definition.  To
+		check, use print,gt_EITfilter()
+	
+INPUT:
+  item	- A integer or structure, which can be scalar or an array.  If this
+	  value is not present, a help summary is printed with the filter
+	  names used.
+OPTIONAL INPUT:
+  string	- If present, return the string mnemonic (long notation)
+  short	- If present, return the short string mnemonic 
+  spaces	- If present, place that many spaces before the output
+		  string.
+OUTPUT:
+  returns	- The filter selected, a integer value or a string
+		  value depending on the switches used.  It is a vector
+		  if the input is a vector
+OPTIONAL OUTPUT:
+  header	- A string that describes the item that was selected
+                 to be used in listing headers.
+HISTORY:
+ 10-Jun-1995, J. R. Lemen (LPARL), Written
+;-
+;+
+NAME:
+  gt_EITsector
+PURPOSE:
+  To extract the EIT sector number optionally return a string mnemonic.
+CALLING SEQUENCE:
+  print, gt_EITsector()			;to list the mnemonics
+  sectors = gt_EITsector(index)
+  sectors = gt_EITsector(roadmap)
+  sectors = gt_EITsector(index.eit, /string)
+  sectors = gt_EITsector(index, /short)
+  sectors = gt_EITsector(indgen(4))		;used with menu selection
+  sectors = gt_EITsector(index.eit, /space)	;put single space before string
+  sectors = gt_EITsector(index.eit, space=3)	;put 3 spaces
+  sectors = gt_EITsector(index,/wave)		;Same as /short, but return integers
+METHOD:
+  The input can be a vector or a scalar.
+  The input can be a integer or a structure.
+  The structure can be the index, or roadmap, or observing log.  
+  The integer value corresponding to the EIT definition.  To
+		check, use print,gt_EITsector()
+	
+INPUT:
+  item	- A integer or structure, which can be scalar or an array.  If this
+	  value is not present, a help summary is printed on the
+	  wavelength sector names used.
+OPTIONAL INPUT:
+  string	- If present, return the string mnemonic (long notation)
+  short	- If present, return the short string mnemonic 
+  wave		- If present, return wavelengths as integers
+  spaces	- If present, place that many spaces before the output
+		  string.
+OUTPUT:
+  returns	- The filter selected, a integer value or a string
+		  value depending on the switches used.  It is a vector
+		  if the input is a vector
+OPTIONAL OUTPUT:
+  header	- A string that describes the item that was selected
+                 to be used in listing headers.
+RESTRICTIONS:
+  The /wave keyword overrides /short and /string keywords.
+HISTORY:
+ 10-Jun-1995, J. R. Lemen (LPARL), Written
+;-
+;+
+NAME: 
+   plot_eit_area
+PURPOSE:
+   Plot the EIT effective area vs wavelength
+CALLING SEQUENCE:
+  plot_eit_area		; Will read the era*genx file
+  plot_eit_area, area		; area = data structure (in/out)
+  plot_eit_area,/hc		; For PostScript output
+  plot_eit_area,/one		; On one wavelength scale
+
+  plot_eit_area will produce a four panel plot (unless the /one)
+  option is specified.  Use the /open, /entrance, /ccd switches
+  to specify which filter wheel case to use (default = /open)
+INPUTS:
+  None are required.
+OPTIONAL INPUT/OUTPUT:
+  area		- Data structure from era*.genx
+		  If area is undefined, will be read from the
+		  era*genx file.
+  filein	- By default, the EIT effective area file is read:
+		    concat_dir('SSW_EIT_RESPONSE','era*.genx')
+		  Use filein='your_file_name' to override the default.
+OPTIONAL INPUT KEYWORDS:
+  /one		- If set, put all four sectors on one graph.
+  /linear	- If set, plot the ordinance on a linear scale (def. is log)
+
+  /open	- If set, plot the open filterwheel case
+  /entrance	- If set, plot the entrance filterwheel case
+  /ccd		- If set, plot the ccd filterwheel case
+  (None)	- If open, entrance and ccd area all 0, plot all cases.
+
+  /notime	- If set, don't put the time on the PostScript plot.
+  /hc		- If set, send to the PostScript printer
+  /noprint	- If both /hc and /noprint are set, create PostScript file 
+		  but do not print it.
+HISTORY:
+  12-Jun-95, J. R. Lemen (LPARL), Written.
+;-
+;+
+ NAME: 
+   plot_eit_entrance
+ PURPOSE:
+   Plot the comparison between computed EIT entrance filter
+   and Jean-Pierre Delaboudiniere measured values.
+ CALLING SEQUENCE:
+   plot_eit_entrance
+   plot_eit_entrance,/hc	; Send to the PostScript printer
+ HISTORY:
+   10-Jun-95, J. R. Lemen (LPARL), Written.
+;-
+;+
+ NAME:
+  plot_eit_filters
+ PURPOSE:
+  Plot the transmissions of the EIT filters
+ CALLING SEQUENCE:
+  plot_eit_filters
+  plot_eit_filters,filters		; filters is a data structure
+ INPUTS:
+   None are required.
+ OPTIONAL INPUT/OUTPUT:
+   filters	- Data structure written to era*genx
+		  If filters is undefined, plot_eit_filters
+		  will read the era*genx file to obtain filters.
+   filein	- By default, the EIT effective area file is read:
+		    concat_dir('SSW_EIT_RESPONSE','era*.genx')
+		  Use filein='your_file_name' to override the default.
+ OPTIONAL INPUT KEYWORDS:
+   /notime	- If set, don't put the time on the PostScript plot.
+   /hc		- If set, send to the PostScript printer
+   /noprint	- If /hc and /noprint are set, create but don't print 
+		  PostScript file.
+ MODIFICATION HISTORY:
+ 10-Jun-95, J. R. Lemen (LPARL), Written.
+;-
+;+
+NAME:
+  plot_eit_flux
+PURPOSE
+  Plot the EIT response curves
+CALLING SEQUENCE:
+  plot_eit_flux
+  plot_eit_flux, /hc		; To make hardcopy
+INPUTS:
+  None.
+OPTIONAL INPUT KEYWORDS:
+  /open	- Set to plot the Filter wheel Open case
+  /entrance	- Set to plot the Filter wheel entrance-like case
+  /ccd		- Set to plot the Filter wheel CCD-like case
+		  (if none of these are specified, all will be plotted).
+  ccd_gain	- The assumed CCD_gain in e-/DN
+  /noverbose	- If set, suppress informational messages.
+  /hc		- If set, send plot to PostScript printer
+  filein	- To specify explicitly the ere*genx file
+		  containing the EIT response curves.
+OUTPUTS:
+  None.
+CALLS:
+  EIT_FLUX to read the response file.
+HISTORY:
+  12-jun-95, J. R. Lemen (LPARL), Written.  
+               test version  -- just reads the ere*genx file directly.
+;-
+;+
+ NAME:
+   plot_eit_mirror
+ PURPOSE:
+   Plot the EIT mirror reflectivity
+ CALLING SEQUENCE:
+   plot_eit_mirror, mirror
+   plot_eit_mirror, code=2, /notime, /hc, yra=[1.e-6,.1]
+   plot_eit_mirror, /extend_range, filein=filein
+ OPTIONAL INPUT/OUTPUT:
+   mirror	- Data structure from the EIT effective area file (era*genx)
+		  If mirror is not defined, the era*genx file will be read.
+   filein	- By default the EIT effective area file is read:
+		    concat_dir('SSW_EIT_RESPONSE','era*.genx')
+		  Use filein='your_file_name' to override the default.
+ OPTIONAL INPUT KEYWORDS:
+   code	0: Plot measurements and model
+   		1: Plot ratio of model/measurements
+   		2: Same as 0, but also over plot corrected model (Default)
+   extend_range If set, extend the wavelength ranges by +/- 50 A
+   notime	- If set, do not put the time on the plot
+   yrange	- Vector of length 2 equal to desired min and max y-axis range
+   /hc		- If set, send to PostScript printer
+   /noprint    - If both /hc and /noprint are set, create PostScript file
+		  but do not print it
+   /noverbose	- Don't give the explanations when running.
+ CALLS:
+   eit_witness to obtain the witness mirror data.
+ HISTORY:
+  10-Jun-95, J. R. Lemen (LPARL), Written.
+;-
+;+
+NAME:
+  plot_eit_response
+PURPOSE:
+  Plot the various EIT response parameters
+CALLING SEQUENCE:
+  .run plot_eit_response
+HISTORY:
+  10-Jun-95, J. R. Lemen (LPARL), Written.
+;-

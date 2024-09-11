@@ -1,0 +1,10 @@
+universal = C_REARRANGE
+universal = S_REARRANGE
+universal = L_REARRANGE
+universal = D_REARRANGE
+universal = L_MEDIAN
+universal = F_MEDIAN
+universal = D_MEDIAN
+universal = L_QSRT_K
+universal = F_QSRT_K
+universal = D_QSRT_K

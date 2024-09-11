@@ -1,0 +1,107 @@
+#!/bin/csh -f
+#
+############################################################################
+#   Name: start_idlserver_5
+#
+#   Purpose: monitor idlserver process - restart if required
+#
+#   Calling Sequence:
+#      csh start_idlserver.csh [serverid]
+#  
+#   Optional Arguments
+#      serverid - must be 8 digit HEX number between 20000000 and 3fffffff
+#                 (default is 2010CAFE per IDL server default)
+#
+#   History:
+#      24-July-1995 (SLF) - simplify HTTP/IDL server maintainence
+#      15-may-1997  (SLF) - SSW environment
+#       4-Feb-1998  (SLF) - update for RSI/IDL Version 5 RPC changes
+#       5-Feb-1998  (SLF) - background it
+#
+#   Restrictions:
+#      Requires SolarSoft Software installation and $SSW points to top
+#      assumes $SSW/site/logs exists (w/write access)
+#
+############################################################################
+# set mailing list 
+set idlserv_mail="freeland@isass0"	#<<<local mailing list
+############################################################################
+if (!($?SSW)) then
+   setenv SSW /ssw
+endif
+
+# determine server id to use
+if ($#argv) == 0 then
+   set servid="2010CAFF"
+else
+   set servid=$argv[1]
+endif
+
+####### define output file names (derive from host/serverid) #####
+set host="`hostname`"
+# file for 
+set serv_sys_file="$SSW/site/logs/idlserv_"$servid"_"$host".ps"
+set serv_log="$SSW/site/logs/idlserv_"$servid"_"$host".log"
+set serv_start=$SSW/site/logs/idlserver.ps
+if (!(-e $serv_start)) then
+   touch $serv_start
+   chmod 666 $serv_start
+endif
+touch $serv_sys_file
+chmod 666 $serv_sys_file
+touch $serv_log
+##############################################################
+
+# run a special HTTP startup 
+setenv IDL_STARTUP $SSW/gen/setup/IDL_WWW_STARTUP_5
+
+########## define the environment ( derived from idl_batch ) ##############
+setenv IDL_BATCH_NOFTP 1		# dont check for FTP errors
+unsetenv IDL_BATCH_REMOVE		# default is not to remove
+set remove="0"
+setenv OUTFIL='~/idl_batch_server'
+setenv IDL_BATCH_LOGFIL $OUTFIL
+/bin/rm -f $OUTFIL
+setenv SSW_INSTR "sxt eit"
+echo "pre source"
+source $SSW/gen/setup/setup.ssw  /quiet  >& $OUTFIL
+echo "post source"
+# ----------- slf 13-aug-93 - add idl env context setup section
+setenv ssw_nomore 1		# disable more-like behavior
+setenv ssw_nox	 1		# 
+setenv ssw_batch  1		# batch mode flag slf, 4-sep-1993
+unsetenv ssw_fast		# make it slow if batch, slf, 29-aug-94
+unsetenv ssw_autobin		# dont run binary startup 
+# -----------
+######################################################################
+######### see if specified server is already running  ################
+set os=`uname`
+
+if ("`uname`" == OSF1) then 
+   set chk=`ps auxw | grep idl | grep server | grep $servid`
+else
+   set chk=`ps -edalf | grep idl | grep server | grep $servid`
+endif
+
+if ($#chk < 20 ) then
+#  not running so start one and send mail
+   echo `date`" START_IDLSERVER running on host "$host >  $serv_sys_file
+   echo $chk >> $serv_sys_file
+   echo "-------------------------------------------------------" >> $serv_start
+   echo "START_IDLSERVER running on host "$host >>  $serv_start
+   echo `date`" idl server "$servid" NOT running on host "$host"... initiating"  >> $serv_start
+   echo `date`" idl server "$servid" NOT running ... initiating"
+############################## Version < 5 ##################################
+#  /bin/csh -cf "$SSW/gen/setup/ssw_idl -server=$servid &" >> $serv_log
+############################## Version > 5 ##################################
+   /bin/csh -cf "$SSW/gen/setup/ssw_idl_server $servid &" >> $serv_log   
+   Mail -s "'idl server '$servid' started'" $idlserv_mail < $serv_sys_file
+else
+#  already running
+   echo `date`" idl server "$servid" already running on host "$host
+   echo `date`" idl server "$servid" already running on host "$host >> $serv_sys_file
+#   echo $chk >> $serv_sys_file
+endif
+chmod 777 $OUTFIL
+
+exit

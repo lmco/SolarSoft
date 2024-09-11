@@ -1,0 +1,155 @@
+#!/bin/csh
+#
+#					S.L.Freeland
+#					13-May-1993
+#					 2-Mar-1994 (/noyoung)
+#					21-Apr-1994 (-l qualifier)
+#					16-Jul-1994 (except_pat rdist)
+#					14-Jan-1995 (inhibit notify if /nomail)
+#
+# Perform remote compare or update of single area via unix rdist
+# This script generates and executes a simple rdist distfile
+#
+# Two modes are available (assume symbol alias exist for each mode)
+#	<rcompare> - run in compare mode (status only, no updates)
+#       <rupdate>  - run in update mode  (update remote directory)
+# You will receive a summary of info (rcompare) or actions (rupdate) via mail
+#  
+# Calling Sequence:
+#   rcompare local_path host [remote_path]  # compare remote to local master
+#   rupdate  local_path host [remote_path]  # update remote from local master
+#   
+# Calling Examples:
+#   rupdate local_path host -l RUSERNAME [/nomail /remove /noyoung]
+#
+# Parameters:
+#   local_path : local path name (compare/update includes all subdirectories)
+#   host       : remote host (name or internet address)
+#   remote_path: remote path name (only required if different from local master)
+#
+# Qualifiers:
+#   /notify or /mail : send mail to user when complete (default)
+#   /nomail         : inhibit mail
+#   /remove 	   : flag (rcompare) or remove (rupdate) remote files which
+#		     do not exist on master (careful!!)
+#   /noyoung	   : if set, update even if master copies are older
+#
+#   -l RUSERNAME   : remote user name if different from $user
+#
+# Calling Examples (examples assume running from isassN):
+#   rcompare /2p/USER/idl sxt3 		      # compare isass2 dir to parellel
+#					      #    sxt2 dir
+#   rcompare /2p/user/dev sxt2 /1p/user/dev   # compare isass2 home to sxt1 home
+#   rupdate  /0p/user isass2 /1p/user /remove # make isass1 home = isass0 home
+#   rcompare /ys/ucon/soft/USER sxt3 /remove  # compare remote to local
+#   rupdate  /ys/ucon/soft/USER sxt3 /remove  # make remote equivilent to local
+#
+# Warning: don't forget that this is recursive! - all subdirectories are
+# compared or updated - very useful if that is what you want, but be careful...
+# For directories containing a large number of files or for trees with 
+# complex structure, you may want to background this task
+# For example: (just an example, don't do this without written permission)
+#   rupdate /ys/ucon sxt2 /remove &  # make entire ucon area on remote
+#				     # equivilent to local master (background)
+#
+# Restrictions:
+#   caller must be on trusted host (add to remote .rhosts file if required)
+#
+# setup defaults
+set arglist=""		
+set mailon="1"		# default on
+set remp=""    		# default ignore remote files not on master
+set younger="-y"	# default - dont clobber newer files
+set ruseron=0		
+set ruser=""		# remote user name (default is $user)
+foreach param ($argv) 
+   if ($ruseron) then
+      set ruser="$param"'@'
+      set ruseron=0
+   else 
+      switch ($param)
+      case /notify:
+      case notify:
+      case /mail:
+      case mail:
+         set mailon=1
+	 breaksw
+      case '-l':
+         set ruseron=1
+         breaksw
+      case /noyounger:
+      case /noyoung:
+         set younger=""
+         breaksw
+      case /remove:
+      case /rem:
+      case remove:
+         set remp="R"
+	 breaksw
+      case /nomail:
+      case nomail:
+         set mailon=""
+         breaksw
+      default:
+         set arglist=($arglist $param)
+         breaksw
+      endsw
+   endif
+end
+
+if ($#arglist <= 1) then
+   echo "Exiting... Need at least 2 inputs"
+   echo "Calling Sequence: compare local_path host [remote_path]" 
+   exit
+endif
+
+set distfile=$HOME"/dist_"$user
+set distlog=$HOME"/dist_"$user".log"
+rm -f $distfile
+rm -f $distlog
+
+set date0=`date`
+#echo "------- rdist run at: $date0  ---------------------"
+echo "------- rdist run at: $date0  ---------------------" > $distlog
+echo " " 
+echo " " >> $distlog
+echo    "Local path: ""$arglist[1]"" on remote host:""$arglist[2]" 
+echo    "Local path: ""$arglist[1]"" on remote host:""$arglist[2]" >> $distlog
+set host_loc=""
+if ($#arglist >= 3) then
+   set host_loc="$arglist[3]"
+   echo "Compare to: ""$host_loc"" on remote host"
+   echo "Compare to: ""$host_loc"" on remote host" >> $distlog
+endif
+
+#
+echo # rdist control file                  > $distfile
+echo #                                    >> $distfile
+echo "$arglist[1] -> $ruser$arglist[2]"   >> $distfile
+echo "   install "$younger" $host_loc ;"  >> $distfile
+echo '   except_pat ( rdist ) ;'          >> $distfile
+
+if ($mailon != "") then
+   echo "   notify $user ;"               >> $distfile
+endif
+
+if ($?rdist_cmode) then
+#   echo "...Running in Compare-mode (no actual updates will occur) "
+   echo "...Running in Compare-mode (no actual updates will occur) " >> $distlog
+   rdist -vh"$remp"f $distfile >> $distlog
+else
+   echo "...Running in Install-mode (remote files will be updated) "
+   echo "...Running in Install-mode (remote files will be updated) " >> $distlog
+   rdist -"$remp"f $distfile >> $distlog
+endif
+echo " " 
+echo " " >> $distlog
+set date0=`date`
+#echo "-------- rdist completed at: $date0  ----------------"
+echo "-------- rdist completed at: $date0  ----------------" >> $distlog
+
+if ($mailon != "") then
+   set wmail=`which Mail`
+   if ($#wmail > 1) set wmail=`which mail`
+   $wmail -s "rdist status" $user < $distlog
+endif

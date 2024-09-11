@@ -1,0 +1,311 @@
+#!/bin/csh -f
+#
+############################################################################
+# Name: ssw_idl
+#
+# Purpose: IDL Startup Script for SSW - SERVER MODE VERSION
+#
+# Calling Sequence:
+#    source ssw_idl [keywords]
+#
+# Keywords:
+#   bin - use binary startup file if available 
+#   nox - skip X-windows default setup
+#   ahead - put users IDL_PATH ahead of SSW paths
+# 
+# 12-Jun-1995 (S.L.Freeland) Modified Yohkoh <run_idl> script to SSW use
+# 15-Feb-1996 (S.L.Freeland) Version 4 "protection" (RSI IDL_DIR shuffle)
+# 27-Feb-1996 (S.L.Freeland) Allow multiple instrument IDL_STARTUP
+# 28-May-1996 (S.L.Freeland) update SSWGEN definition
+# 15-aug-1996 (S.L.Freeland) move SSW_TEST (...unsupport -> $SSW/gen/idl_test)
+# 19-aug-1996 (S.L.Freeland) printenv protect (SunOS)
+# 22-may-1997 (S.L.Freeland) "simplify" IDL_DIR search (V2->V5 support)
+#  2-jun-1997 (S.L.Freeland) if uac exists, execute it to inhibit unaligned
+#                            access messages (OSF  version 5)
+#  5-nov-1997 (S.L.Freealand) add missing quote ($SSW defined check)
+# 20-nov-1997 (S.L.Freeland)  reduced length of $SSWGEN string (Linux problem)
+############################################################################
+onintr cleanup
+
+if (!($?SSW)) then 
+   echo "You Need to define environmental <SSW> before running this script"
+   echo "See http://www.space.lockheed.com/solarsoft/ssw_setup.html "
+   exit
+endif
+
+if (!($?SSW_INSTR)) then 
+   setenv SSW_INSTR "gen"
+endif
+
+############### verify printenv is available #############################
+set temp_path=($path)
+if (-e /usr/ucb/printenv) then
+   set path=($path /usr/ucb)
+endif
+##########################################################################
+
+########## inhibited unalligned access messages ##########################
+if (-e /usr/bin/uac) then
+   /usr/bin/uac p 0
+endif
+##########################################################################
+
+
+##################### Verify a working IDL_DIR is found ##################
+# test to see if user has defined IDL_DIR, if not, set it.
+# code is bulky due to moving RSI target and multi IDL Version support (SLF)
+#
+# slf 22-may-1997 - loop through
+if !( $?IDL_DIR ) then
+   set slist=(/usr/local/lib/idl /usr/local/rsi/idl_4 /usr/local/rsi/idl_5 /usr/local/rsi/idl)
+   foreach member ($slist)
+      if (-d $member) then 
+            setenv IDL_DIR $member
+      endif
+   end
+   if !( $?IDL_DIR ) then                    # still undefined??
+      if (-d /usr/local/lib/idl) then
+         set idl_dir=`find /usr/local/lib/idl -name bin -print`
+         setenv IDL_DIR `echo $idl_dir[1]:h`
+      else
+         echo "Cannot find idl directory - (IDL_DIR)"
+         exit
+      endif
+   endif
+endif
+############################################################################
+
+
+############ Verify a working IDL Astronomy copy is available #############
+if (!($?IDL_ASTRON) ) then
+   set IDL_ASTRON=""
+   if (-d $IDL_DIR/pro) set IDL_ASTRON="$IDL_DIR/pro"
+   if (-d $IDL_DIR/user_contrib/astron/pro) set IDL_ASTRON="$IDL_DIR/user_contrib/astron/pro"
+   if (-d /usr/local/lib/zastron) set IDL_ASTRON="/usr/local/lib/zastron"
+else
+   set IDL_ASTRON="$IDL_ASTRON"
+endif
+if ("$IDL_ASTRON" != "") then
+   set IDL_ASTRON=':+'$IDL_ASTRON
+else
+   if ($?IDL_SSWASTRON) then				# No local
+      set IDL_ASTRON=':+'$IDL_SSWASTRON	#shared		# Use SSW version
+   endif
+endif
+############################################################################
+
+############# determine initial SSW IDL_PATH ###############################
+# There are four main elements suppported
+#	SSWP	- SSW software directories
+#	PERSONAL- user personal directrories
+#	IDL_SYS	- IDL system usercontrib directories
+#       IDL_ASTON - astonomy library if available
+
+set IDL_SYS = +$IDL_DIR/lib:+$IDL_DIR/userlib"$IDL_ASTRON"
+
+if ( $?IDL_PATH ) then
+	set PERSONAL = $IDL_PATH
+else
+	set PERSONAL = ""
+endif
+
+# set environmental for later use in idl fast start
+setenv ssw_pers_path $PERSONAL
+
+######## slf 23-Nov-1992 Define Initial Segments ########################
+set SSWTEST = "$SSW/gen/idl_test"
+set SITE    = +$SSW/site/idl
+set SSWGEN  = "$SSWTEST/conflicts_resolve:+$SSWTEST/genutil" 
+set SSWP    = ""
+############## Define SSW instrument libraries  ###########################
+set chk=`echo $SSW_INSTR | grep -i GEN`
+if ("$chk" == "") then
+   set SSW_INSTR="GEN ""$SSW_INSTR"		# prepend GEN if required
+endif
+set upinstr =(`echo $SSW_INSTR | tr "[a-z]" "[A-Z]"`)
+
+set idl_startups=""
+set start_names=""
+foreach instr ($upinstr)
+   set top="SSW_"$instr
+   set chk=`printenv $top` 
+   if ($chk != "") then 
+      if (-d $chk) set SSWP=$SSWP"$chk""/idl/atest:""+""$chk""/idl:"
+      if (-e $chk/setup/IDL_STARTUP) then 
+         set idl_startups=($idl_startups $chk/setup/IDL_STARTUP)
+         set start_names=($start_names $instr)
+      endif
+   endif
+end
+###########################################################################
+# define standard path construction		slf, 8-mar-1993
+set SSW_PATH = $SITE":"$SSWGEN":"$SSWP		
+###########################################################################
+#slf 22-mar-93 - dont use fast start while in 'batch' mode
+if ($?IDL_BATCH_RUN) then
+   if($IDL_BATCH_RUN !="") unsetenv ssw_fast
+endif
+
+################      Deal with IDL_STARTUP(s) ##############################
+# $SSW/gen/setup/IDL_STARTUP + $SSW/site/setup/IDL_STARUP + $IDL_STARTUP
+#    (SSW GEN)		           (SSW SITE)                 (PERSONAL)
+#############################################################################
+# slf, 8-mar-1993 - S.L.Freeland 
+# dmz, 3-Dec-1993 - Dominic Zarro
+# (N.B. the user's personal startup is saved in the environment variable
+#   $ys_pers_startup and NOT $ys_pers_start. This is necessary to prevent
+#  the Yohkoh startup from finding the latter and executing it.
+# slf, 12-Jan-1993 - S.L.Freeland [allow site/IDL_STARTUP]
+# slf, 27-feb-1996 - S.L.Freeland [allow $SSW/mission/xxx/setup/IDL_STARTUP]
+#
+#############################################################################
+#  The 'IDL_STARTUP' is a (potential) concatenation of:
+#
+#	SSW/GEN/setup/IDL_STARTUP		# SSW 'gen' startup
+#	SSW/mission/XXX/setup/IDL_STARTUP	# any Instruments in SSW_INSTR
+#       SSW/site/setup/IDL_STARTUP		# SSW 'site' startup
+#	IDL_STARTUP				# Users Personal Startup
+#
+# ---------------------------------------------------------------------------
+set com = $0
+setenv temp_startup  ~/$com:t.$$	        # temp filename =  ~/ssw_idl.PID
+echo "; SSW IDL_STARTUP FILE" > $temp_startup
+foreach startup ($idl_startups)			# first member is 'gen'
+   echo 'print,"Executing SSW IDL_STARTUP for: '$start_names[1]'"'        >> $temp_startup 
+   echo "; ------------------------------------"    >> $temp_startup
+   cat $startup 				    >> $temp_startup 
+   echo "; ------------------------------------"    >> $temp_startup
+   shift start_names
+end
+#  if site startup exists, append it
+
+set ssetup="$SSW/site/setup/IDL_STARTUP"
+if (-e $ssetup) then
+   echo "; ---- Site Startup: $ssetup -----------"      >> $temp_startup
+   echo "print,'Executing SSW IDL_STARTUP for: SITE"    >> $temp_startup
+   cat $ssetup 					        >> $temp_startup
+endif
+
+#  if personal startup exists, append it
+if ($?IDL_STARTUP) then
+   setenv ssw_pers_startup $IDL_STARTUP
+   echo "; ------- Personal Startup: $IDL_STARTUP -----------"  >> $temp_startup
+   echo "print,'Executing SSW IDL_STARTUP: (Personal)"          >> $temp_startup
+   cat $IDL_STARTUP 						>> $temp_startup
+endif
+setenv IDL_STARTUP $temp_startup
+#############################################################################
+# --------------------------------------------------------------------
+#############################################################################
+set TMP = ""
+set command = ""
+foreach i ($*)		# go through each argument
+   switch ("$i")
+	case fast:
+		setenv ssw_fast 1
+		set SSW_PATH=$UTIL	#slf, 8-mar (upwardly compatible)
+		breaksw
+        case bin:			#slf, 18-may-95 - turn on autobin
+		setenv ssw_autobin 1
+                breaksw
+        case nobin:			#slf,  9-may-95 - turn off autobin
+   	        unsetenv ssw_autobin	
+		breaksw
+        case slow:			#slf, 25-mar (force slow path)
+		unsetenv ssw_autobin	#slf,  9-may-1995
+	        unsetenv ssw_fast
+		set SSW_PATH = $SITE":"$SSW
+		breaksw
+	case nox:
+        case xoff:
+	        setenv ssw_nox 1
+	        breaksw
+	case ahead:			# put users IDL_PATH in front
+		set TMP = "AHEAD"
+		breaksw
+	case tek:
+		setenv IDL_DEVICE tek
+	        setenv ssw_nox 1
+	        breaksw
+	default:		# unknown input; call IDL with it later
+		set temp = $command		#buffer the string
+		set command = "$temp $i"	#append it
+		breaksw
+   endsw
+end
+
+# slf, 8-mar-1993
+# set DISPLAY environ if not already done (and user wants X stuff)
+if (! $?DISPLAY) then
+   switch ($?ssw_nox)
+      case 0: 
+         source $SSW_BIN/setDISPLAY.src
+      breaksw
+      case 1: 
+         if ($ssw_nox != 1) then
+            source $SSW_BIN/setDISPLAY.src
+	 endif
+      breaksw
+   endsw
+endif
+
+# slf, enable SSW message of the day
+set ssw_upgrade=`tail -1 $SSW/gen/setup/ssw.upgrade`
+echo "--------------------------------------------------------"
+echo "Running SSW, Last Updated: "$ssw_upgrade
+if (-e $SSW/site/setup/ssw_motd) then
+      echo ""
+      cat $SSW/site/setup/ssw_motd
+endif
+echo " "
+echo "PROBLEMS? - e-mail TO: freeland@penumbra.nascom.nasa.gov"
+echo "--------------------------------------------------------"
+
+set TEMP2 = ""
+setenv ssw_ahead "$TMP"
+
+if ($TMP == "AHEAD") then
+    set TEMP2 = $PERSONAL
+    if ($SSW_PATH != "") then			#have to do the conditional because of inserting the ':'
+	set TEMP2 = $TEMP2':'$SSW_PATH
+    endif
+    set TEMP2 = $TEMP2':'$IDL_SYS
+else
+    if ($SSW_PATH != "") then                 #have to do the conditional because of inserting the ':'
+	set TEMP2 = $TEMP2':'$SSW_PATH
+    endif
+    if ($PERSONAL != "") then
+
+	set TEMP2 = $TEMP2':'$PERSONAL
+    endif
+
+    set TEMP2 = $TEMP2':'$IDL_SYS
+endif
+
+# set the darn thing.
+setenv IDL_PATH $TEMP2
+alias idltool $IDL_DIR/bin/idltool
+
+# call IDL with any arguments
+onintr -				# allow ctrl c in idl
+ $IDL_DIR/bin/idlrpc $command		# no alias (see comment) slf 30-Jul
+
+cleanup:
+onintr -
+
+if ($?ssw_pers_startup) then
+   setenv IDL_STARTUP $ssw_pers_startup
+   unsetenv ssw_pers_start
+endif
+
+# clean up temporary startup file
+
+if ($?temp_startup) then			# remove temporary file if created
+  if (-e $temp_startup) rm -f $temp_startup
+  unsetenv temp_startup
+endif
+
+set path=($temp_path)
+
+exit
+
